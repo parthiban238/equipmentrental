@@ -1,7 +1,7 @@
+
 package equipmentrental.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -24,8 +24,11 @@ public class Rental {
 
     private String status;
 
+    // Default constructor
     public Rental() {
     }
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -83,3 +86,4 @@ public class Rental {
         this.status = status;
     }
 }
+

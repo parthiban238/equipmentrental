@@ -1,3 +1,4 @@
+
 package equipmentrental.controller;
 
 import equipmentrental.entity.User;
@@ -28,19 +29,56 @@ public class UserController {
         return repository.save(user);
     }
 
+    // Login
+    @PostMapping("/login")
+    public User login(@RequestBody User loginUser) {
+
+        return repository.findByEmail(loginUser.getEmail())
+                .filter(user ->
+                        user.getPassword().equals(loginUser.getPassword()))
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Invalid email or password"));
+    }
+
     // Get user by ID
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
+
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+    }
+
+    // Get users by role
+    @GetMapping("/role/{role}")
+    public List<User> getUsersByRole(
+            @PathVariable String role) {
+
+        return repository.findByRole(role);
+    }
+
+    // Get user by email
+    @GetMapping("/email/{email}")
+    public User getUserByEmail(
+            @PathVariable String email) {
+
+        return repository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found with email: "
+                                        + email));
     }
 
     // Update user
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+    public User updateUser(
+            @PathVariable Long id,
+            @RequestBody User updatedUser) {
 
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
 
         user.setName(updatedUser.getName());
         user.setEmail(updatedUser.getEmail());
@@ -55,10 +93,12 @@ public class UserController {
     public String deleteUser(@PathVariable Long id) {
 
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
 
         repository.delete(user);
 
         return "User deleted successfully";
     }
 }
+
