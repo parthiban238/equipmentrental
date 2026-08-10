@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #6a1b9a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background-color: white;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 650px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        button {
+            background-color: #6a1b9a;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background-color: #4a148c;
+        }
+
+        .logout {
+            background-color: #d32f2f;
+        }
+
+        .logout:hover {
+            background-color: #b71c1c;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f3e5f5;
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- Header -->
+
+<header>
+
+    <h1>⚙️ Admin Dashboard</h1>
+
+</header>
+
+
+<!-- Main Container -->
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>
+
+            Welcome,
+
+            <span id="userName">
+                Admin
+            </span>!
+
+        </h2>
+
+
+        <p>
+
+            Manage users, equipment and rental bookings.
+
+        </p>
+
+
+        <!-- Admin Information -->
+
+        <div class="info">
+
+            <p>
+
+                <strong>Role:</strong>
+
+                <span id="userRole">
+                    ADMIN
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <br>
+
+
+        <!-- Manage Users -->
+
+        <button onclick="manageUsers()">
+
+            👥 Manage Users
+
+        </button>
+
+
+        <!-- Manage Equipment -->
+
+        <button onclick="manageEquipment()">
+
+            🚜 Manage Equipment
+
+        </button>
+
+
+        <!-- Manage Bookings -->
+
+        <button onclick="manageBookings()">
+
+            📋 Manage Bookings
+
+        </button>
+
+
+        <br>
+
+
+        <!-- Logout -->
+
+        <button
+            class="logout"
+            onclick="logout()">
+
+            🚪 Logout
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- JavaScript -->
+
+<script>
+
+    // ==================================
+    // Get Logged-in User Details
+    // ==================================
+
+    const userName =
+        localStorage.getItem("userName");
+
+    const userRole =
+        localStorage.getItem("userRole");
+
+
+    // Display user name
+
+    if (userName) {
+
+        document.getElementById(
+            "userName"
+        ).innerText = userName;
+
+    }
+
+
+    // Display user role
+
+    if (userRole) {
+
+        document.getElementById(
+            "userRole"
+        ).innerText = userRole;
+
+    }
+
+
+    // ==================================
+    // Check Admin Access
+    // ==================================
+
+    if (userRole !== "ADMIN") {
+
+        alert(
+            "Admin access required."
+        );
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // ==================================
+    // Manage Users
+    // ==================================
+
+    function manageUsers() {
+
+        window.location.href =
+            "users.html";
+
+    }
+
+
+    // ==================================
+    // Manage Equipment
+    // ==================================
+
+    function manageEquipment() {
+
+        window.location.href =
+            "admin-equipment.html";
+
+    }
+
+
+    // ==================================
+    // Manage Bookings
+    // ==================================
+
+    function manageBookings() {
+
+        window.location.href =
+            "admin-bookings.html";
+
+    }
+
+
+    // ==================================
+    // Logout
+    // ==================================
+
+    function logout() {
+
+        localStorage.clear();
+
+        window.location.href =
+            "login.html";
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

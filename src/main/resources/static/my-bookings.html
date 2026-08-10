@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Bookings</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f7f4;
+        }
+
+        header {
+            background-color: #2e7d32;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .booking-card {
+            background-color: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .booking-card h3 {
+            color: #2e7d32;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 5px;
+        }
+
+        .pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .back-btn {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>📋 My Bookings</h1>
+
+</header>
+
+
+<div class="container">
+
+    <button
+        class="back-btn"
+        onclick="goBack()">
+
+        ← Back to Farmer Dashboard
+
+    </button>
+
+
+    <h2>My Rental Bookings</h2>
+
+
+    <div id="bookingList">
+
+        <p>Loading bookings...</p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const API_URL =
+        "http://localhost:8081";
+
+
+    // Get logged-in Farmer ID
+
+    const userId =
+        localStorage.getItem("userId");
+
+
+    // ==================================
+    // Check Login
+    // ==================================
+
+    if (!userId) {
+
+        alert("Please login first.");
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // ==================================
+    // Load Farmer Bookings
+    // ==================================
+
+    async function loadBookings() {
+
+        const bookingList =
+            document.getElementById(
+                "bookingList"
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/rentals/user/${userId}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load bookings"
+                );
+
+            }
+
+
+            const bookings =
+                await response.json();
+
+
+            console.log(
+                "My Bookings:",
+                bookings
+            );
+
+
+            bookingList.innerHTML = "";
+
+
+            if (bookings.length === 0) {
+
+                bookingList.innerHTML = `
+
+                    <div class="booking-card">
+
+                        <p>
+                            No bookings found.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            bookings.forEach(function(booking) {
+
+                const card =
+                    document.createElement("div");
+
+
+                card.className =
+                    "booking-card";
+
+
+                const status =
+                    String(
+                        booking.status || "PENDING"
+                    ).toUpperCase();
+
+
+                let statusClass =
+                    "pending";
+
+
+                if (status === "APPROVED") {
+
+                    statusClass =
+                        "approved";
+
+                }
+                else if (status === "REJECTED") {
+
+                    statusClass =
+                        "rejected";
+
+                }
+                else if (status === "COMPLETED") {
+
+                    statusClass =
+                        "completed";
+
+                }
+
+
+                card.innerHTML = `
+
+                    <h3>
+                        🚜 Booking #${booking.id}
+                    </h3>
+
+                    <p>
+                        <strong>Equipment ID:</strong>
+                        ${booking.equipmentId}
+                    </p>
+
+                    <p>
+                        <strong>Start Date:</strong>
+                        ${booking.startDate}
+                    </p>
+
+                    <p>
+                        <strong>End Date:</strong>
+                        ${booking.endDate}
+                    </p>
+
+                    <p>
+                        <strong>Total Amount:</strong>
+                        ₹${booking.totalAmount}
+                    </p>
+
+                    <p>
+
+                        <strong>Status:</strong>
+
+                        <span class="status ${statusClass}">
+                            ${status}
+                        </span>
+
+                    </p>
+
+                `;
+
+
+                bookingList.appendChild(card);
+
+            });
+
+        }
+        catch (error) {
+
+            console.error(
+                "Booking Error:",
+                error
+            );
+
+
+            bookingList.innerHTML = `
+
+                <div class="booking-card">
+
+                    <p>
+                        ❌ Failed to load bookings.
+                    </p>
+
+                    <p>
+                        ${error.message}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    // ==================================
+    // Back
+    // ==================================
+
+    function goBack() {
+
+        window.location.href =
+            "farmer.html";
+
+    }
+
+
+    // Load bookings
+
+    loadBookings();
+
+</script>
+
+
+</body>
+
+</html>

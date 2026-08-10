@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Bookings</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #6a1b9a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .booking-card {
+            background-color: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .booking-card h3 {
+            color: #6a1b9a;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 5px;
+        }
+
+        .pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .delete-btn {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #b71c1c;
+        }
+
+        .back-btn {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background-color: #333;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>📋 Manage Rental Bookings</h1>
+
+</header>
+
+
+<div class="container">
+
+
+    <button
+        class="back-btn"
+        onclick="goBack()">
+
+        ← Back to Admin Dashboard
+
+    </button>
+
+
+    <h2>All Rental Bookings</h2>
+
+
+    <div id="bookingList">
+
+        <p>Loading bookings...</p>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    const API_URL =
+        "http://localhost:8081";
+
+
+    // ==================================
+    // Load All Bookings
+    // ==================================
+
+    async function loadBookings() {
+
+        const bookingList =
+            document.getElementById(
+                "bookingList"
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/rentals`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load bookings"
+                );
+
+            }
+
+
+            const bookings =
+                await response.json();
+
+
+            console.log(
+                "All Bookings:",
+                bookings
+            );
+
+
+            bookingList.innerHTML = "";
+
+
+            if (
+                !bookings ||
+                bookings.length === 0
+            ) {
+
+                bookingList.innerHTML = `
+
+                    <div class="booking-card">
+
+                        <p>
+                            No bookings found.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            bookings.forEach(
+                function(booking) {
+
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    card.className =
+                        "booking-card";
+
+
+                    const status =
+                        String(
+                            booking.status ||
+                            "PENDING"
+                        ).toUpperCase();
+
+
+                    let statusClass =
+                        "pending";
+
+
+                    if (
+                        status === "APPROVED"
+                    ) {
+
+                        statusClass =
+                            "approved";
+
+                    }
+
+                    else if (
+                        status === "REJECTED"
+                    ) {
+
+                        statusClass =
+                            "rejected";
+
+                    }
+
+                    else if (
+                        status === "COMPLETED"
+                    ) {
+
+                        statusClass =
+                            "completed";
+
+                    }
+
+
+                    card.innerHTML = `
+
+                        <h3>
+                            📋 Booking #${booking.id}
+                        </h3>
+
+                        <p>
+                            <strong>User ID:</strong>
+                            ${booking.userId}
+                        </p>
+
+                        <p>
+                            <strong>Equipment ID:</strong>
+                            ${booking.equipmentId}
+                        </p>
+
+                        <p>
+                            <strong>Start Date:</strong>
+                            ${booking.startDate}
+                        </p>
+
+                        <p>
+                            <strong>End Date:</strong>
+                            ${booking.endDate}
+                        </p>
+
+                        <p>
+                            <strong>Total Amount:</strong>
+                            ₹${booking.totalAmount}
+                        </p>
+
+                        <p>
+
+                            <strong>Status:</strong>
+
+                            <span
+                                class="status ${statusClass}">
+
+                                ${status}
+
+                            </span>
+
+                        </p>
+
+
+                        <button
+                            class="delete-btn"
+                            onclick="deleteBooking(${booking.id})">
+
+                            🗑️ Delete
+
+                        </button>
+
+                    `;
+
+
+                    bookingList.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Booking Error:",
+                error
+            );
+
+
+            bookingList.innerHTML = `
+
+                <div class="booking-card">
+
+                    <p>
+                        ❌ Failed to load bookings.
+                    </p>
+
+                    <p>
+                        ${error.message}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    // ==================================
+    // Delete Booking
+    // ==================================
+
+    async function deleteBooking(
+        bookingId
+    ) {
+
+
+        const confirmDelete =
+            confirm(
+                "Are you sure you want to delete Booking #" +
+                bookingId +
+                "?"
+            );
+
+
+        if (!confirmDelete) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/rentals/id/${bookingId}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                const errorMessage =
+                    await response.text();
+
+                throw new Error(
+                    errorMessage ||
+                    "Delete failed"
+                );
+
+            }
+
+
+            alert(
+                "Booking deleted successfully! ✅"
+            );
+
+
+            // Refresh list
+
+            loadBookings();
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Delete Error:",
+                error
+            );
+
+
+            alert(
+                "Failed to delete booking!\n\n" +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    // ==================================
+    // Back to Admin Dashboard
+    // ==================================
+
+    function goBack() {
+
+        window.location.href =
+            "admin.html";
+
+    }
+
+
+    // Load bookings when page opens
+
+    loadBookings();
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Owner Dashboard</title>
+
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f7f4;
+        }
+
+
+        header {
+            background-color: #1565c0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+
+        .container {
+            padding: 30px;
+            text-align: center;
+        }
+
+
+        .card {
+            background-color: white;
+            padding: 25px;
+            margin: 20px auto;
+            max-width: 650px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+
+        h2 {
+            color: #1565c0;
+        }
+
+
+        button {
+            background-color: #1565c0;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+
+        button:hover {
+            background-color: #0d47a1;
+        }
+
+
+        .logout {
+            background-color: #d32f2f;
+        }
+
+
+        .logout:hover {
+            background-color: #b71c1c;
+        }
+
+
+        .info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- Header -->
+
+<header>
+
+    <h1>🚜 Equipment Owner Dashboard</h1>
+
+</header>
+
+
+<!-- Main Content -->
+
+<div class="container">
+
+
+    <div class="card">
+
+
+        <h2>
+
+            Welcome,
+
+            <span id="userName">
+                Owner
+            </span>!
+
+        </h2>
+
+
+        <p>
+
+            Manage your agricultural equipment
+            and rental bookings.
+
+        </p>
+
+
+        <!-- Owner Information -->
+
+        <div class="info">
+
+
+            <p>
+
+                <strong>Owner ID:</strong>
+
+                <span id="userId">
+                    -
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>Role:</strong>
+
+                <span id="userRole">
+                    OWNER
+                </span>
+
+            </p>
+
+
+        </div>
+
+
+        <!-- Add Equipment -->
+
+        <button onclick="addEquipment()">
+
+            ➕ Add Equipment
+
+        </button>
+
+
+        <!-- View My Equipment -->
+
+        <button onclick="viewEquipment()">
+
+            🚜 View My Equipment
+
+        </button>
+
+
+        <!-- Rental Requests -->
+
+        <button onclick="viewBookings()">
+
+            📋 View Rental Requests
+
+        </button>
+
+
+        <br>
+
+
+        <!-- Logout -->
+
+        <button
+            class="logout"
+            onclick="logout()">
+
+            🚪 Logout
+
+        </button>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    // ==================================
+    // Get logged-in owner details
+    // ==================================
+
+    const userName =
+        localStorage.getItem("userName");
+
+
+    const userId =
+        localStorage.getItem("userId");
+
+
+    const userRole =
+        localStorage.getItem("userRole");
+
+
+    // ==================================
+    // Display Owner Name
+    // ==================================
+
+    if (userName) {
+
+        document
+            .getElementById("userName")
+            .innerText = userName;
+
+    }
+
+
+    // ==================================
+    // Display Owner ID
+    // ==================================
+
+    if (userId) {
+
+        document
+            .getElementById("userId")
+            .innerText = userId;
+
+    }
+
+
+    // ==================================
+    // Display Role
+    // ==================================
+
+    if (userRole) {
+
+        document
+            .getElementById("userRole")
+            .innerText = userRole;
+
+    }
+
+
+    // ==================================
+    // Add Equipment
+    // ==================================
+
+    function addEquipment() {
+
+        window.location.href =
+            "add-equipment.html";
+
+    }
+
+
+    // ==================================
+    // View My Equipment
+    // ==================================
+
+    function viewEquipment() {
+
+        window.location.href =
+            "owner-equipment.html";
+
+    }
+
+
+    // ==================================
+    // View Rental Requests
+    // ==================================
+
+    function viewBookings() {
+
+        window.location.href =
+            "owner-bookings.html";
+
+    }
+
+
+    // ==================================
+    // Logout
+    // ==================================
+
+    function logout() {
+
+        localStorage.clear();
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>

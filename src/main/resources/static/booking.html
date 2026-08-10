@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Rental Requests</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f7f4;
+        }
+
+        header {
+            background-color: #1565c0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .booking-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .booking-card h3 {
+            color: #1565c0;
+        }
+
+        button {
+            border: none;
+            padding: 10px 18px;
+            margin: 5px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .approve {
+            background-color: #2e7d32;
+        }
+
+        .reject {
+            background-color: #d32f2f;
+        }
+
+        .back {
+            background-color: #555;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .pending {
+            color: #f57c00;
+        }
+
+        .approved {
+            color: #2e7d32;
+        }
+
+        .rejected {
+            color: #d32f2f;
+        }
+
+        .completed {
+            color: #1565c0;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>📋 Rental Requests</h1>
+
+</header>
+
+
+<div class="container">
+
+    <button
+        class="back"
+        onclick="goBack()">
+
+        ← Back to Owner Dashboard
+
+    </button>
+
+
+    <h2>My Equipment Rental Requests</h2>
+
+
+    <div id="bookingList">
+
+        <p>Loading rental requests...</p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const API_URL =
+        "http://localhost:8081";
+
+
+    // Get logged-in owner ID
+
+    const ownerId =
+        localStorage.getItem("userId");
+
+
+    console.log("Owner ID:", ownerId);
+
+
+    // Check login
+
+    if (!ownerId) {
+
+        alert("Please login first.");
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // ==================================
+    // Load Owner Rentals
+    // ==================================
+
+    async function loadBookings() {
+
+        const bookingList =
+            document.getElementById(
+                "bookingList"
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/rentals/owner/${ownerId}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load rental requests"
+                );
+
+            }
+
+
+            const bookings =
+                await response.json();
+
+
+            console.log(
+                "Owner Bookings:",
+                bookings
+            );
+
+
+            bookingList.innerHTML = "";
+
+
+            if (
+                !bookings ||
+                bookings.length === 0
+            ) {
+
+                bookingList.innerHTML = `
+
+                    <div class="booking-card">
+
+                        <p>
+                            No rental requests found.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            bookings.forEach(function(booking) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "booking-card";
+
+
+                const status =
+                    String(
+                        booking.status ||
+                        "PENDING"
+                    ).toUpperCase();
+
+
+                let statusClass =
+                    "pending";
+
+
+                if (status === "APPROVED") {
+
+                    statusClass =
+                        "approved";
+
+                }
+
+                else if (status === "REJECTED") {
+
+                    statusClass =
+                        "rejected";
+
+                }
+
+                else if (status === "COMPLETED") {
+
+                    statusClass =
+                        "completed";
+
+                }
+
+
+                let actionButtons = "";
+
+
+                // Only PENDING can be approved/rejected
+
+                if (status === "PENDING") {
+
+                    actionButtons = `
+
+                        <button
+                            class="approve"
+                            onclick="approveBooking(${booking.id})">
+
+                            ✅ Approve
+
+                        </button>
+
+
+                        <button
+                            class="reject"
+                            onclick="rejectBooking(${booking.id})">
+
+                            ❌ Reject
+
+                        </button>
+
+                    `;
+
+                }
+
+
+                card.innerHTML = `
+
+                    <h3>
+                        📋 Rental #${booking.id}
+                    </h3>
+
+                    <p>
+                        <strong>User ID:</strong>
+                        ${booking.userId}
+                    </p>
+
+                    <p>
+                        <strong>Equipment ID:</strong>
+                        ${booking.equipmentId}
+                    </p>
+
+                    <p>
+                        <strong>Start Date:</strong>
+                        ${booking.startDate}
+                    </p>
+
+                    <p>
+                        <strong>End Date:</strong>
+                        ${booking.endDate}
+                    </p>
+
+                    <p>
+                        <strong>Total Amount:</strong>
+                        ₹${booking.totalAmount}
+                    </p>
+
+                    <p>
+
+                        <strong>Status:</strong>
+
+                        <span class="status ${statusClass}">
+                            ${status}
+                        </span>
+
+                    </p>
+
+                    ${actionButtons}
+
+                `;
+
+
+                bookingList.appendChild(card);
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Booking Error:",
+                error
+            );
+
+
+            bookingList.innerHTML = `
+
+                <div class="booking-card">
+
+                    <p>
+                        ❌ Failed to load rental requests.
+                    </p>
+
+                    <p>
+                        ${error.message}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    // ==================================
+    // Approve Booking
+    // ==================================
+
+    async function approveBooking(
+        bookingId
+    ) {
+
+        const confirmApprove =
+            confirm(
+                "Approve this rental request?"
+            );
+
+
+        if (!confirmApprove) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/rentals/approve/${bookingId}`,
+                    {
+                        method: "PUT"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                const error =
+                    await response.text();
+
+                throw new Error(
+                    error ||
+                    "Approval failed"
+                );
+
+            }
+
+
+            alert(
+                "Rental approved successfully! ✅"
+            );
+
+
+            loadBookings();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Approve Error:",
+                error
+            );
+
+
+            alert(
+                "Approval failed!\n\n" +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    // ==================================
+    // Reject Booking
+    // ==================================
+
+    async function rejectBooking(
+        bookingId
+    ) {
+
+        const confirmReject =
+            confirm(
+                "Reject this rental request?"
+            );
+
+
+        if (!confirmReject) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/rentals/reject/${bookingId}`,
+                    {
+                        method: "PUT"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                const error =
+                    await response.text();
+
+                throw new Error(
+                    error ||
+                    "Rejection failed"
+                );
+
+            }
+
+
+            alert(
+                "Rental rejected successfully! ❌"
+            );
+
+
+            loadBookings();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Reject Error:",
+                error
+            );
+
+
+            alert(
+                "Rejection failed!\n\n" +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    // ==================================
+    // Back
+    // ==================================
+
+    function goBack() {
+
+        window.location.href =
+            "owner.html";
+
+    }
+
+
+    // Load bookings
+
+    loadBookings();
+
+</script>
+
+
+</body>
+
+</html>

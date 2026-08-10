@@ -1,0 +1,43 @@
+/* Available Equipment */
+
+#equipment {
+    padding: 60px 30px;
+    text-align: center;
+}
+
+#equipment h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: #1b5e20;
+}
+
+#equipmentList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+}
+
+.equipment-card {
+    width: 280px;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.equipment-card h3 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+.equipment-card p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.equipment-card button {
+    width: 100%;
+    margin-top: 15px;
+}
