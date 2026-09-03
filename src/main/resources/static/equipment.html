@@ -1,89 +1,108 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Equipment - Agricultural Equipment Rental</title>
 
     <link rel="stylesheet" href="style.css">
-
 </head>
-
 
 <body>
 
-
-<!-- Header -->
-
 <header>
-
     <h1>🚜 Agricultural Equipment Rental</h1>
 
     <nav>
-
-        <a href="farmer.html">
-            Farmer Dashboard
-        </a>
-
-        <a href="equipment.html">
-            Equipment
-        </a>
-
-        <a href="login.html">
-            Logout
-        </a>
-
+        <a href="farmer.html">Farmer Dashboard</a>
+        <a href="equipment.html">Equipment</a>
+        <a href="my-bookings.html">My Bookings</a>
+        <a href="login.html">Logout</a>
     </nav>
-
 </header>
 
-
-<!-- Main Content -->
 
 <main>
 
     <section class="equipment-section">
 
-        <h2>Available Equipment</h2>
+        <h2>🔍 Search & Check Equipment Availability</h2>
 
+        <!-- Search Area -->
+        <div class="search-container">
 
-        <div id="equipmentList">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search equipment name, category or location..."
+            >
 
-            <p>
-                Loading equipment...
-            </p>
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="Tractor">Tractor</option>
+                <option value="Harvester">Harvester</option>
+                <option value="Cultivator">Cultivator</option>
+                <option value="Plough">Plough</option>
+                <option value="Seeder">Seeder</option>
+            </select>
+
+            <button onclick="searchEquipment()">
+                🔍 Search
+            </button>
+
+            <button onclick="loadEquipment()">
+                🔄 Reset
+            </button>
 
         </div>
 
+
+        <!-- Date Availability -->
+        <div class="availability-container">
+
+            <h3>📅 Check Availability</h3>
+
+            <label>
+                Start Date:
+            </label>
+
+            <input
+                type="date"
+                id="startDate"
+            >
+
+            <label>
+                End Date:
+            </label>
+
+            <input
+                type="date"
+                id="endDate"
+            >
+
+        </div>
+
+
+        <!-- Equipment List -->
+        <div id="equipmentList">
+            <p>Loading equipment...</p>
+        </div>
 
     </section>
 
 </main>
 
 
-<!-- Footer -->
-
 <footer>
-
     <p>
         © 2026 Agricultural Equipment Rental Marketplace
     </p>
-
 </footer>
 
 
-<!-- JavaScript -->
-
 <script src="equipment.js"></script>
 
-
 </body>
-
 </html>
-

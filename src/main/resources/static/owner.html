@@ -1,194 +1,349 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Owner Dashboard</title>
 
-
     <style>
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f7f4;
+        * {
+            box-sizing: border-box;
         }
 
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f4;
+        }
 
         header {
-            background-color: #1565c0;
+            background: #1565c0;
             color: white;
             padding: 20px;
             text-align: center;
         }
 
+        header h1 {
+            margin: 0;
+        }
 
         .container {
-            padding: 30px;
-            text-align: center;
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
         }
 
-
-        .card {
-            background-color: white;
+        .welcome-card {
+            background: white;
             padding: 25px;
-            margin: 20px auto;
-            max-width: 650px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            margin-bottom: 25px;
         }
 
+        .welcome-card h2 {
+            color: #1565c0;
+            margin-top: 0;
+        }
 
-        h2 {
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .info p {
+            margin: 8px 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .dashboard-card .icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card h3 {
+            color: #1565c0;
+            margin: 10px 0;
+        }
+
+        .dashboard-card p {
+            color: #555;
+            min-height: 40px;
+        }
+
+        button {
+            border: none;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .primary {
+            background: #1565c0;
+        }
+
+        .primary:hover {
+            background: #0d47a1;
+        }
+
+        .green {
+            background: #2e7d32;
+        }
+
+        .green:hover {
+            background: #1b5e20;
+        }
+
+        .orange {
+            background: #ef6c00;
+        }
+
+        .orange:hover {
+            background: #e65100;
+        }
+
+        .logout {
+            background: #d32f2f;
+        }
+
+        .logout:hover {
+            background: #b71c1c;
+        }
+
+        .summary {
+            margin-top: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .summary h2 {
             color: #1565c0;
         }
 
-
-        button {
-            background-color: #1565c0;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            margin: 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 15px;
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
         }
 
-
-        button:hover {
-            background-color: #0d47a1;
-        }
-
-
-        .logout {
-            background-color: #d32f2f;
-        }
-
-
-        .logout:hover {
-            background-color: #b71c1c;
-        }
-
-
-        .info {
-            background-color: #e3f2fd;
-            padding: 15px;
+        .summary-box {
+            padding: 20px;
             border-radius: 8px;
-            margin: 15px 0;
+            text-align: center;
+            background: #f5f5f5;
         }
 
+        .summary-box h3 {
+            font-size: 30px;
+            margin: 0;
+        }
+
+        .summary-box p {
+            margin-bottom: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #666;
+        }
+
+        @media (max-width: 700px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- Header -->
-
 <header>
-
     <h1>🚜 Equipment Owner Dashboard</h1>
-
 </header>
-
-
-<!-- Main Content -->
 
 <div class="container">
 
-
-    <div class="card">
-
+    <!-- Welcome -->
+    <div class="welcome-card">
 
         <h2>
-
             Welcome,
-
-            <span id="userName">
-                Owner
-            </span>!
-
+            <span id="userName">Owner</span>!
         </h2>
 
-
         <p>
-
-            Manage your agricultural equipment
-            and rental bookings.
-
+            Manage your agricultural equipment,
+            rental requests and bookings.
         </p>
-
-
-        <!-- Owner Information -->
 
         <div class="info">
 
-
             <p>
-
                 <strong>Owner ID:</strong>
-
-                <span id="userId">
-                    -
-                </span>
-
+                <span id="userId">-</span>
             </p>
-
 
             <p>
-
                 <strong>Role:</strong>
-
-                <span id="userRole">
-                    OWNER
-                </span>
-
+                <span id="userRole">OWNER</span>
             </p>
 
+        </div>
+
+    </div>
+
+
+    <!-- Dashboard Cards -->
+
+    <div class="dashboard-grid">
+
+        <!-- Add Equipment -->
+        <div class="dashboard-card">
+
+            <div class="icon">➕</div>
+
+            <h3>Add Equipment</h3>
+
+            <p>
+                Add your tractor, harvester
+                or other agricultural equipment.
+            </p>
+
+            <button
+                class="green"
+                onclick="addEquipment()">
+
+                Add Equipment
+
+            </button>
 
         </div>
 
 
-        <!-- Add Equipment -->
+        <!-- My Equipment -->
+        <div class="dashboard-card">
 
-        <button onclick="addEquipment()">
+            <div class="icon">🚜</div>
 
-            ➕ Add Equipment
+            <h3>My Equipment</h3>
 
-        </button>
+            <p>
+                View and manage your listed equipment.
+            </p>
 
+            <button
+                class="primary"
+                onclick="viewEquipment()">
 
-        <!-- View My Equipment -->
+                View Equipment
 
-        <button onclick="viewEquipment()">
+            </button>
 
-            🚜 View My Equipment
-
-        </button>
+        </div>
 
 
         <!-- Rental Requests -->
+        <div class="dashboard-card">
 
-        <button onclick="viewBookings()">
+            <div class="icon">📋</div>
 
-            📋 View Rental Requests
+            <h3>Rental Requests</h3>
 
-        </button>
+            <p>
+                View farmer rental requests
+                and approve or reject them.
+            </p>
+
+            <button
+                class="orange"
+                onclick="viewBookings()">
+
+                View Requests
+
+            </button>
+
+        </div>
+
+    </div>
 
 
-        <br>
+    <!-- Summary -->
+
+    <div class="summary">
+
+        <h2>📊 Owner Activities</h2>
+
+        <div class="summary-grid">
+
+            <div class="summary-box">
+
+                <h3>🚜</h3>
+
+                <p>
+                    Manage Equipment
+                </p>
+
+            </div>
 
 
-        <!-- Logout -->
+            <div class="summary-box">
+
+                <h3>📋</h3>
+
+                <p>
+                    Manage Rental Requests
+                </p>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <h3>✅</h3>
+
+                <p>
+                    Track Rental Status
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Logout -->
+
+    <div style="text-align:center; margin-top:25px;">
 
         <button
             class="logout"
@@ -198,35 +353,68 @@
 
         </button>
 
-
     </div>
-
 
 </div>
 
 
+<footer>
+    Agricultural Equipment Rental Management System © 2026
+</footer>
+
+
 <script>
 
-
-    // ==================================
-    // Get logged-in owner details
-    // ==================================
+    // =========================================
+    // Get logged-in owner information
+    // =========================================
 
     const userName =
         localStorage.getItem("userName");
 
-
     const userId =
         localStorage.getItem("userId");
-
 
     const userRole =
         localStorage.getItem("userRole");
 
 
-    // ==================================
+    // =========================================
+    // Login validation
+    // =========================================
+
+    if (!userId) {
+
+        alert("Please login first.");
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // =========================================
+    // Check Owner Role
+    // =========================================
+
+    if (
+        userRole &&
+        userRole.toUpperCase() !== "OWNER"
+    ) {
+
+        alert(
+            "Access denied. Owner account required."
+        );
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // =========================================
     // Display Owner Name
-    // ==================================
+    // =========================================
 
     if (userName) {
 
@@ -237,9 +425,9 @@
     }
 
 
-    // ==================================
+    // =========================================
     // Display Owner ID
-    // ==================================
+    // =========================================
 
     if (userId) {
 
@@ -250,22 +438,23 @@
     }
 
 
-    // ==================================
+    // =========================================
     // Display Role
-    // ==================================
+    // =========================================
 
     if (userRole) {
 
         document
             .getElementById("userRole")
-            .innerText = userRole;
+            .innerText =
+            userRole.toUpperCase();
 
     }
 
 
-    // ==================================
+    // =========================================
     // Add Equipment
-    // ==================================
+    // =========================================
 
     function addEquipment() {
 
@@ -275,9 +464,9 @@
     }
 
 
-    // ==================================
+    // =========================================
     // View My Equipment
-    // ==================================
+    // =========================================
 
     function viewEquipment() {
 
@@ -287,9 +476,9 @@
     }
 
 
-    // ==================================
+    // =========================================
     // View Rental Requests
-    // ==================================
+    // =========================================
 
     function viewBookings() {
 
@@ -299,9 +488,9 @@
     }
 
 
-    // ==================================
+    // =========================================
     // Logout
-    // ==================================
+    // =========================================
 
     function logout() {
 
@@ -312,9 +501,7 @@
 
     }
 
-
 </script>
-
 
 </body>
 
