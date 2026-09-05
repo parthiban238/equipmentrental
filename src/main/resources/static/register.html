@@ -1,12 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>New Registration</title>
 
+
     <style>
+
         body {
             font-family: Arial, sans-serif;
             background: #f4f7f4;
@@ -17,6 +23,7 @@
             margin: 0;
         }
 
+
         .register-container {
             background: white;
             width: 350px;
@@ -25,11 +32,13 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
 
+
         h2 {
             text-align: center;
             margin-bottom: 25px;
             color: #2e7d32;
         }
+
 
         label {
             display: block;
@@ -38,6 +47,7 @@
             font-weight: bold;
         }
 
+
         input,
         select {
             width: 100%;
@@ -45,7 +55,43 @@
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 14px;
         }
+
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
+
+        input.error,
+        select.error {
+            border: 2px solid #d32f2f;
+        }
+
+
+        input.success,
+        select.success {
+            border: 2px solid #2e7d32;
+        }
+
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 13px;
+            margin-top: 4px;
+            min-height: 16px;
+        }
+
+
+        .success-message {
+            color: #2e7d32;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
 
         button {
             width: 100%;
@@ -59,82 +105,715 @@
             cursor: pointer;
         }
 
+
         button:hover {
             background: #1b5e20;
         }
+
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
 
         .login-link {
             text-align: center;
             margin-top: 15px;
         }
 
+
         .login-link a {
             color: #2e7d32;
             text-decoration: none;
         }
+
 
         #message {
             text-align: center;
             margin-top: 15px;
             font-weight: bold;
         }
+
+
+        .password-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <div class="register-container">
+
 
     <h2>New Registration</h2>
 
+
     <form id="registerForm">
 
-        <label for="name">Name</label>
+
+        <!-- NAME -->
+
+        <label for="name">
+            Name
+        </label>
+
         <input
             type="text"
             id="name"
             placeholder="Enter your name"
+            autocomplete="name"
             required
         >
 
-        <label for="email">Email</label>
+        <div
+            id="nameError"
+            class="error-message">
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <label for="email">
+            Email
+        </label>
+
         <input
             type="email"
             id="email"
             placeholder="Enter your email"
+            autocomplete="email"
             required
         >
 
-        <label for="password">Password</label>
+        <div
+            id="emailError"
+            class="error-message">
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <label for="password">
+            Password
+        </label>
+
         <input
             type="password"
             id="password"
             placeholder="Enter password"
+            autocomplete="new-password"
             required
         >
 
-        <label for="role">Role</label>
-        <select id="role" required>
-            <option value="">Select Role</option>
-            <option value="FARMER">Farmer</option>
-            <option value="OWNER">Equipment Owner</option>
+        <div class="password-info">
+            Minimum 8 characters, including
+            uppercase, lowercase and number.
+        </div>
+
+        <div
+            id="passwordError"
+            class="error-message">
+        </div>
+
+
+        <!-- ROLE -->
+
+        <label for="role">
+            Role
+        </label>
+
+        <select
+            id="role"
+            required>
+
+            <option value="">
+                Select Role
+            </option>
+
+            <option value="FARMER">
+                Farmer
+            </option>
+
+            <option value="OWNER">
+                Equipment Owner
+            </option>
+
         </select>
 
-        <button type="submit">Register</button>
+        <div
+            id="roleError"
+            class="error-message">
+        </div>
+
+
+        <!-- REGISTER BUTTON -->
+
+        <button
+            type="submit"
+            id="registerButton">
+
+            Register
+
+        </button>
+
 
     </form>
 
+
     <div id="message"></div>
 
+
     <div class="login-link">
+
         Already have an account?
-        <a href="login.html">Login</a>
+
+        <a href="login.html">
+            Login
+        </a>
+
     </div>
+
 
 </div>
 
-<script src="register.js"></script>
+
+
+<script>
+
+
+// ============================================
+// API URL
+// ============================================
+
+const API_URL =
+    "http://localhost:8081";
+
+
+// ============================================
+// Get Elements
+// ============================================
+
+const registerForm =
+    document.getElementById("registerForm");
+
+const nameInput =
+    document.getElementById("name");
+
+const emailInput =
+    document.getElementById("email");
+
+const passwordInput =
+    document.getElementById("password");
+
+const roleInput =
+    document.getElementById("role");
+
+const registerButton =
+    document.getElementById("registerButton");
+
+const message =
+    document.getElementById("message");
+
+
+// ============================================
+// Email Validation
+// ============================================
+
+function validateEmail(email) {
+
+    const emailPattern =
+        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    return emailPattern.test(email);
+
+}
+
+
+// ============================================
+// Name Validation
+// ============================================
+
+function validateName(name) {
+
+    const namePattern =
+        /^[A-Za-z ]{2,50}$/;
+
+    return namePattern.test(name);
+
+}
+
+
+// ============================================
+// Password Validation
+// ============================================
+
+function validatePassword(password) {
+
+    /*
+        Minimum 8 characters
+        At least one uppercase
+        At least one lowercase
+        At least one number
+    */
+
+    const passwordPattern =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    return passwordPattern.test(password);
+
+}
+
+
+// ============================================
+// Clear Errors
+// ============================================
+
+function clearErrors() {
+
+    document.getElementById("nameError").textContent = "";
+    document.getElementById("emailError").textContent = "";
+    document.getElementById("passwordError").textContent = "";
+    document.getElementById("roleError").textContent = "";
+
+    nameInput.classList.remove("error", "success");
+    emailInput.classList.remove("error", "success");
+    passwordInput.classList.remove("error", "success");
+    roleInput.classList.remove("error", "success");
+
+}
+
+
+// ============================================
+// Validate Form
+// ============================================
+
+function validateForm() {
+
+    clearErrors();
+
+    let valid = true;
+
+
+    const name =
+        nameInput.value.trim();
+
+    const email =
+        emailInput.value.trim();
+
+    const password =
+        passwordInput.value;
+
+    const role =
+        roleInput.value;
+
+
+    // ----------------------------------------
+    // Name
+    // ----------------------------------------
+
+    if (name === "") {
+
+        document.getElementById("nameError")
+            .textContent =
+            "Name is required.";
+
+        nameInput.classList.add("error");
+
+        valid = false;
+
+    }
+
+    else if (!validateName(name)) {
+
+        document.getElementById("nameError")
+            .textContent =
+            "Name must contain only letters and spaces.";
+
+        nameInput.classList.add("error");
+
+        valid = false;
+
+    }
+
+    else {
+
+        nameInput.classList.add("success");
+
+    }
+
+
+    // ----------------------------------------
+    // Email
+    // ----------------------------------------
+
+    if (email === "") {
+
+        document.getElementById("emailError")
+            .textContent =
+            "Email is required.";
+
+        emailInput.classList.add("error");
+
+        valid = false;
+
+    }
+
+    else if (!validateEmail(email)) {
+
+        document.getElementById("emailError")
+            .textContent =
+            "Please enter a valid email address.";
+
+        emailInput.classList.add("error");
+
+        valid = false;
+
+    }
+
+    else {
+
+        emailInput.classList.add("success");
+
+    }
+
+
+    // ----------------------------------------
+    // Password
+    // ----------------------------------------
+
+    if (password === "") {
+
+        document.getElementById("passwordError")
+            .textContent =
+            "Password is required.";
+
+        passwordInput.classList.add("error");
+
+        valid = false;
+
+    }
+
+    else if (!validatePassword(password)) {
+
+        document.getElementById("passwordError")
+            .textContent =
+            "Password must have 8+ characters, uppercase, lowercase and number.";
+
+        passwordInput.classList.add("error");
+
+        valid = false;
+
+    }
+
+    else {
+
+        passwordInput.classList.add("success");
+
+    }
+
+
+    // ----------------------------------------
+    // Role
+    // ----------------------------------------
+
+    if (role === "") {
+
+        document.getElementById("roleError")
+            .textContent =
+            "Please select a role.";
+
+        roleInput.classList.add("error");
+
+        valid = false;
+
+    }
+
+    else {
+
+        roleInput.classList.add("success");
+
+    }
+
+
+    return valid;
+
+}
+
+
+// ============================================
+// Email Real-Time Validation
+// ============================================
+
+emailInput.addEventListener(
+    "input",
+    function () {
+
+        const email =
+            emailInput.value.trim();
+
+        const error =
+            document.getElementById("emailError");
+
+
+        if (email === "") {
+
+            emailInput.classList.remove(
+                "success",
+                "error"
+            );
+
+            error.textContent = "";
+
+            return;
+
+        }
+
+
+        if (!validateEmail(email)) {
+
+            emailInput.classList.remove(
+                "success"
+            );
+
+            emailInput.classList.add(
+                "error"
+            );
+
+            error.textContent =
+                "Invalid email format.";
+
+        }
+
+        else {
+
+            emailInput.classList.remove(
+                "error"
+            );
+
+            emailInput.classList.add(
+                "success"
+            );
+
+            error.textContent = "";
+
+        }
+
+    }
+);
+
+
+// ============================================
+// Form Submit
+// ============================================
+
+registerForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        message.textContent = "";
+        message.style.color = "";
+
+
+        // Validate
+
+        if (!validateForm()) {
+
+            message.textContent =
+                "Please correct the errors.";
+
+            message.style.color =
+                "#d32f2f";
+
+            return;
+
+        }
+
+
+        // Get values
+
+        const name =
+            nameInput.value.trim();
+
+        const email =
+            emailInput.value.trim().toLowerCase();
+
+        const password =
+            passwordInput.value;
+
+        const role =
+            roleInput.value;
+
+
+        // Disable button
+
+        registerButton.disabled = true;
+
+        registerButton.textContent =
+            "Registering...";
+
+
+        try {
+
+
+            // ====================================
+            // Send Registration Request
+            // ====================================
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/users`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            name: name,
+
+                            email: email,
+
+                            password: password,
+
+                            role: role
+
+                        })
+                    }
+                );
+
+
+            // ====================================
+            // Read Response
+            // ====================================
+
+            const responseText =
+                await response.text();
+
+
+            // ====================================
+            // Registration Success
+            // ====================================
+
+            if (response.ok) {
+
+                message.textContent =
+                    "Registration successful! ✅";
+
+                message.style.color =
+                    "#2e7d32";
+
+
+                registerForm.reset();
+
+
+                nameInput.classList.remove(
+                    "success",
+                    "error"
+                );
+
+                emailInput.classList.remove(
+                    "success",
+                    "error"
+                );
+
+                passwordInput.classList.remove(
+                    "success",
+                    "error"
+                );
+
+                roleInput.classList.remove(
+                    "success",
+                    "error"
+                );
+
+
+                clearErrors();
+
+
+                // Go to Login after 1.5 seconds
+
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            "login.html";
+
+                    },
+                    1500
+                );
+
+
+            }
+
+
+            // ====================================
+            // Registration Failed
+            // ====================================
+
+            else {
+
+                message.textContent =
+                    responseText ||
+                    "Registration failed.";
+
+                message.style.color =
+                    "#d32f2f";
+
+            }
+
+
+        }
+
+
+        catch (error) {
+
+
+            console.error(
+                "Registration Error:",
+                error
+            );
+
+
+            message.textContent =
+                "❌ Cannot connect to server.";
+
+            message.style.color =
+                "#d32f2f";
+
+        }
+
+
+        finally {
+
+            registerButton.disabled =
+                false;
+
+            registerButton.textContent =
+                "Register";
+
+        }
+
+    }
+);
+
+
+</script>
+
 
 </body>
-</html>
 
+</html>
