@@ -169,6 +169,35 @@
             cursor: pointer;
         }
 
+        /* ==============================
+           Rating Button
+        ============================== */
+
+        .rating-btn {
+            margin-top: 18px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .rating-btn:hover {
+            background: #e68900;
+        }
+
+        .reviewed {
+            margin-top: 18px;
+            padding: 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
         @media (max-width: 600px) {
 
             .container {
@@ -190,13 +219,16 @@
                 gap: 10px;
                 align-items: flex-start;
             }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -206,6 +238,7 @@
 
 
 <div class="container">
+
 
     <div class="top-section">
 
@@ -225,297 +258,138 @@
     <div id="bookingList">
 
         <div class="loading">
+
             Loading your bookings...
+
         </div>
 
     </div>
 
+
 </div>
+
 
 
 <script>
 
-    const API_URL = "http://localhost:8081";
+
+const API_URL = "http://localhost:8081";
 
 
-    // Get logged-in user
-    const userId = localStorage.getItem("userId");
-    const userRole = localStorage.getItem("userRole");
+// ==========================================
+// Get logged-in user
+// ==========================================
+
+const userId =
+    localStorage.getItem("userId");
+
+const userRole =
+    localStorage.getItem("userRole");
 
 
-    // ==============================
-    // Check Login
-    // ==============================
+// ==========================================
+// Check Login
+// ==========================================
 
-    if (!userId) {
+if (!userId) {
 
-        alert("Please login first.");
+    alert("Please login first.");
 
-        window.location.href = "login.html";
-
-    }
-
-
-    // ==============================
-    // Check Farmer
-    // ==============================
-
-    if (
-        userRole &&
-        userRole.toUpperCase() !== "FARMER"
-    ) {
-
-        alert("Farmer access required.");
-
-        window.location.href = "login.html";
-
-    }
+    window.location.href =
+        "login.html";
+}
 
 
-    // ==============================
-    // Load Bookings
-    // ==============================
+// ==========================================
+// Check Farmer
+// ==========================================
 
-    async function loadBookings() {
+if (
+    userRole &&
+    userRole.toUpperCase() !== "FARMER"
+) {
 
-        const bookingList =
-            document.getElementById("bookingList");
+    alert("Farmer access required.");
 
-        bookingList.innerHTML = `
-            <div class="loading">
-                Loading your bookings...
-            </div>
-        `;
+    window.location.href =
+        "login.html";
+}
 
 
-        try {
+// ==========================================
+// Load Farmer Bookings
+// ==========================================
 
-            const response = await fetch(
-                `${API_URL}/api/rentals/user/${userId}`
+async function loadBookings() {
+
+    const bookingList =
+        document.getElementById("bookingList");
+
+
+    bookingList.innerHTML = `
+
+        <div class="loading">
+
+            Loading your bookings...
+
+        </div>
+
+    `;
+
+
+    try {
+
+        const response = await fetch(
+
+            `${API_URL}/api/rentals/user/${userId}`
+
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to fetch bookings"
             );
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Unable to fetch bookings"
-                );
-
-            }
-
-
-            const bookings =
-                await response.json();
-
-
-            console.log(
-                "Farmer Bookings:",
-                bookings
-            );
-
-
-            // No bookings
-            if (
-                !bookings ||
-                bookings.length === 0
-            ) {
-
-                bookingList.innerHTML = `
-
-                    <div class="empty">
-
-                        <h3>📋 No Bookings Found</h3>
-
-                        <p>
-                            You have not booked any agricultural equipment yet.
-                        </p>
-
-                        <button
-                            class="refresh-btn"
-                            onclick="goToEquipment()">
-
-                            🚜 Browse Equipment
-
-                        </button>
-
-                    </div>
-
-                `;
-
-                return;
-
-            }
-
-
-            // Clear loading
-            bookingList.innerHTML = "";
-
-
-            // Display each booking
-            bookings.forEach(function(booking) {
-
-                const card =
-                    document.createElement("div");
-
-                card.className = "booking-card";
-
-
-                // Status
-                const status =
-                    String(
-                        booking.status || "PENDING"
-                    ).toUpperCase();
-
-
-                let statusClass = "pending";
-
-
-                if (status === "APPROVED") {
-
-                    statusClass = "approved";
-
-                }
-                else if (status === "REJECTED") {
-
-                    statusClass = "rejected";
-
-                }
-                else if (status === "COMPLETED") {
-
-                    statusClass = "completed";
-
-                }
-
-
-                // Amount
-                const amount =
-                    booking.totalAmount != null
-                        ? "₹ " +
-                          Number(
-                              booking.totalAmount
-                          ).toFixed(2)
-                        : "₹ 0.00";
-
-
-                card.innerHTML = `
-
-                    <div class="booking-header">
-
-                        <h3>
-                            🚜 Booking #${booking.id}
-                        </h3>
-
-                        <span class="status ${statusClass}">
-                            ${status}
-                        </span>
-
-                    </div>
-
-
-                    <div class="details">
-
-                        <div class="detail-box">
-
-                            <strong>👨‍🌾 Farmer ID</strong>
-
-                            <span>
-                                ${booking.userId}
-                            </span>
-
-                        </div>
-
-
-                        <div class="detail-box">
-
-                            <strong>🚜 Equipment ID</strong>
-
-                            <span>
-                                ${booking.equipmentId}
-                            </span>
-
-                        </div>
-
-
-                        <div class="detail-box">
-
-                            <strong>📅 Start Date</strong>
-
-                            <span>
-                                ${booking.startDate}
-                            </span>
-
-                        </div>
-
-
-                        <div class="detail-box">
-
-                            <strong>📅 End Date</strong>
-
-                            <span>
-                                ${booking.endDate}
-                            </span>
-
-                        </div>
-
-
-                        <div class="detail-box">
-
-                            <strong>💰 Total Amount</strong>
-
-                            <span>
-                                ${amount}
-                            </span>
-
-                        </div>
-
-
-                        <div class="detail-box">
-
-                            <strong>📌 Booking Status</strong>
-
-                            <span>
-                                ${status}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-
-                bookingList.appendChild(card);
-
-            });
 
         }
 
-        catch (error) {
 
-            console.error(
-                "Booking Error:",
-                error
-            );
+        const bookings =
+            await response.json();
 
+
+        console.log(
+            "Farmer Bookings:",
+            bookings
+        );
+
+
+        // ==================================
+        // No bookings
+        // ==================================
+
+        if (
+            !bookings ||
+            bookings.length === 0
+        ) {
 
             bookingList.innerHTML = `
 
-                <div class="error">
+                <div class="empty">
 
-                    ❌ Failed to load bookings.
+                    <h3>📋 No Bookings Found</h3>
 
-                    <br><br>
-
-                    Please make sure Spring Boot
-                    backend is running.
-
-                    <br>
+                    <p>
+                        You have not booked any
+                        agricultural equipment yet.
+                    </p>
 
                     <button
                         class="refresh-btn"
-                        onclick="loadBookings()">
+                        onclick="goToEquipment()">
 
-                        🔄 Try Again
+                        🚜 Browse Equipment
 
                     </button>
 
@@ -523,42 +397,496 @@
 
             `;
 
+            return;
+        }
+
+
+        bookingList.innerHTML = "";
+
+
+        // ==================================
+        // Display bookings
+        // ==================================
+
+        bookings.forEach(function(booking) {
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "booking-card";
+
+
+            // ==============================
+            // Status
+            // ==============================
+
+            const status =
+                String(
+                    booking.status || "PENDING"
+                ).toUpperCase();
+
+
+            let statusClass =
+                "pending";
+
+
+            if (status === "APPROVED") {
+
+                statusClass =
+                    "approved";
+
+            }
+            else if (status === "REJECTED") {
+
+                statusClass =
+                    "rejected";
+
+            }
+            else if (status === "COMPLETED") {
+
+                statusClass =
+                    "completed";
+
+            }
+
+
+            // ==============================
+            // Amount
+            // ==============================
+
+            const amount =
+                booking.totalAmount != null
+
+                ? "₹ " +
+                  Number(
+                      booking.totalAmount
+                  ).toFixed(2)
+
+                : "₹ 0.00";
+
+
+            // ==============================
+            // Rating button
+            // ==============================
+
+            let ratingSection = "";
+
+
+            if (status === "COMPLETED") {
+
+                ratingSection = `
+
+                    <button
+                        class="rating-btn"
+                        onclick="
+                            openRating(
+                                ${booking.id},
+                                ${booking.equipmentId}
+                            )
+                        ">
+
+                        ⭐ Give Rating & Review
+
+                    </button>
+
+                `;
+
+            }
+
+
+            // ==============================
+            // Card HTML
+            // ==============================
+
+            card.innerHTML = `
+
+                <div class="booking-header">
+
+                    <h3>
+                        🚜 Booking #${booking.id}
+                    </h3>
+
+                    <span
+                        class="status ${statusClass}">
+
+                        ${status}
+
+                    </span>
+
+                </div>
+
+
+                <div class="details">
+
+
+                    <div class="detail-box">
+
+                        <strong>
+                            👨‍🌾 Farmer ID
+                        </strong>
+
+                        <span>
+                            ${booking.userId}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <strong>
+                            🚜 Equipment ID
+                        </strong>
+
+                        <span>
+                            ${booking.equipmentId}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <strong>
+                            📅 Start Date
+                        </strong>
+
+                        <span>
+                            ${booking.startDate}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <strong>
+                            📅 End Date
+                        </strong>
+
+                        <span>
+                            ${booking.endDate}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <strong>
+                            💰 Total Amount
+                        </strong>
+
+                        <span>
+                            ${amount}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <strong>
+                            📌 Booking Status
+                        </strong>
+
+                        <span>
+                            ${status}
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                ${ratingSection}
+
+            `;
+
+
+            bookingList.appendChild(card);
+
+
+        });
+
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Booking Error:",
+            error
+        );
+
+
+        bookingList.innerHTML = `
+
+            <div class="error">
+
+                ❌ Failed to load bookings.
+
+                <br><br>
+
+                Please make sure Spring Boot
+                backend is running.
+
+                <br>
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadBookings()">
+
+                    🔄 Try Again
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+// ==========================================
+// ⭐ Open Rating
+// ==========================================
+
+async function openRating(
+    rentalId,
+    equipmentId
+) {
+
+
+    // ==============================
+    // Check if already reviewed
+    // ==============================
+
+    try {
+
+        const checkResponse =
+            await fetch(
+                `${API_URL}/api/ratings/rental/${rentalId}`
+            );
+
+
+        if (checkResponse.ok) {
+
+            alert(
+                "⭐ You have already reviewed this rental."
+            );
+
+            return;
+
         }
 
     }
+    catch (error) {
 
-
-    // ==============================
-    // Back to Farmer Dashboard
-    // ==============================
-
-    function goBack() {
-
-        window.location.href =
-            "farmer.html";
+        console.log(
+            "No previous rating found."
+        );
 
     }
 
 
     // ==============================
-    // Browse Equipment
+    // Get rating
     // ==============================
 
-    function goToEquipment() {
+    const rating =
+        prompt(
+            "⭐ Give rating from 1 to 5:"
+        );
 
-        window.location.href =
-            "equipment.html";
+
+    if (rating === null) {
+
+        return;
+
+    }
+
+
+    const ratingValue =
+        Number(rating);
+
+
+    // ==============================
+    // Validate rating
+    // ==============================
+
+    if (
+        !Number.isInteger(ratingValue) ||
+        ratingValue < 1 ||
+        ratingValue > 5
+    ) {
+
+        alert(
+            "❌ Please enter a rating between 1 and 5."
+        );
+
+        return;
 
     }
 
 
     // ==============================
-    // Load when page opens
+    // Get review
     // ==============================
 
-    loadBookings();
+    const review =
+        prompt(
+            "✍️ Write your review:"
+        );
+
+
+    if (review === null) {
+
+        return;
+
+    }
+
+
+    // ==============================
+    // Prepare data
+    // ==============================
+
+    const data = {
+
+        rentalId:
+            Number(rentalId),
+
+        userId:
+            Number(userId),
+
+        equipmentId:
+            Number(equipmentId),
+
+        rating:
+            ratingValue,
+
+        review:
+            review.trim()
+
+    };
+
+
+    // ==============================
+    // Submit
+    // ==============================
+
+    try {
+
+        const response =
+            await fetch(
+
+                `${API_URL}/api/ratings`,
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify(data)
+
+                }
+
+            );
+
+
+        const result =
+            await response.text();
+
+
+        if (!response.ok) {
+
+            alert(
+                "❌ " + result
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "⭐ Rating & Review submitted successfully!"
+        );
+
+
+        // Reload bookings
+        loadBookings();
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Rating Error:",
+            error
+        );
+
+
+        alert(
+            "❌ Failed to submit rating."
+        );
+
+    }
+
+}
+
+
+
+// ==========================================
+// Back to Farmer Dashboard
+// ==========================================
+
+function goBack() {
+
+    window.location.href =
+        "farmer.html";
+
+}
+
+
+
+// ==========================================
+// Browse Equipment
+// ==========================================
+
+function goToEquipment() {
+
+    window.location.href =
+        "equipment.html";
+
+}
+
+
+
+// ==========================================
+// Load when page opens
+// ==========================================
+
+loadBookings();
+
 
 </script>
+
 
 </body>
 
