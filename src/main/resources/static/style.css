@@ -1,165 +1,352 @@
-/* =========================
-   General Page Style
-   ========================= */
-
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f4;
-    color: #333;
+html {
+    scroll-behavior: smooth;
 }
 
+body {
+    font-family: Arial, sans-serif;
+    background: #f7faf7;
+    color: #222;
+}
 
-/* =========================
-   Header
-   ========================= */
+/* NAVBAR */
 
 header {
-    background-color: #2e7d32;
+    background: #155d27;
     color: white;
-    padding: 20px;
-    text-align: center;
+    padding: 18px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-header h1 {
-    margin: 0 0 15px 0;
+.logo {
+    font-size: 22px;
+    font-weight: bold;
 }
-
-
-/* =========================
-   Navigation
-   ========================= */
 
 nav {
-    margin-top: 10px;
+    display: flex;
+    gap: 22px;
+    align-items: center;
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin: 0 12px;
-    font-weight: bold;
+    font-weight: 500;
 }
 
 nav a:hover {
     text-decoration: underline;
 }
 
-
-/* =========================
-   Main Content
-   ========================= */
-
-main {
-    padding: 30px;
-}
-
-.equipment-section {
-    max-width: 1000px;
-    margin: auto;
-}
-
-.equipment-section h2 {
-    text-align: center;
-    color: #2e7d32;
-    margin-bottom: 25px;
+.register-btn {
+    background: white;
+    color: #155d27;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-weight: bold;
 }
 
 
-/* =========================
-   Equipment List
-   ========================= */
+/* HERO */
 
-#equipmentList {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+.hero {
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 70px 8%;
+    background: linear-gradient(120deg, #e9f7e9, #ffffff);
 }
 
-
-/* =========================
-   Equipment Card
-   ========================= */
-
-.equipment-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+.hero-content {
+    max-width: 600px;
 }
 
-.equipment-card h3 {
-    color: #2e7d32;
-    margin-top: 0;
+.hero h1 {
+    font-size: 45px;
+    line-height: 1.15;
+    color: #164d24;
 }
 
-.equipment-card p {
-    margin: 10px 0;
+.hero h1 span {
+    color: #e08b00;
 }
 
+.hero p {
+    margin-top: 20px;
+    font-size: 19px;
+    line-height: 1.6;
+}
 
-/* =========================
-   Buttons
-   ========================= */
+.buttons {
+    margin-top: 30px;
+}
 
-button {
-    background-color: #2e7d32;
+.primary-btn,
+.secondary-btn {
+    display: inline-block;
+    padding: 13px 22px;
+    border-radius: 7px;
+    text-decoration: none;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.primary-btn {
+    background: #155d27;
     color: white;
-    border: none;
-    padding: 11px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 10px;
 }
 
-button:hover {
-    background-color: #1b5e20;
+.secondary-btn {
+    background: #e08b00;
+    color: white;
 }
 
-button:disabled {
-    background-color: #999;
-    cursor: not-allowed;
+.hero-image {
+    font-size: 180px;
 }
 
 
-/* =========================
-   Footer
-   ========================= */
+/* COMMON SECTION */
+
+.section,
+.how-section {
+    padding: 65px 7%;
+    text-align: center;
+}
+
+.section h2,
+.how-section h2,
+.about h2,
+.contact h2,
+.stats h2 {
+    font-size: 32px;
+    color: #155d27;
+    margin-bottom: 40px;
+}
+
+
+/* WHY CHOOSE */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
+}
+
+.icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    color: #155d27;
+    margin-bottom: 10px;
+}
+
+
+/* HOW IT WORKS */
+
+.how-section {
+    background: #eaf5ea;
+}
+
+.steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.step {
+    background: white;
+    padding: 18px;
+    min-width: 130px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.step span {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #155d27;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.step h3 {
+    font-size: 15px;
+}
+
+.arrow {
+    font-size: 25px;
+    color: #155d27;
+}
+
+
+/* SERVICES */
+
+.service-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.service-card {
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.big-icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.service-card h3 {
+    color: #155d27;
+    margin-bottom: 10px;
+}
+
+
+/* STATS */
+
+.stats {
+    padding: 65px 7%;
+    background: #155d27;
+    color: white;
+    text-align: center;
+}
+
+.stats h2 {
+    color: white;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.stats-container div {
+    background: rgba(255,255,255,0.12);
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.stats-container h3 {
+    font-size: 38px;
+}
+
+.stats-container p {
+    margin-top: 8px;
+}
+
+
+/* ABOUT */
+
+.about {
+    padding: 65px 15%;
+    text-align: center;
+    background: white;
+}
+
+.about p {
+    max-width: 850px;
+    margin: 15px auto;
+    line-height: 1.7;
+    font-size: 17px;
+}
+
+
+/* CONTACT */
+
+.contact {
+    padding: 55px 10%;
+    text-align: center;
+    background: #f0f6f0;
+}
+
+.contact p {
+    margin: 10px;
+}
+
+
+/* FOOTER */
 
 footer {
-    background-color: #333;
+    background: #0d3b18;
     color: white;
     text-align: center;
-    padding: 15px;
-    margin-top: 40px;
+    padding: 20px;
 }
 
 
-/* =========================
-   Mobile Responsive
-   ========================= */
+/* MOBILE */
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
 
-    header h1 {
-        font-size: 22px;
+    header {
+        flex-direction: column;
+        gap: 15px;
     }
 
-    nav a {
-        display: block;
-        margin: 8px;
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
-    main {
-        padding: 15px;
+    .hero {
+        flex-direction: column;
+        text-align: center;
     }
 
-    #equipmentList {
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .hero-image {
+        font-size: 100px;
+        margin-top: 30px;
+    }
+
+    .cards,
+    .service-container,
+    .stats-container {
         grid-template-columns: 1fr;
+    }
+
+    .arrow {
+        display: none;
     }
 }

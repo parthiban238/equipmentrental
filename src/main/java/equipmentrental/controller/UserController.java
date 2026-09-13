@@ -2,6 +2,8 @@ package equipmentrental.controller;
 
 import equipmentrental.entity.User;
 import equipmentrental.repository.UserRepository;
+import equipmentrental.service.EmailService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,44 +14,94 @@ import java.util.List;
 public class UserController {
 
     private final UserRepository repository;
+    private final EmailService emailService;
 
-    public UserController(UserRepository repository) {
+    // Constructor
+    public UserController(
+            UserRepository repository,
+            EmailService emailService) {
+
         this.repository = repository;
+        this.emailService = emailService;
     }
 
-    // Get all users
+    // ==========================================
+    // GET ALL USERS
+    // ==========================================
     @GetMapping
     public List<User> getAllUsers() {
         return repository.findAll();
     }
 
-    // Create/Register user
+    // ==========================================
+    // REGISTER USER + WELCOME EMAIL
+    // ==========================================
     @PostMapping
     public User registerUser(@RequestBody User user) {
-        return repository.save(user);
+
+        // Check duplicate email
+        if (repository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        // Save user in database
+        User savedUser = repository.save(user);
+
+        // Send welcome email
+        try {
+
+            emailService.sendWelcomeEmail(
+                    savedUser.getEmail(),
+                    savedUser.getName(),
+                    savedUser.getRole()
+            );
+
+            System.out.println(
+                    "Welcome email sent successfully to: "
+                            + savedUser.getEmail()
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Welcome email could not be sent: "
+                            + e.getMessage()
+            );
+        }
+
+        return savedUser;
     }
 
-    // Login user
+    // ==========================================
+    // LOGIN USER
+    // ==========================================
     @PostMapping("/login")
     public User login(@RequestBody User loginUser) {
 
         return repository.findByEmail(loginUser.getEmail())
                 .filter(user ->
-                        user.getPassword().equals(loginUser.getPassword()))
+                        user.getPassword()
+                                .equals(loginUser.getPassword()))
                 .orElseThrow(() ->
-                        new RuntimeException("Invalid email or password"));
+                        new RuntimeException(
+                                "Invalid email or password"));
     }
 
-    // Get user by ID
+    // ==========================================
+    // GET USER BY ID
+    // ==========================================
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
 
         return repository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new RuntimeException(
+                                "User not found"));
     }
 
-    // Get users by role
+    // ==========================================
+    // GET USERS BY ROLE
+    // ==========================================
     @GetMapping("/role/{role}")
     public List<User> getUsersByRole(
             @PathVariable String role) {
@@ -57,7 +109,9 @@ public class UserController {
         return repository.findByRole(role);
     }
 
-    // Get user by email
+    // ==========================================
+    // GET USER BY EMAIL
+    // ==========================================
     @GetMapping("/email/{email}")
     public User getUserByEmail(
             @PathVariable String email) {
@@ -65,10 +119,13 @@ public class UserController {
         return repository.findByEmail(email)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "User not found with email: " + email));
+                                "User not found with email: "
+                                        + email));
     }
 
-    // Update user
+    // ==========================================
+    // UPDATE USER
+    // ==========================================
     @PutMapping("/{id}")
     public User updateUser(
             @PathVariable Long id,
@@ -76,7 +133,8 @@ public class UserController {
 
         User user = repository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new RuntimeException(
+                                "User not found"));
 
         user.setName(updatedUser.getName());
         user.setEmail(updatedUser.getEmail());
@@ -86,13 +144,16 @@ public class UserController {
         return repository.save(user);
     }
 
-    // Delete user
+    // ==========================================
+    // DELETE USER
+    // ==========================================
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Long id) {
 
         User user = repository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new RuntimeException(
+                                "User not found"));
 
         repository.delete(user);
 

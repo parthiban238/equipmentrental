@@ -13,12 +13,18 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    public void sendWelcomeEmail(String toEmail, String name, String role) {
+    public void sendWelcomeEmail(
+            String toEmail,
+            String name,
+            String role) {
 
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(toEmail);
-        message.setSubject("Welcome to Agricultural Equipment Rental System");
+
+        message.setSubject(
+                "Welcome to Agricultural Equipment Rental System"
+        );
 
         String emailBody =
                 "Hello " + name + ",\n\n" +
