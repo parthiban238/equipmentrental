@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,125 +7,1039 @@
     <title>Equipment Rental - Login</title>
 
     <style>
+
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;                             
+            min-height: 100vh;
+            background:
+                linear-gradient(rgba(235, 248, 235, 0.82),
+                                rgba(235, 248, 235, 0.82)),
+                url("https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1800&q=80");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            padding: 40px 20px;
         }
+
+        /* ================================
+           MAIN LOGIN CONTAINER
+        ================================= */
 
         .login-container {
-    
-                                        width: 380px;
+            max-width: 1100px;
+            margin: auto;
+
             background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+
+            border-radius: 22px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.18);
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
         }
 
-        h1 {
-            text-align: center;
-            color: #2e7d32;
-            margin-bottom: 10px;
+        /* ================================
+           LEFT PROMO SECTION
+        ================================= */
+
+        .promo-section {
+            min-height: 620px;
+
+            padding: 55px 45px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    rgba(10, 90, 45, 0.65),
+                    rgba(0, 70, 35, 0.78)
+                ),
+                url("https://images.unsplash.com/photo-1530267981375-f0de937f5f13?auto=format&fit=crop&w=1200&q=80");
+
+            background-size: cover;
+            background-position: center;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
+        .promo-title {
+            font-size: 42px;
+            line-height: 1.15;
+            font-weight: 700;
         }
 
-        label {
-            display: block;
-            margin-top: 15px;
-            margin-bottom: 6px;
+        .promo-title span {
+            color: #d8f59d;
+        }
+
+        .promo-subtitle {
+            margin-top: 20px;
+            font-size: 22px;
             font-weight: bold;
         }
 
-        input {
+        .promo-text {
+            margin-top: 15px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Equipment icons */
+
+        .equipment-icons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+
+            margin-top: 30px;
+        }
+
+        .equipment-item {
+            text-align: center;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            padding: 15px 8px;
+
+            border-radius: 12px;
+
+            backdrop-filter: blur(5px);
+        }
+
+        .equipment-item .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .equipment-item p {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .promo-bottom {
+            background: rgba(0, 60, 30, 0.75);
+
+            padding: 18px 20px;
+
+            border-radius: 14px;
+
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        /* ================================
+           LOGIN SECTION
+        ================================= */
+
+        .login-section {
+            padding: 55px 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            text-align: center;
+
+            font-size: 38px;
+
+            font-weight: bold;
+
+            color: #218838;
+        }
+
+        .logo-icon {
+            color: #f4b400;
+        }
+
+        .login-subtitle {
+            text-align: center;
+
+            margin-top: 12px;
+            margin-bottom: 35px;
+
+            font-size: 19px;
+
+            color: #555;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            color: #222;
+        }
+
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+
+            padding: 15px;
+
+            border: 1px solid #cbd5dc;
+
+            border-radius: 8px;
+
+            background: #f4f8ff;
+
+            font-size: 16px;
+
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #218838;
+
+            box-shadow: 0 0 0 3px rgba(33, 136, 56, 0.12);
+        }
+
+        .login-btn,
+        .register-btn {
+            width: 100%;
+
+            border: none;
+
+            background: #218838;
+
+            color: white;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .login-btn:hover,
+        .register-btn:hover {
+            background: #176b2b;
+
+            transform: translateY(-1px);
+        }
+
+        .message {
+            margin-top: 15px;
+
+            text-align: center;
+
+            font-weight: bold;
+        }
+
+        .divider {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin: 30px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+
+            height: 1px;
+
+            flex: 1;
+
+            background: #ddd;
+        }
+
+        .divider span {
+            color: #666;
+
+            font-weight: bold;
+        }
+
+        .register-link-box {
+            border: 1px solid #b7e3c2;
+
+            background: #f0fff4;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
             font-size: 15px;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #2e7d32;
-        }
+        .register-link {
+            color: #218838;
 
-        button {
-            width: 100%;
-            margin-top: 25px;
-            padding: 12px;
-            background: #2e7d32;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
+            font-weight: bold;
+
+            text-decoration: underline;
+
             cursor: pointer;
         }
 
-        button:hover {
-            background: #1b5e20;
+        /* ================================
+           REGISTER SECTION
+        ================================= */
+
+        .register-section {
+            max-width: 1100px;
+
+            margin: 25px auto 0;
+
+            background: rgba(255, 255, 255, 0.97);
+
+            padding: 40px;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.14);
         }
 
-        #loginMessage {
-            text-align: center;
-            margin-top: 15px;
-            font-weight: bold;
+        .register-header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 30px;
         }
+
+        .register-icon {
+            font-size: 45px;
+        }
+
+        .register-header h2 {
+            color: #218838;
+
+            font-size: 32px;
+        }
+
+        .register-header p {
+            color: #666;
+
+            margin-top: 5px;
+        }
+
+        .register-form {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 20px 30px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .register-footer {
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #555;
+        }
+
+        .login-link {
+            color: #218838;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            text-decoration: underline;
+        }
+
+        /* ================================
+           RESPONSIVE
+        ================================= */
+
+        @media (max-width: 850px) {
+
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .promo-section {
+                min-height: 500px;
+            }
+
+            .register-form {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .login-section {
+                padding: 35px 25px;
+            }
+
+            .promo-section {
+                padding: 35px 25px;
+            }
+
+            .promo-title {
+                font-size: 32px;
+            }
+
+            .equipment-icons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .register-section {
+                padding: 25px 20px;
+            }
+        }
+
     </style>
 </head>
 
 <body>
 
+    <!-- =========================================
+         LOGIN + PROMO
+    ========================================== -->
+
     <div class="login-container">
 
-        <h1>🌾 Equipment Rental</h1>
+        <!-- LEFT PROMO -->
+        <div class="promo-section">
 
-        <p class="subtitle">Login to your account</p>
+            <div>
 
-        <form id="loginForm">
+                <h1 class="promo-title">
+                    Modern Equipment
+                    <br>
+                    <span>for a Better Harvest</span>
+                </h1>
 
-            <label for="email">Email</label>
+                <p class="promo-subtitle">
+                    Rent • Use • Grow
+                </p>
 
-            <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                required
-            >
+                <p class="promo-text">
+                    Access reliable agricultural equipment
+                    whenever you need it. Rent tractors,
+                    harvesters and farming equipment from
+                    trusted equipment owners.
+                </p>
 
-            <label for="password">Password</label>
+                <div class="equipment-icons">
 
-            <input
-                type="password"
-                id="password"
-                placeholder="Enter your password"
-                required
-            >
+                    <div class="equipment-item">
+                        <div class="icon">🚜</div>
+                        <p>Tractors</p>
+                    </div>
 
-            <button type="submit">
-                Login
-            </button>
+                    <div class="equipment-item">
+                        <div class="icon">🌾</div>
+                        <p>Harvesters</p>
+                    </div>
 
-        </form>
+                    <div class="equipment-item">
+                        <div class="icon">🔧</div>
+                        <p>Implements</p>
+                    </div>
 
-        <p id="loginMessage"></p>
+                    <div class="equipment-item">
+                        <div class="icon">🌱</div>
+                        <p>More</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="promo-bottom">
+                🌿 Empowering Farmers with Easy Equipment Rental
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT LOGIN -->
+        <div class="login-section">
+
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                Equipment Rental
+            </div>
+
+            <p class="login-subtitle">
+                Login to your account
+            </p>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Password</label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="login-btn">
+                    Login
+                </button>
+
+            </form>
+
+            <p
+                id="loginMessage"
+                class="message">
+            </p>
+
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <div class="register-link-box">
+
+                Don't have an account?
+
+                <span
+                    class="register-link"
+                    onclick="scrollToRegister()">
+                    Register here
+                </span>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <script src="login.js"></script>
+
+    <!-- =========================================
+         REGISTER SECTION
+    ========================================== -->
+
+    <div
+        class="register-section"
+        id="registerSection">
+
+        <div class="register-header">
+
+            <div class="register-icon">
+                👤➕
+            </div>
+
+            <div>
+
+                <h2>Register</h2>
+
+                <p>
+                    Create your account to rent or list equipment
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form
+            id="registerForm"
+            class="register-form">
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+                <label>Full Name</label>
+
+                <input
+                    type="text"
+                    id="registerName"
+                    placeholder="Enter your name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    id="registerEmail"
+                    placeholder="Enter your email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="Enter your password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+                <label>Confirm Password</label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Re-enter your password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- ROLE -->
+
+            <div class="form-group">
+
+                <label>Role</label>
+
+                <select
+                    id="registerRole"
+                    required>
+
+                    <option value="">
+                        Select role
+                    </option>
+
+                    <option value="FARMER">
+                        Farmer
+                    </option>
+
+                    <option value="OWNER">
+                        Owner
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- REGISTER BUTTON -->
+
+            <div class="form-group full-width">
+
+                <button
+                    type="submit"
+                    class="register-btn">
+
+                    👤 Register
+
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <p
+            id="registerMessage"
+            class="message">
+        </p>
+
+
+        <div class="register-footer">
+
+            Already have an account?
+
+            <span
+                class="login-link"
+                onclick="scrollToLogin()">
+
+                Login here
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const API_URL =
+            "http://localhost:8081/api/users";
+
+
+        /* =====================================
+           LOGIN
+        ====================================== */
+
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("loginEmail").value.trim();
+
+                const password =
+                    document.getElementById("loginPassword").value;
+
+                const message =
+                    document.getElementById("loginMessage");
+
+                message.style.color = "#555";
+
+                message.textContent = "Logging in...";
+
+                try {
+
+                    const response =
+                        await fetch(
+                            API_URL + "/login",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+                                    email: email,
+                                    password: password
+                                })
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Invalid email or password"
+                        );
+
+                    }
+
+
+                    const user =
+                        await response.json();
+
+
+                    /* Save user details */
+
+                    localStorage.setItem(
+                        "userId",
+                        user.id
+                    );
+
+                    localStorage.setItem(
+                        "userName",
+                        user.name
+                    );
+
+                    localStorage.setItem(
+                        "userRole",
+                        user.role
+                    );
+
+                    localStorage.setItem(
+                        "userEmail",
+                        user.email
+                    );
+
+
+                    message.style.color =
+                        "#218838";
+
+                    message.textContent =
+                        "Login successful!";
+
+
+                    /* Redirect according to role */
+
+                    setTimeout(function() {
+
+                        if (user.role === "FARMER") {
+
+                            window.location.href =
+                                "farmer.html";
+
+                        }
+
+                        else if (user.role === "OWNER") {
+
+                            window.location.href =
+                                "owner.html";
+
+                        }
+
+                        else if (user.role === "ADMIN") {
+
+                            window.location.href =
+                                "admin.html";
+
+                        }
+
+                    }, 700);
+
+
+                }
+
+                catch (error) {
+
+                    message.style.color =
+                        "red";
+
+                    message.textContent =
+                        error.message;
+
+                }
+
+            });
+
+
+        /* =====================================
+           REGISTER
+        ====================================== */
+
+        document
+            .getElementById("registerForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+
+                const name =
+                    document.getElementById("registerName").value.trim();
+
+                const email =
+                    document.getElementById("registerEmail").value.trim();
+
+                const password =
+                    document.getElementById("registerPassword").value;
+
+                const confirmPassword =
+                    document.getElementById("confirmPassword").value;
+
+                const role =
+                    document.getElementById("registerRole").value;
+
+                const message =
+                    document.getElementById("registerMessage");
+
+
+                /* Check password */
+
+                if (password !== confirmPassword) {
+
+                    message.style.color = "red";
+
+                    message.textContent =
+                        "Passwords do not match.";
+
+                    return;
+
+                }
+
+
+                message.style.color = "#555";
+
+                message.textContent =
+                    "Creating account...";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            API_URL,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+
+                                    name: name,
+
+                                    email: email,
+
+                                    password: password,
+
+                                    role: role
+
+                                })
+
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        const errorText =
+                            await response.text();
+
+                        throw new Error(
+                            errorText ||
+                            "Registration failed"
+                        );
+
+                    }
+
+
+                    const user =
+                        await response.json();
+
+
+                    message.style.color =
+                        "#218838";
+
+                    message.textContent =
+                        "Registration successful! Welcome email sent.";
+
+
+                    document
+                        .getElementById("registerForm")
+                        .reset();
+
+
+                    /* Put registered email in login */
+
+                    document
+                        .getElementById("loginEmail")
+                        .value =
+                        user.email;
+
+
+                    /* Scroll to login */
+
+                    setTimeout(function() {
+
+                        scrollToLogin();
+
+                    }, 1000);
+
+
+                }
+
+                catch (error) {
+
+                    message.style.color =
+                        "red";
+
+                    message.textContent =
+                        error.message;
+
+                }
+
+            });
+
+
+        /* =====================================
+           SCROLL TO REGISTER
+        ====================================== */
+
+        function scrollToRegister() {
+
+            document
+                .getElementById("registerSection")
+                .scrollIntoView({
+                    behavior: "smooth"
+                });
+
+        }
+
+
+        /* =====================================
+           SCROLL TO LOGIN
+        ====================================== */
+
+        function scrollToLogin() {
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+    </script>
 
 </body>
 </html>
-

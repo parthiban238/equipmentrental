@@ -44,12 +44,11 @@ public class UserController {
             throw new RuntimeException("Email already registered");
         }
 
-        // Save user in database
+        // Save user
         User savedUser = repository.save(user);
 
         // Send welcome email
         try {
-
             emailService.sendWelcomeEmail(
                     savedUser.getEmail(),
                     savedUser.getName(),
@@ -62,7 +61,6 @@ public class UserController {
             );
 
         } catch (Exception e) {
-
             System.out.println(
                     "Welcome email could not be sent: "
                             + e.getMessage()
@@ -73,18 +71,42 @@ public class UserController {
     }
 
     // ==========================================
-    // LOGIN USER
+    // LOGIN USER + LOGIN EMAIL
     // ==========================================
     @PostMapping("/login")
     public User login(@RequestBody User loginUser) {
 
-        return repository.findByEmail(loginUser.getEmail())
-                .filter(user ->
-                        user.getPassword()
+        // Check email and password
+        User user = repository.findByEmail(loginUser.getEmail())
+                .filter(existingUser ->
+                        existingUser.getPassword()
                                 .equals(loginUser.getPassword()))
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Invalid email or password"));
+                                "Invalid email or password"
+                        ));
+
+        // Send login notification email
+        try {
+            emailService.sendLoginEmail(
+                    user.getEmail(),
+                    user.getName(),
+                    user.getRole()
+            );
+
+            System.out.println(
+                    "Login email sent successfully to: "
+                            + user.getEmail()
+            );
+
+        } catch (Exception e) {
+            System.out.println(
+                    "Login email could not be sent: "
+                            + e.getMessage()
+            );
+        }
+
+        return user;
     }
 
     // ==========================================
@@ -96,7 +118,8 @@ public class UserController {
         return repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "User not found"));
+                                "User not found"
+                        ));
     }
 
     // ==========================================
@@ -120,7 +143,8 @@ public class UserController {
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "User not found with email: "
-                                        + email));
+                                        + email
+                        ));
     }
 
     // ==========================================
@@ -134,7 +158,8 @@ public class UserController {
         User user = repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "User not found"));
+                                "User not found"
+                        ));
 
         user.setName(updatedUser.getName());
         user.setEmail(updatedUser.getEmail());
@@ -153,7 +178,8 @@ public class UserController {
         User user = repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "User not found"));
+                                "User not found"
+                        ));
 
         repository.delete(user);
 
