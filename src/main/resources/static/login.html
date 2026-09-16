@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,67 +10,62 @@
     <style>
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: Arial, Helvetica, sans-serif;
         }
 
         body {
             min-height: 100vh;
+
             background:
-                linear-gradient(rgba(235, 248, 235, 0.82),
-                                rgba(235, 248, 235, 0.82)),
+                linear-gradient(
+                    rgba(225, 244, 225, 0.82),
+                    rgba(225, 244, 225, 0.82)
+                ),
                 url("https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1800&q=80");
 
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
 
-            padding: 40px 20px;
+            padding: 35px 20px;
+            color: #222;
         }
 
-        /* ================================
-           MAIN LOGIN CONTAINER
-        ================================= */
-
-        .login-container {
-            max-width: 1100px;
+        .main-container {
+            max-width: 1150px;
             margin: auto;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
 
             background: white;
 
-            border-radius: 22px;
-
+            border-radius: 25px;
             overflow: hidden;
 
             box-shadow:
-                0 15px 45px rgba(0, 0, 0, 0.18);
-
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
+                0 20px 60px rgba(0, 0, 0, 0.20);
         }
 
-        /* ================================
-           LEFT PROMO SECTION
-        ================================= */
+        .left-section {
 
-        .promo-section {
-            min-height: 620px;
+            min-height: 680px;
 
             padding: 55px 45px;
+
+            color: white;
 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
 
-            color: white;
-
             background:
                 linear-gradient(
-                    rgba(10, 90, 45, 0.65),
-                    rgba(0, 70, 35, 0.78)
+                    rgba(5, 85, 40, 0.78),
+                    rgba(0, 55, 28, 0.86)
                 ),
                 url("https://images.unsplash.com/photo-1530267981375-f0de937f5f13?auto=format&fit=crop&w=1200&q=80");
 
@@ -77,106 +73,117 @@
             background-position: center;
         }
 
-        .promo-title {
-            font-size: 42px;
-            line-height: 1.15;
-            font-weight: 700;
-        }
-
-        .promo-title span {
+        .brand-small {
+            font-size: 17px;
+            font-weight: bold;
+            letter-spacing: 2px;
             color: #d8f59d;
         }
 
-        .promo-subtitle {
-            margin-top: 20px;
-            font-size: 22px;
-            font-weight: bold;
+        .left-title {
+            margin-top: 40px;
+            font-size: 44px;
+            line-height: 1.12;
         }
 
-        .promo-text {
-            margin-top: 15px;
+        .left-title span {
+            color: #d7f53d;
+        }
+
+        .left-description {
+            margin-top: 22px;
+            font-size: 17px;
+            line-height: 1.7;
+            max-width: 450px;
+            color: #f1f8f1;
+        }
+
+        .features {
+            margin-top: 35px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.18);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+        }
+
+        .feature-text h3 {
             font-size: 16px;
-            line-height: 1.6;
+            margin-bottom: 3px;
         }
 
-        /* Equipment icons */
-
-        .equipment-icons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-
-            margin-top: 30px;
-        }
-
-        .equipment-item {
-            text-align: center;
-
-            background: rgba(255, 255, 255, 0.15);
-
-            padding: 15px 8px;
-
-            border-radius: 12px;
-
-            backdrop-filter: blur(5px);
-        }
-
-        .equipment-item .icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .equipment-item p {
+        .feature-text p {
             font-size: 13px;
-            font-weight: bold;
+            color: #dbe9db;
         }
 
-        .promo-bottom {
+        .left-bottom {
+            margin-top: 30px;
+
+            padding: 18px 22px;
+
+            border-radius: 15px;
+
             background: rgba(0, 60, 30, 0.75);
 
-            padding: 18px 20px;
-
-            border-radius: 14px;
-
-            font-size: 17px;
+            font-size: 16px;
             font-weight: bold;
+
+            text-align: center;
         }
 
-        /* ================================
-           LOGIN SECTION
-        ================================= */
-
-        .login-section {
-            padding: 55px 55px;
+        .right-section {
+            padding: 50px 55px;
 
             display: flex;
             flex-direction: column;
             justify-content: center;
+
+            background: #ffffff;
         }
 
         .logo {
             text-align: center;
 
-            font-size: 38px;
-
+            font-size: 35px;
             font-weight: bold;
 
-            color: #218838;
+            color: #167331;
         }
 
-        .logo-icon {
-            color: #f4b400;
+        .logo span {
+            color: #e6ad00;
         }
 
-        .login-subtitle {
+        .welcome {
             text-align: center;
 
-            margin-top: 12px;
-            margin-bottom: 35px;
+            margin-top: 10px;
+            margin-bottom: 30px;
 
-            font-size: 19px;
+            color: #666;
 
-            color: #555;
+            font-size: 17px;
         }
 
         .form-group {
@@ -188,8 +195,7 @@
 
             margin-bottom: 8px;
 
-            font-size: 16px;
-
+            font-size: 15px;
             font-weight: bold;
 
             color: #222;
@@ -197,44 +203,118 @@
 
         .form-group input,
         .form-group select {
+
             width: 100%;
 
-            padding: 15px;
+            padding: 15px 16px;
 
             border: 1px solid #cbd5dc;
 
-            border-radius: 8px;
+            border-radius: 10px;
 
-            background: #f4f8ff;
+            background: #f5f8fc;
 
-            font-size: 16px;
+            font-size: 15px;
 
             outline: none;
+
+            transition: 0.3s;
         }
 
         .form-group input:focus,
         .form-group select:focus {
-            border-color: #218838;
 
-            box-shadow: 0 0 0 3px rgba(33, 136, 56, 0.12);
+            border-color: #2b8a3e;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px rgba(43,138,62,0.12);
         }
 
-        .login-btn,
-        .register-btn {
+        .password-box {
+            position: relative;
+        }
+
+        .password-box input {
+            padding-right: 50px;
+        }
+
+        .show-password {
+
+            position: absolute;
+
+            right: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            cursor: pointer;
+
+            font-size: 20px;
+
+            color: #555;
+        }
+
+        .login-options {
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-top: -8px;
+            margin-bottom: 20px;
+
+            font-size: 13px;
+        }
+
+        .remember {
+
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            color: #555;
+        }
+
+        .remember input {
+            width: auto;
+        }
+
+        .secure-text {
+            color: #218838;
+            font-weight: bold;
+        }
+
+        .forgot-link {
+            color: #218838;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+
             width: 100%;
 
             border: none;
 
-            background: #218838;
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2b8a3e,
+                    #19752d
+                );
 
             color: white;
 
-            padding: 15px;
-
-            border-radius: 8px;
-
             font-size: 17px;
-
             font-weight: bold;
 
             cursor: pointer;
@@ -242,52 +322,175 @@
             transition: 0.3s;
         }
 
-        .login-btn:hover,
-        .register-btn:hover {
-            background: #176b2b;
+        .login-btn:hover {
+            transform: translateY(-2px);
 
-            transform: translateY(-1px);
+            box-shadow:
+                0 8px 20px rgba(33,136,56,0.30);
         }
 
-        .message {
-            margin-top: 15px;
+        #otpSection,
+        #forgotPasswordSection {
+
+            display: none;
+
+            margin-top: 22px;
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            background: #f1fff4;
+
+            border: 1px solid #b7e3c2;
+        }
+
+        .otp-title {
 
             text-align: center;
+
+            color: #19752d;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            margin-bottom: 7px;
+        }
+
+        .otp-info {
+
+            text-align: center;
+
+            color: #666;
+
+            font-size: 13px;
+
+            margin-bottom: 15px;
+        }
+
+        .otp-input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: 1px solid #b8c7bd;
+
+            border-radius: 9px;
+
+            text-align: center;
+
+            letter-spacing: 7px;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            outline: none;
+        }
+
+        .otp-input:focus {
+
+            border-color: #218838;
+
+            box-shadow:
+                0 0 0 3px rgba(33,136,56,0.12);
+        }
+
+        .verify-btn {
+
+            width: 100%;
+
+            margin-top: 12px;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #146c2e;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .verify-btn:hover {
+            background: #0d5422;
+        }
+
+        .back-login-btn {
+
+            width: 100%;
+
+            margin-top: 10px;
+
+            padding: 12px;
+
+            border: 1px solid #218838;
+
+            border-radius: 9px;
+
+            background: white;
+
+            color: #218838;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .back-login-btn:hover {
+            background: #f1fff4;
+        }
+
+        .otp-message {
+
+            text-align: center;
+
+            margin-top: 10px;
+
+            font-size: 13px;
 
             font-weight: bold;
         }
 
         .divider {
+
             display: flex;
 
             align-items: center;
 
-            gap: 15px;
+            gap: 12px;
 
-            margin: 30px 0;
+            margin: 25px 0;
         }
 
         .divider::before,
         .divider::after {
+
             content: "";
 
-            height: 1px;
-
             flex: 1;
+
+            height: 1px;
 
             background: #ddd;
         }
 
         .divider span {
-            color: #666;
 
+            color: #777;
+
+            font-size: 13px;
             font-weight: bold;
         }
 
-        .register-link-box {
-            border: 1px solid #b7e3c2;
-
-            background: #f0fff4;
+        .register-box {
 
             padding: 18px;
 
@@ -295,10 +498,17 @@
 
             text-align: center;
 
-            font-size: 15px;
+            background: #f1fff4;
+
+            border: 1px solid #b9dfc1;
+
+            color: #555;
+
+            font-size: 14px;
         }
 
         .register-link {
+
             color: #218838;
 
             font-weight: bold;
@@ -308,26 +518,64 @@
             cursor: pointer;
         }
 
-        /* ================================
-           REGISTER SECTION
-        ================================= */
+        .security {
+
+            margin-top: 22px;
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 20px;
+
+            color: #777;
+
+            font-size: 12px;
+
+            text-align: center;
+        }
+
+        .security div {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .security-icon {
+            font-size: 20px;
+        }
+
+        .message {
+
+            text-align: center;
+
+            margin-top: 12px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            min-height: 18px;
+        }
 
         .register-section {
-            max-width: 1100px;
+
+            max-width: 1150px;
 
             margin: 25px auto 0;
 
-            background: rgba(255, 255, 255, 0.97);
-
             padding: 40px;
+
+            background: rgba(255,255,255,0.97);
 
             border-radius: 22px;
 
             box-shadow:
-                0 15px 45px rgba(0, 0, 0, 0.14);
+                0 15px 45px rgba(0,0,0,0.14);
         }
 
         .register-header {
+
             display: flex;
 
             align-items: center;
@@ -338,22 +586,25 @@
         }
 
         .register-icon {
-            font-size: 45px;
+            font-size: 42px;
         }
 
         .register-header h2 {
+
             color: #218838;
 
-            font-size: 32px;
+            font-size: 30px;
         }
 
         .register-header p {
+
             color: #666;
 
             margin-top: 5px;
         }
 
         .register-form {
+
             display: grid;
 
             grid-template-columns: 1fr 1fr;
@@ -365,7 +616,32 @@
             grid-column: 1 / -1;
         }
 
+        .register-btn {
+
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #218838;
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .register-btn:hover {
+            background: #176b2b;
+        }
+
         .register-footer {
+
             text-align: center;
 
             margin-top: 20px;
@@ -374,26 +650,23 @@
         }
 
         .login-link {
+
             color: #218838;
 
             font-weight: bold;
 
-            cursor: pointer;
-
             text-decoration: underline;
+
+            cursor: pointer;
         }
 
-        /* ================================
-           RESPONSIVE
-        ================================= */
+        @media(max-width: 850px) {
 
-        @media (max-width: 850px) {
-
-            .login-container {
+            .main-container {
                 grid-template-columns: 1fr;
             }
 
-            .promo-section {
+            .left-section {
                 min-height: 500px;
             }
 
@@ -406,30 +679,40 @@
             }
         }
 
-        @media (max-width: 500px) {
+        @media(max-width: 500px) {
 
             body {
                 padding: 15px;
             }
 
-            .login-section {
+            .left-section {
                 padding: 35px 25px;
             }
 
-            .promo-section {
+            .right-section {
                 padding: 35px 25px;
             }
 
-            .promo-title {
-                font-size: 32px;
+            .left-title {
+                font-size: 34px;
             }
 
-            .equipment-icons {
-                grid-template-columns: repeat(2, 1fr);
+            .logo {
+                font-size: 29px;
             }
 
             .register-section {
                 padding: 25px 20px;
+            }
+
+            .security {
+                gap: 10px;
+            }
+
+            .login-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
             }
         }
 
@@ -438,97 +721,188 @@
 
 <body>
 
-    <!-- =========================================
-         LOGIN + PROMO
-    ========================================== -->
 
-    <div class="login-container">
+<!-- =====================================================
+     MAIN CONTAINER
+====================================================== -->
 
-        <!-- LEFT PROMO -->
-        <div class="promo-section">
+<div class="main-container">
 
-            <div>
 
-                <h1 class="promo-title">
-                    Modern Equipment
-                    <br>
-                    <span>for a Better Harvest</span>
-                </h1>
+    <!-- =================================================
+         LEFT SIDE
+    ================================================== -->
 
-                <p class="promo-subtitle">
-                    Rent • Use • Grow
-                </p>
+    <div class="left-section">
 
-                <p class="promo-text">
-                    Access reliable agricultural equipment
-                    whenever you need it. Rent tractors,
-                    harvesters and farming equipment from
-                    trusted equipment owners.
-                </p>
+        <div>
 
-                <div class="equipment-icons">
+            <div class="brand-small">
+                🌱 AGRICULTURE • TECHNOLOGY • GROWTH
+            </div>
 
-                    <div class="equipment-item">
-                        <div class="icon">🚜</div>
-                        <p>Tractors</p>
+            <h1 class="left-title">
+                Rent Equipment.
+                <br>
+                <span>Grow Better.</span>
+            </h1>
+
+            <p class="left-description">
+
+                Access reliable agricultural equipment
+                whenever you need it. Rent tractors,
+                harvesters and farming implements from
+                trusted equipment owners.
+
+            </p>
+
+
+            <div class="features">
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🚜
                     </div>
 
-                    <div class="equipment-item">
-                        <div class="icon">🌾</div>
-                        <p>Harvesters</p>
-                    </div>
+                    <div class="feature-text">
 
-                    <div class="equipment-item">
-                        <div class="icon">🔧</div>
-                        <p>Implements</p>
-                    </div>
+                        <h3>Wide Range of Equipment</h3>
 
-                    <div class="equipment-item">
-                        <div class="icon">🌱</div>
-                        <p>More</p>
+                        <p>
+                            Tractors, harvesters and farming tools
+                        </p>
+
                     </div>
 
                 </div>
 
-            </div>
 
-            <div class="promo-bottom">
-                🌿 Empowering Farmers with Easy Equipment Rental
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        💰
+                    </div>
+
+                    <div class="feature-text">
+
+                        <h3>Affordable Rental</h3>
+
+                        <p>
+                            Reduce equipment investment costs
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        📍
+                    </div>
+
+                    <div class="feature-text">
+
+                        <h3>Available Near You</h3>
+
+                        <p>
+                            Find equipment based on location
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🤝
+                    </div>
+
+                    <div class="feature-text">
+
+                        <h3>Easy & Secure Booking</h3>
+
+                        <p>
+                            Simple rental management platform
+                        </p>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
 
-        <!-- RIGHT LOGIN -->
-        <div class="login-section">
+        <div class="left-bottom">
 
-            <div class="logo">
-                <span class="logo-icon">🌾</span>
-                Equipment Rental
+            🌿 Smart Farming Starts With
+            <strong>the Right Equipment</strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         RIGHT SIDE
+    ================================================== -->
+
+    <div class="right-section">
+
+
+        <div class="logo">
+
+            <span>🌾</span>
+            Equipment Rental
+
+        </div>
+
+
+        <p class="welcome">
+
+            Welcome Back!
+            <br>
+
+            Login securely to continue
+
+        </p>
+
+
+        <!-- =================================================
+             LOGIN FORM
+        ================================================== -->
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label>
+                    📧 Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="Enter your email"
+                    required
+                >
+
             </div>
 
-            <p class="login-subtitle">
-                Login to your account
-            </p>
 
-            <form id="loginForm">
+            <div class="form-group">
 
-                <div class="form-group">
+                <label>
+                    🔐 Password
+                </label>
 
-                    <label>Email</label>
-
-                    <input
-                        type="email"
-                        id="loginEmail"
-                        placeholder="Enter your email"
-                        required
-                    >
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Password</label>
+                <div class="password-box">
 
                     <input
                         type="password"
@@ -537,509 +911,1547 @@
                         required
                     >
 
+                    <span
+                        class="show-password"
+                        onclick="togglePassword()">
+
+                        👁️
+
+                    </span>
+
                 </div>
 
-                <button
-                    type="submit"
-                    class="login-btn">
-                    Login
-                </button>
-
-            </form>
-
-            <p
-                id="loginMessage"
-                class="message">
-            </p>
-
-            <div class="divider">
-                <span>OR</span>
             </div>
 
-            <div class="register-link-box">
 
-                Don't have an account?
+            <div class="login-options">
+
+                <label class="remember">
+
+                    <input
+                        type="checkbox"
+                        id="rememberMe">
+
+                    Remember me
+
+                </label>
+
 
                 <span
-                    class="register-link"
-                    onclick="scrollToRegister()">
-                    Register here
+                    class="forgot-link"
+                    onclick="showForgotPassword()">
+
+                    Forgot Password?
+
                 </span>
 
             </div>
 
-        </div>
 
-    </div>
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn">
 
+                Login & Get OTP
 
-    <!-- =========================================
-         REGISTER SECTION
-    ========================================== -->
-
-    <div
-        class="register-section"
-        id="registerSection">
-
-        <div class="register-header">
-
-            <div class="register-icon">
-                👤➕
-            </div>
-
-            <div>
-
-                <h2>Register</h2>
-
-                <p>
-                    Create your account to rent or list equipment
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <form
-            id="registerForm"
-            class="register-form">
-
-            <!-- NAME -->
-
-            <div class="form-group">
-
-                <label>Full Name</label>
-
-                <input
-                    type="text"
-                    id="registerName"
-                    placeholder="Enter your name"
-                    required
-                >
-
-            </div>
-
-
-            <!-- EMAIL -->
-
-            <div class="form-group">
-
-                <label>Email</label>
-
-                <input
-                    type="email"
-                    id="registerEmail"
-                    placeholder="Enter your email"
-                    required
-                >
-
-            </div>
-
-
-            <!-- PASSWORD -->
-
-            <div class="form-group">
-
-                <label>Password</label>
-
-                <input
-                    type="password"
-                    id="registerPassword"
-                    placeholder="Enter your password"
-                    required
-                >
-
-            </div>
-
-
-            <!-- CONFIRM PASSWORD -->
-
-            <div class="form-group">
-
-                <label>Confirm Password</label>
-
-                <input
-                    type="password"
-                    id="confirmPassword"
-                    placeholder="Re-enter your password"
-                    required
-                >
-
-            </div>
-
-
-            <!-- ROLE -->
-
-            <div class="form-group">
-
-                <label>Role</label>
-
-                <select
-                    id="registerRole"
-                    required>
-
-                    <option value="">
-                        Select role
-                    </option>
-
-                    <option value="FARMER">
-                        Farmer
-                    </option>
-
-                    <option value="OWNER">
-                        Owner
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- REGISTER BUTTON -->
-
-            <div class="form-group full-width">
-
-                <button
-                    type="submit"
-                    class="register-btn">
-
-                    👤 Register
-
-                </button>
-
-            </div>
+            </button>
 
         </form>
 
 
         <p
-            id="registerMessage"
+            id="loginMessage"
             class="message">
         </p>
 
 
-        <div class="register-footer">
+        <!-- =================================================
+             LOGIN OTP
+        ================================================== -->
 
-            Already have an account?
+        <div id="otpSection">
+
+            <div class="otp-title">
+                📩 Verify Your Email
+            </div>
+
+            <p class="otp-info">
+
+                A 6-digit OTP has been sent to
+                your registered email.
+
+            </p>
+
+            <input
+                type="text"
+                id="otp"
+                class="otp-input"
+                maxlength="6"
+                inputmode="numeric"
+                placeholder="••••••"
+            >
+
+            <button
+                type="button"
+                class="verify-btn"
+                id="verifyOtpBtn">
+
+                ✓ Verify OTP & Login
+
+            </button>
+
+            <p
+                id="otpMessage"
+                class="otp-message">
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             FORGOT PASSWORD
+        ================================================== -->
+
+        <div id="forgotPasswordSection">
+
+
+            <div class="otp-title">
+
+                🔑 Reset Your Password
+
+            </div>
+
+
+            <!-- STEP 1 -->
+
+            <div id="forgotEmailStep">
+
+                <p class="otp-info">
+
+                    Enter your registered email address.
+                    We will send you a password reset OTP.
+
+                </p>
+
+
+                <input
+                    type="email"
+                    id="forgotEmail"
+                    class="otp-input"
+                    style="letter-spacing: 0;"
+                    placeholder="Enter your email"
+                >
+
+
+                <button
+                    type="button"
+                    class="verify-btn"
+                    id="sendForgotOtpBtn">
+
+                    📩 Send Reset OTP
+
+                </button>
+
+            </div>
+
+
+            <!-- STEP 2 -->
+
+            <div id="forgotOtpStep"
+                 style="display:none;">
+
+                <p class="otp-info">
+
+                    Enter the 6-digit OTP sent
+                    to your email.
+
+                </p>
+
+
+                <input
+                    type="text"
+                    id="forgotOtp"
+                    class="otp-input"
+                    maxlength="6"
+                    inputmode="numeric"
+                    placeholder="••••••"
+                >
+
+
+                <button
+                    type="button"
+                    class="verify-btn"
+                    id="verifyForgotOtpBtn">
+
+                    ✓ Verify OTP
+
+                </button>
+
+            </div>
+
+
+            <!-- STEP 3 -->
+
+            <div id="newPasswordStep"
+                 style="display:none;">
+
+                <p class="otp-info">
+
+                    Create your new password.
+
+                </p>
+
+
+                <div class="form-group">
+
+                    <label>
+                        🔐 New Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="newPassword"
+                        placeholder="Enter new password"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        🔐 Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmNewPassword"
+                        placeholder="Confirm new password"
+                    >
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="verify-btn"
+                    id="resetPasswordBtn">
+
+                    🔒 Reset Password
+
+                </button>
+
+            </div>
+
+
+            <p
+                id="forgotMessage"
+                class="otp-message">
+            </p>
+
+
+            <button
+                type="button"
+                class="back-login-btn"
+                onclick="hideForgotPassword()">
+
+                ← Back to Login
+
+            </button>
+
+        </div>
+
+
+        <div class="divider">
+
+            <span>OR</span>
+
+        </div>
+
+
+        <div class="register-box">
+
+            Don't have an account?
 
             <span
-                class="login-link"
-                onclick="scrollToLogin()">
+                class="register-link"
+                onclick="scrollToRegister()">
 
-                Login here
+                Create New Account
 
             </span>
+
+        </div>
+
+
+        <div class="security">
+
+            <div>
+
+                <span class="security-icon">
+                    🛡️
+                </span>
+
+                Secure
+
+            </div>
+
+
+            <div>
+
+                <span class="security-icon">
+                    👨‍🌾
+                </span>
+
+                Farmer
+
+            </div>
+
+
+            <div>
+
+                <span class="security-icon">
+                    👨‍💼
+                </span>
+
+                Owner
+
+            </div>
+
+
+            <div>
+
+                <span class="security-icon">
+                    ⚙️
+                </span>
+
+                Admin
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     REGISTER SECTION
+====================================================== -->
+
+<div
+    class="register-section"
+    id="registerSection">
+
+
+    <div class="register-header">
+
+        <div class="register-icon">
+            👤➕
+        </div>
+
+        <div>
+
+            <h2>
+                Create Your Account
+            </h2>
+
+            <p>
+                Register as a Farmer or Equipment Owner
+            </p>
 
         </div>
 
     </div>
 
 
-    <script>
-
-        const API_URL =
-            "http://localhost:8081/api/users";
-
-
-        /* =====================================
-           LOGIN
-        ====================================== */
-
-        document
-            .getElementById("loginForm")
-            .addEventListener("submit", async function(event) {
-
-                event.preventDefault();
-
-                const email =
-                    document.getElementById("loginEmail").value.trim();
-
-                const password =
-                    document.getElementById("loginPassword").value;
-
-                const message =
-                    document.getElementById("loginMessage");
-
-                message.style.color = "#555";
-
-                message.textContent = "Logging in...";
-
-                try {
-
-                    const response =
-                        await fetch(
-                            API_URL + "/login",
-                            {
-                                method: "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body: JSON.stringify({
-                                    email: email,
-                                    password: password
-                                })
-                            }
-                        );
+    <form
+        id="registerForm"
+        class="register-form">
 
 
-                    if (!response.ok) {
+        <div class="form-group">
 
-                        throw new Error(
-                            "Invalid email or password"
-                        );
+            <label>
+                Full Name
+            </label>
 
+            <input
+                type="text"
+                id="registerName"
+                placeholder="Enter your full name"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="registerEmail"
+                placeholder="Enter your email"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="registerPassword"
+                placeholder="Create a password"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Confirm Password
+            </label>
+
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Re-enter password"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Select Role
+            </label>
+
+            <select
+                id="registerRole"
+                required>
+
+                <option value="">
+                    Select your role
+                </option>
+
+                <option value="FARMER">
+                    👨‍🌾 Farmer
+                </option>
+
+                <option value="OWNER">
+                    👨‍💼 Equipment Owner
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group full-width">
+
+            <button
+                type="submit"
+                class="register-btn">
+
+                👤 Create Account
+
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <p
+        id="registerMessage"
+        class="message">
+    </p>
+
+
+    <div class="register-footer">
+
+        Already have an account?
+
+        <span
+            class="login-link"
+            onclick="scrollToLogin()">
+
+            Login Here
+
+        </span>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   API URL
+===================================================== */
+
+const API_URL =
+    "http://localhost:8081/api/users";
+
+
+/* =====================================================
+   SHOW / HIDE LOGIN PASSWORD
+===================================================== */
+
+function togglePassword() {
+
+    const password =
+        document.getElementById("loginPassword");
+
+    if (password.type === "password") {
+
+        password.type = "text";
+
+    } else {
+
+        password.type = "password";
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+document
+    .getElementById("loginForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const email =
+            document
+                .getElementById("loginEmail")
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById("loginPassword")
+                .value;
+
+
+        const message =
+            document.getElementById("loginMessage");
+
+
+        const loginBtn =
+            document.getElementById("loginBtn");
+
+
+        message.style.color = "#555";
+
+        message.textContent =
+            "Checking your credentials...";
+
+
+        loginBtn.disabled = true;
+
+        loginBtn.textContent =
+            "Sending OTP...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL + "/login",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            email: email,
+
+                            password: password
+
+                        })
                     }
+                );
 
 
-                    const user =
-                        await response.json();
+            const data =
+                await response.json();
 
 
-                    /* Save user details */
+            if (!response.ok) {
 
-                    localStorage.setItem(
-                        "userId",
-                        user.id
-                    );
+                throw new Error(
+                    data.message ||
+                    "Invalid email or password"
+                );
 
-                    localStorage.setItem(
-                        "userName",
-                        user.name
-                    );
+            }
 
-                    localStorage.setItem(
-                        "userRole",
-                        user.role
-                    );
 
-                    localStorage.setItem(
-                        "userEmail",
-                        user.email
-                    );
+            message.style.color =
+                "#218838";
 
+            message.textContent =
+                "✓ OTP sent successfully to your email.";
 
-                    message.style.color =
-                        "#218838";
-
-                    message.textContent =
-                        "Login successful!";
-
-
-                    /* Redirect according to role */
-
-                    setTimeout(function() {
-
-                        if (user.role === "FARMER") {
-
-                            window.location.href =
-                                "farmer.html";
-
-                        }
-
-                        else if (user.role === "OWNER") {
-
-                            window.location.href =
-                                "owner.html";
-
-                        }
-
-                        else if (user.role === "ADMIN") {
-
-                            window.location.href =
-                                "admin.html";
-
-                        }
-
-                    }, 700);
-
-
-                }
-
-                catch (error) {
-
-                    message.style.color =
-                        "red";
-
-                    message.textContent =
-                        error.message;
-
-                }
-
-            });
-
-
-        /* =====================================
-           REGISTER
-        ====================================== */
-
-        document
-            .getElementById("registerForm")
-            .addEventListener("submit", async function(event) {
-
-                event.preventDefault();
-
-
-                const name =
-                    document.getElementById("registerName").value.trim();
-
-                const email =
-                    document.getElementById("registerEmail").value.trim();
-
-                const password =
-                    document.getElementById("registerPassword").value;
-
-                const confirmPassword =
-                    document.getElementById("confirmPassword").value;
-
-                const role =
-                    document.getElementById("registerRole").value;
-
-                const message =
-                    document.getElementById("registerMessage");
-
-
-                /* Check password */
-
-                if (password !== confirmPassword) {
-
-                    message.style.color = "red";
-
-                    message.textContent =
-                        "Passwords do not match.";
-
-                    return;
-
-                }
-
-
-                message.style.color = "#555";
-
-                message.textContent =
-                    "Creating account...";
-
-
-                try {
-
-                    const response =
-                        await fetch(
-                            API_URL,
-                            {
-                                method: "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body: JSON.stringify({
-
-                                    name: name,
-
-                                    email: email,
-
-                                    password: password,
-
-                                    role: role
-
-                                })
-
-                            }
-                        );
-
-
-                    if (!response.ok) {
-
-                        const errorText =
-                            await response.text();
-
-                        throw new Error(
-                            errorText ||
-                            "Registration failed"
-                        );
-
-                    }
-
-
-                    const user =
-                        await response.json();
-
-
-                    message.style.color =
-                        "#218838";
-
-                    message.textContent =
-                        "Registration successful! Welcome email sent.";
-
-
-                    document
-                        .getElementById("registerForm")
-                        .reset();
-
-
-                    /* Put registered email in login */
-
-                    document
-                        .getElementById("loginEmail")
-                        .value =
-                        user.email;
-
-
-                    /* Scroll to login */
-
-                    setTimeout(function() {
-
-                        scrollToLogin();
-
-                    }, 1000);
-
-
-                }
-
-                catch (error) {
-
-                    message.style.color =
-                        "red";
-
-                    message.textContent =
-                        error.message;
-
-                }
-
-            });
-
-
-        /* =====================================
-           SCROLL TO REGISTER
-        ====================================== */
-
-        function scrollToRegister() {
 
             document
-                .getElementById("registerSection")
+                .getElementById("otpSection")
+                .style.display = "block";
+
+
+            document
+                .getElementById("otpSection")
                 .scrollIntoView({
-                    behavior: "smooth"
+                    behavior: "smooth",
+                    block: "center"
                 });
 
-        }
 
-
-        /* =====================================
-           SCROLL TO LOGIN
-        ====================================== */
-
-        function scrollToLogin() {
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+            loginBtn.textContent =
+                "OTP Sent ✓";
 
         }
 
-    </script>
+        catch(error) {
+
+            message.style.color =
+                "red";
+
+            message.textContent =
+                error.message;
+
+            loginBtn.disabled = false;
+
+            loginBtn.textContent =
+                "Login & Get OTP";
+
+        }
+
+    });
+
+
+/* =====================================================
+   VERIFY LOGIN OTP
+===================================================== */
+
+document
+    .getElementById("verifyOtpBtn")
+    .addEventListener("click", async function() {
+
+
+        const email =
+            document
+                .getElementById("loginEmail")
+                .value
+                .trim();
+
+
+        const otp =
+            document
+                .getElementById("otp")
+                .value
+                .trim();
+
+
+        const otpMessage =
+            document.getElementById("otpMessage");
+
+
+        const verifyBtn =
+            document.getElementById("verifyOtpBtn");
+
+
+        if (!/^\d{6}$/.test(otp)) {
+
+            otpMessage.style.color =
+                "red";
+
+            otpMessage.textContent =
+                "Please enter a valid 6-digit OTP.";
+
+            return;
+
+        }
+
+
+        verifyBtn.disabled = true;
+
+        verifyBtn.textContent =
+            "Verifying...";
+
+
+        otpMessage.style.color =
+            "#555";
+
+        otpMessage.textContent =
+            "Verifying OTP...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL + "/verify-otp",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            email: email,
+
+                            otp: otp
+
+                        })
+                    }
+                );
+
+
+            const user =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    user.message ||
+                    "Invalid OTP"
+                );
+
+            }
+
+
+            localStorage.setItem(
+                "userId",
+                user.id
+            );
+
+            localStorage.setItem(
+                "userName",
+                user.name
+            );
+
+            localStorage.setItem(
+                "userRole",
+                user.role
+            );
+
+            localStorage.setItem(
+                "userEmail",
+                user.email
+            );
+
+
+            if (
+                document
+                    .getElementById("rememberMe")
+                    .checked
+            ) {
+
+                localStorage.setItem(
+                    "rememberMe",
+                    "true"
+                );
+
+            }
+
+
+            otpMessage.style.color =
+                "#218838";
+
+            otpMessage.textContent =
+                "✓ OTP verified! Login successful.";
+
+
+            setTimeout(function() {
+
+
+                if (user.role === "FARMER") {
+
+                    window.location.href =
+                        "farmer.html";
+
+                }
+
+                else if (user.role === "OWNER") {
+
+                    window.location.href =
+                        "owner.html";
+
+                }
+
+                else if (user.role === "ADMIN") {
+
+                    window.location.href =
+                        "admin.html";
+
+                }
+
+
+            }, 700);
+
+        }
+
+        catch(error) {
+
+            otpMessage.style.color =
+                "red";
+
+            otpMessage.textContent =
+                error.message;
+
+            verifyBtn.disabled = false;
+
+            verifyBtn.textContent =
+                "✓ Verify OTP & Login";
+
+        }
+
+    });
+
+
+/* =====================================================
+   SHOW FORGOT PASSWORD
+===================================================== */
+
+function showForgotPassword() {
+
+    document
+        .getElementById("loginForm")
+        .style.display = "none";
+
+
+    document
+        .getElementById("otpSection")
+        .style.display = "none";
+
+
+    document
+        .getElementById("forgotPasswordSection")
+        .style.display = "block";
+
+
+    document
+        .getElementById("forgotEmailStep")
+        .style.display = "block";
+
+
+    document
+        .getElementById("forgotOtpStep")
+        .style.display = "none";
+
+
+    document
+        .getElementById("newPasswordStep")
+        .style.display = "none";
+
+
+    document
+        .getElementById("forgotMessage")
+        .textContent = "";
+
+
+    document
+        .getElementById("forgotEmail")
+        .value =
+        document
+            .getElementById("loginEmail")
+            .value;
+
+
+    document
+        .getElementById("forgotPasswordSection")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+}
+
+
+/* =====================================================
+   HIDE FORGOT PASSWORD
+===================================================== */
+
+function hideForgotPassword() {
+
+    document
+        .getElementById("forgotPasswordSection")
+        .style.display = "none";
+
+
+    document
+        .getElementById("loginForm")
+        .style.display = "block";
+
+
+    document
+        .getElementById("forgotMessage")
+        .textContent = "";
+
+}
+
+
+/* =====================================================
+   SEND FORGOT PASSWORD OTP
+===================================================== */
+
+document
+    .getElementById("sendForgotOtpBtn")
+    .addEventListener("click", async function() {
+
+
+        const email =
+            document
+                .getElementById("forgotEmail")
+                .value
+                .trim();
+
+
+        const message =
+            document
+                .getElementById("forgotMessage");
+
+
+        const button =
+            document
+                .getElementById("sendForgotOtpBtn");
+
+
+        if (!email) {
+
+            message.style.color = "red";
+
+            message.textContent =
+                "Please enter your registered email.";
+
+            return;
+
+        }
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Sending OTP...";
+
+
+        message.style.color = "#555";
+
+        message.textContent =
+            "Sending password reset OTP...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL + "/forgot-password",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            email: email
+
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to send OTP"
+                );
+
+            }
+
+
+            message.style.color =
+                "#218838";
+
+            message.textContent =
+                "✓ Password reset OTP sent to your email.";
+
+
+            document
+                .getElementById("forgotEmailStep")
+                .style.display = "none";
+
+
+            document
+                .getElementById("forgotOtpStep")
+                .style.display = "block";
+
+
+        }
+
+        catch(error) {
+
+            message.style.color =
+                "red";
+
+            message.textContent =
+                error.message;
+
+            button.disabled = false;
+
+            button.textContent =
+                "📩 Send Reset OTP";
+
+        }
+
+    });
+
+
+/* =====================================================
+   VERIFY FORGOT PASSWORD OTP
+===================================================== */
+
+document
+    .getElementById("verifyForgotOtpBtn")
+    .addEventListener("click", async function() {
+
+
+        const email =
+            document
+                .getElementById("forgotEmail")
+                .value
+                .trim();
+
+
+        const otp =
+            document
+                .getElementById("forgotOtp")
+                .value
+                .trim();
+
+
+        const message =
+            document
+                .getElementById("forgotMessage");
+
+
+        const button =
+            document
+                .getElementById("verifyForgotOtpBtn");
+
+
+        if (!/^\d{6}$/.test(otp)) {
+
+            message.style.color = "red";
+
+            message.textContent =
+                "Please enter a valid 6-digit OTP.";
+
+            return;
+
+        }
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Verifying...";
+
+
+        message.style.color = "#555";
+
+        message.textContent =
+            "Verifying OTP...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL + "/verify-forgot-otp",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            email: email,
+
+                            otp: otp
+
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Invalid OTP"
+                );
+
+            }
+
+
+            message.style.color =
+                "#218838";
+
+            message.textContent =
+                "✓ OTP verified. Create your new password.";
+
+
+            document
+                .getElementById("forgotOtpStep")
+                .style.display = "none";
+
+
+            document
+                .getElementById("newPasswordStep")
+                .style.display = "block";
+
+
+        }
+
+        catch(error) {
+
+            message.style.color =
+                "red";
+
+            message.textContent =
+                error.message;
+
+            button.disabled = false;
+
+            button.textContent =
+                "✓ Verify OTP";
+
+        }
+
+    });
+
+
+/* =====================================================
+   RESET PASSWORD
+===================================================== */
+
+document
+    .getElementById("resetPasswordBtn")
+    .addEventListener("click", async function() {
+
+
+        const email =
+            document
+                .getElementById("forgotEmail")
+                .value
+                .trim();
+
+
+        const otp =
+            document
+                .getElementById("forgotOtp")
+                .value
+                .trim();
+
+
+        const newPassword =
+            document
+                .getElementById("newPassword")
+                .value;
+
+
+        const confirmPassword =
+            document
+                .getElementById("confirmNewPassword")
+                .value;
+
+
+        const message =
+            document
+                .getElementById("forgotMessage");
+
+
+        const button =
+            document
+                .getElementById("resetPasswordBtn");
+
+
+        if (!newPassword || !confirmPassword) {
+
+            message.style.color = "red";
+
+            message.textContent =
+                "Please enter both password fields.";
+
+            return;
+
+        }
+
+
+        if (newPassword.length < 4) {
+
+            message.style.color = "red";
+
+            message.textContent =
+                "Password must contain at least 4 characters.";
+
+            return;
+
+        }
+
+
+        if (newPassword !== confirmPassword) {
+
+            message.style.color = "red";
+
+            message.textContent =
+                "Passwords do not match.";
+
+            return;
+
+        }
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Resetting Password...";
+
+
+        message.style.color = "#555";
+
+        message.textContent =
+            "Updating your password...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL + "/reset-password",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            email: email,
+
+                            otp: otp,
+
+                            newPassword: newPassword
+
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Password reset failed"
+                );
+
+            }
+
+
+            message.style.color =
+                "#218838";
+
+            message.textContent =
+                "✓ Password reset successful! You can now login.";
+
+
+            document
+                .getElementById("newPassword")
+                .value = "";
+
+
+            document
+                .getElementById("confirmNewPassword")
+                .value = "";
+
+
+            setTimeout(function() {
+
+                hideForgotPassword();
+
+                document
+                    .getElementById("loginEmail")
+                    .value = email;
+
+                document
+                    .getElementById("loginPassword")
+                    .value = "";
+
+            }, 1500);
+
+        }
+
+        catch(error) {
+
+            message.style.color =
+                "red";
+
+            message.textContent =
+                error.message;
+
+            button.disabled = false;
+
+            button.textContent =
+                "🔒 Reset Password";
+
+        }
+
+    });
+
+
+/* =====================================================
+   REGISTER
+===================================================== */
+
+document
+    .getElementById("registerForm")
+    .addEventListener("submit", async function(event) {
+
+
+        event.preventDefault();
+
+
+        const name =
+            document
+                .getElementById("registerName")
+                .value
+                .trim();
+
+
+        const email =
+            document
+                .getElementById("registerEmail")
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById("registerPassword")
+                .value;
+
+
+        const confirmPassword =
+            document
+                .getElementById("confirmPassword")
+                .value;
+
+
+        const role =
+            document
+                .getElementById("registerRole")
+                .value;
+
+
+        const message =
+            document
+                .getElementById("registerMessage");
+
+
+        if (password !== confirmPassword) {
+
+            message.style.color =
+                "red";
+
+            message.textContent =
+                "Passwords do not match.";
+
+            return;
+
+        }
+
+
+        message.style.color =
+            "#555";
+
+        message.textContent =
+            "Creating your account...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            name: name,
+
+                            email: email,
+
+                            password: password,
+
+                            role: role
+
+                        })
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                const errorText =
+                    await response.text();
+
+                throw new Error(
+                    errorText ||
+                    "Registration failed"
+                );
+
+            }
+
+
+            const user =
+                await response.json();
+
+
+            message.style.color =
+                "#218838";
+
+            message.textContent =
+                "✓ Registration successful! Welcome email sent.";
+
+
+            document
+                .getElementById("registerForm")
+                .reset();
+
+
+            document
+                .getElementById("loginEmail")
+                .value =
+                user.email;
+
+
+            setTimeout(function() {
+
+                scrollToLogin();
+
+            }, 1000);
+
+        }
+
+        catch(error) {
+
+            message.style.color =
+                "red";
+
+            message.textContent =
+                error.message;
+
+        }
+
+    });
+
+
+/* =====================================================
+   SCROLL TO REGISTER
+===================================================== */
+
+function scrollToRegister() {
+
+    document
+        .getElementById("registerSection")
+        .scrollIntoView({
+
+            behavior: "smooth"
+
+        });
+
+}
+
+
+/* =====================================================
+   SCROLL TO LOGIN
+===================================================== */
+
+function scrollToLogin() {
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+}
+
+</script>
 
 </body>
+
 </html>

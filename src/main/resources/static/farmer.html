@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,58 +12,321 @@
 
     <style>
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f7f4;
+            background: #f4f8f4;
+            color: #222;
         }
+
+        /* =========================
+           NAVBAR
+        ========================= */
 
         header {
-            background-color: #2e7d32;
+            background: #155d27;
             color: white;
-            padding: 20px;
-            text-align: center;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .container {
-            padding: 30px;
-            text-align: center;
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
         }
 
-        .card {
-            background-color: white;
-            padding: 30px;
-            margin: 20px auto;
-            max-width: 600px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        nav {
+            display: flex;
+            gap: 12px;
         }
 
-        h2 {
-            color: #2e7d32;
+        nav button {
+            border: none;
+            background: white;
+            color: #155d27;
+            padding: 9px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
-        button {
-            background-color: #2e7d32;
+        nav button:hover {
+            background: #e8f5e9;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 360px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 50px 8%;
+
+            background:
+                linear-gradient(
+                    rgba(21, 93, 39, 0.75),
+                    rgba(21, 93, 39, 0.75)
+                ),
+                url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80");
+
+            background-size: cover;
+            background-position: center;
+
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .hero h1 {
+            font-size: 44px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 span {
+            color: #ffd54f;
+        }
+
+        .hero p {
+            font-size: 19px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .hero-button {
+            background: #ff9800;
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
+            padding: 14px 25px;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            margin: 8px;
+        }
+
+        .hero-button:hover {
+            background: #e68900;
+        }
+
+        .hero-icon {
+            font-size: 130px;
+        }
+
+        /* =========================
+           WELCOME
+        ========================= */
+
+        .welcome {
+            text-align: center;
+            padding: 45px 20px 25px;
+        }
+
+        .welcome h2 {
+            color: #155d27;
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: #555;
+            font-size: 17px;
+        }
+
+        /* =========================
+           STATISTICS
+        ========================= */
+
+        .stats {
+            width: 86%;
+            margin: 25px auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            text-align: center;
+
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: #155d27;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+        }
+
+        /* =========================
+           ACTION SECTION
+        ========================= */
+
+        .actions {
+            width: 86%;
+            margin: 35px auto;
+
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .action-card {
+            background: white;
+            padding: 30px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+            text-align: center;
+        }
+
+        .action-card h3 {
+            color: #155d27;
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .action-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .action-button {
+            background: #2e7d32;
+            color: white;
+
+            border: none;
+
+            padding: 12px 25px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
             font-size: 15px;
+            font-weight: bold;
         }
 
-        button:hover {
-            background-color: #1b5e20;
+        .action-button:hover {
+            background: #1b5e20;
         }
 
-        .logout {
-            background-color: #d32f2f;
+        /* =========================
+           FARMING TIP
+        ========================= */
+
+        .tip {
+            width: 86%;
+            margin: 40px auto;
+
+            background: #e8f5e9;
+
+            border-left: 6px solid #2e7d32;
+
+            padding: 25px;
+
+            border-radius: 10px;
         }
 
-        .logout:hover {
-            background-color: #b71c1c;
+        .tip h3 {
+            color: #155d27;
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .tip p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            margin-top: 50px;
+
+            background: #0d3b18;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .hero {
+                text-align: center;
+                flex-direction: column;
+            }
+
+            .hero h1 {
+                font-size: 34px;
+            }
+
+            .hero-icon {
+                font-size: 80px;
+                margin-top: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
         }
 
     </style>
@@ -75,73 +337,227 @@
 <body>
 
 
-<!-- Header -->
+<!-- =========================
+     NAVBAR
+========================= -->
 
 <header>
 
-    <h1>🌾 Farmer Dashboard</h1>
+    <div class="logo">
+        🌾 AgriRent
+    </div>
+
+    <nav>
+
+        <button onclick="viewEquipment()">
+            🚜 Equipment
+        </button>
+
+        <button onclick="viewBookings()">
+            📋 Bookings
+        </button>
+
+        <button onclick="logout()">
+            🚪 Logout
+        </button>
+
+    </nav>
 
 </header>
 
 
-<!-- Main Content -->
+<!-- =========================
+     HERO
+========================= -->
 
-<div class="container">
+<section class="hero">
 
-    <div class="card">
+    <div class="hero-content">
 
-        <h2>
-
-            Welcome,
-
-            <span id="userName">
-                Farmer
-            </span>!
-
-        </h2>
-
+        <h1>
+            Smart Farming Starts
+            <span>Here</span> 🌱
+        </h1>
 
         <p>
-            Welcome to Agricultural Equipment Rental Marketplace.
+            Rent reliable agricultural equipment
+            and make your farming work easier,
+            faster and more efficient.
         </p>
-
-
-        <p>
-            Search and rent agricultural equipment easily.
-        </p>
-
-
-        <!-- View Equipment -->
-
-        <button onclick="viewEquipment()">
-
-            🚜 View Equipment
-
-        </button>
-
-
-        <!-- My Bookings -->
-
-        <button onclick="viewBookings()">
-
-            📋 My Bookings
-
-        </button>
-
-
-        <!-- Logout -->
 
         <button
-            class="logout"
-            onclick="logout()">
+            class="hero-button"
+            onclick="viewEquipment()">
 
-            🚪 Logout
+            🚜 Explore Equipment
 
         </button>
 
     </div>
 
-</div>
+
+    <div class="hero-icon">
+        👨‍🌾
+    </div>
+
+</section>
+
+
+<!-- =========================
+     WELCOME
+========================= -->
+
+<section class="welcome">
+
+    <h2>
+        Welcome,
+        <span id="userName">Farmer</span>! 👋
+    </h2>
+
+    <p>
+        Agricultural Equipment Rental Marketplace
+    </p>
+
+</section>
+
+
+<!-- =========================
+     STATISTICS
+========================= -->
+
+<section class="stats">
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            🚜
+        </div>
+
+        <h3>Available</h3>
+
+        <p>
+            Agricultural Equipment
+        </p>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            📋
+        </div>
+
+        <h3>My Bookings</h3>
+
+        <p>
+            Manage your rentals
+        </p>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            🌱
+        </div>
+
+        <h3>Easy Rental</h3>
+
+        <p>
+            Simple & convenient
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ACTION CARDS
+========================= -->
+
+<section class="actions">
+
+    <div class="action-card">
+
+        <h3>
+            🚜 Find Equipment
+        </h3>
+
+        <p>
+            Search tractors, harvesters,
+            cultivators and other agricultural
+            equipment.
+        </p>
+
+        <button
+            class="action-button"
+            onclick="viewEquipment()">
+
+            View Equipment
+
+        </button>
+
+    </div>
+
+
+    <div class="action-card">
+
+        <h3>
+            📋 My Bookings
+        </h3>
+
+        <p>
+            Check your rental requests,
+            booking status and equipment
+            rental details.
+        </p>
+
+        <button
+            class="action-button"
+            onclick="viewBookings()">
+
+            View My Bookings
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FARMING TIP
+========================= -->
+
+<section class="tip">
+
+    <h3>
+        🌾 Farming Tip of the Day
+    </h3>
+
+    <p>
+        Using the right agricultural equipment
+        can help farmers save time, reduce effort
+        and improve productivity.
+    </p>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <p>
+        © 2026 Agricultural Equipment Rental Marketplace
+    </p>
+
+</footer>
 
 
 <script>
@@ -157,7 +573,9 @@
         localStorage.getItem("userRole");
 
 
-    // Display user name
+    // ==================================
+    // Display User Name
+    // ==================================
 
     if (userName) {
 
@@ -227,4 +645,3 @@
 </body>
 
 </html>
-```

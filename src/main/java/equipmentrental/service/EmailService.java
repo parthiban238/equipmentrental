@@ -1,5 +1,6 @@
 package equipmentrental.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -7,84 +8,121 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Autowired
+    private JavaMailSender mailSender;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
 
-    // ==========================================
-    // SEND WELCOME EMAIL AFTER REGISTRATION
-    // ==========================================
-    public void sendWelcomeEmail(
-            String toEmail,
-            String name,
-            String role) {
+    // =========================
+    // WELCOME EMAIL
+    // =========================
+
+    public void sendWelcomeEmail(String toEmail, String name) {
 
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(toEmail);
-
         message.setSubject(
                 "Welcome to Agricultural Equipment Rental System"
         );
 
-        String emailBody =
+        message.setText(
                 "Hello " + name + ",\n\n" +
+
                 "Welcome to the Agricultural Equipment Rental System!\n\n" +
+
                 "Your account has been successfully created.\n\n" +
 
-                "Account Details:\n" +
-                "Name: " + name + "\n" +
-                "Role: " + role + "\n" +
-                "Email: " + toEmail + "\n\n" +
-
-                "You can now login and use our platform.\n\n" +
+                "You can now login and rent agricultural equipment "
+                + "or manage your equipment based on your role.\n\n" +
 
                 "Thank you for joining us!\n\n" +
-                "Regards,\n" +
-                "Agricultural Equipment Rental Team";
 
-        message.setText(emailBody);
+                "Agricultural Equipment Rental System"
+        );
 
         mailSender.send(message);
     }
 
 
-    // ==========================================
-    // SEND LOGIN EMAIL AFTER SUCCESSFUL LOGIN
-    // ==========================================
-    public void sendLoginEmail(
+    // =========================
+    // LOGIN OTP EMAIL
+    // =========================
+
+    public void sendOtpEmail(
             String toEmail,
             String name,
-            String role) {
+            String otp) {
 
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(toEmail);
 
         message.setSubject(
-                "Login Successful - Agricultural Equipment Rental System"
+                "Login OTP - Agricultural Equipment Rental System"
         );
 
-        String emailBody =
+        message.setText(
                 "Hello " + name + ",\n\n" +
-                "You have successfully logged in to the " +
-                "Agricultural Equipment Rental System.\n\n" +
 
-                "Login Details:\n" +
-                "Name: " + name + "\n" +
-                "Role: " + role + "\n" +
-                "Email: " + toEmail + "\n\n" +
+                "Your OTP for login is:\n\n" +
 
-                "If this login was not made by you, " +
-                "please change your password immediately.\n\n" +
+                otp + "\n\n" +
 
-                "Thank you for using our platform!\n\n" +
-                "Regards,\n" +
-                "Agricultural Equipment Rental Team";
+                "This OTP is valid for 5 minutes.\n\n" +
 
-        message.setText(emailBody);
+                "Please do not share this OTP with anyone.\n\n" +
+
+                "If you did not attempt to login, please ignore this email.\n\n" +
+
+                "Thank you,\n" +
+
+                "Agricultural Equipment Rental System"
+        );
+
+        mailSender.send(message);
+    }
+
+
+    // =========================
+    // FORGOT PASSWORD OTP
+    // =========================
+
+    public void sendForgotPasswordOtpEmail(
+            String toEmail,
+            String name,
+            String otp) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(toEmail);
+
+        message.setSubject(
+                "Password Reset OTP - Agricultural Equipment Rental System"
+        );
+
+        message.setText(
+                "Hello " + name + ",\n\n" +
+
+                "We received a request to reset your password.\n\n" +
+
+                "Your password reset OTP is:\n\n" +
+
+                otp + "\n\n" +
+
+                "This OTP is valid for 5 minutes.\n\n" +
+
+                "Enter this OTP on the password reset page "
+                + "to create a new password.\n\n" +
+
+                "Please do not share this OTP with anyone.\n\n" +
+
+                "If you did not request a password reset, "
+                + "please ignore this email.\n\n" +
+
+                "Thank you,\n" +
+
+                "Agricultural Equipment Rental System"
+        );
 
         mailSender.send(message);
     }

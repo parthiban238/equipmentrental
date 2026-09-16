@@ -4,185 +4,532 @@ import equipmentrental.entity.User;
 import equipmentrental.repository.UserRepository;
 import equipmentrental.service.EmailService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/users")
+@CrossOrigin(origins = {
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
+})
 public class UserController {
 
-    private final UserRepository repository;
-    private final EmailService emailService;
+    @Autowired
+    private UserRepository userRepository;
 
-    // Constructor
-    public UserController(
-            UserRepository repository,
-            EmailService emailService) {
+    @Autowired
+    private EmailService emailService;
 
-        this.repository = repository;
-        this.emailService = emailService;
-    }
+    private final Random random = new Random();
 
-    // ==========================================
-    // GET ALL USERS
-    // ==========================================
-    @GetMapping
-    public List<User> getAllUsers() {
-        return repository.findAll();
-    }
+    private final ConcurrentHashMap<String, String> loginOtpStore =
+            new ConcurrentHashMap<>();
 
-    // ==========================================
-    // REGISTER USER + WELCOME EMAIL
-    // ==========================================
+    private final ConcurrentHashMap<String, Long> loginOtpExpiryStore =
+            new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<String, String> forgotOtpStore =
+            new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<String, Long> forgotOtpExpiryStore =
+            new ConcurrentHashMap<>();
+
+
+    // =========================
+    // REGISTER USER
+    // =========================
+
     @PostMapping
-    public User registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
 
-        // Check duplicate email
-        if (repository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Email is required"));
         }
 
-        // Save user
-        User savedUser = repository.save(user);
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Email already registered"));
+        }
 
-        // Send welcome email
+        User savedUser = userRepository.save(user);
+
         try {
             emailService.sendWelcomeEmail(
                     savedUser.getEmail(),
-                    savedUser.getName(),
-                    savedUser.getRole()
+                    savedUser.getName()
             );
-
-            System.out.println(
-                    "Welcome email sent successfully to: "
-                            + savedUser.getEmail()
-            );
-
         } catch (Exception e) {
             System.out.println(
-                    "Welcome email could not be sent: "
-                            + e.getMessage()
+                    "Welcome email could not be sent: " + e.getMessage()
             );
         }
 
-        return savedUser;
+        return ResponseEntity.ok(savedUser);
     }
 
-    // ==========================================
-    // LOGIN USER + LOGIN EMAIL
-    // ==========================================
+
+    // =========================
+    // LOGIN - SEND OTP
+    // =========================
+
     @PostMapping("/login")
-    public User login(@RequestBody User loginUser) {
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginData) {
 
-        // Check email and password
-        User user = repository.findByEmail(loginUser.getEmail())
-                .filter(existingUser ->
-                        existingUser.getPassword()
-                                .equals(loginUser.getPassword()))
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Invalid email or password"
-                        ));
+        String email = loginData.get("email");
+        String password = loginData.get("password");
 
-        // Send login notification email
+        if (email == null || password == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Email and password are required"));
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("message", "Invalid email or password"));
+        }
+
+        if (!user.getPassword().equals(password)) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("message", "Invalid email or password"));
+        }
+
+        String otp = generateOtp();
+
+        loginOtpStore.put(email, otp);
+
+        loginOtpExpiryStore.put(
+                email,
+                System.currentTimeMillis() + (5 * 60 * 1000)
+        );
+
         try {
-            emailService.sendLoginEmail(
+
+            emailService.sendOtpEmail(
                     user.getEmail(),
                     user.getName(),
-                    user.getRole()
-            );
-
-            System.out.println(
-                    "Login email sent successfully to: "
-                            + user.getEmail()
+                    otp
             );
 
         } catch (Exception e) {
+
             System.out.println(
-                    "Login email could not be sent: "
+                    "Login OTP email could not be sent: "
                             + e.getMessage()
             );
+
+            return ResponseEntity.internalServerError()
+                    .body(Map.of(
+                            "message",
+                            "Unable to send OTP email"
+                    ));
         }
 
-        return user;
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "OTP sent successfully",
+                        "email", email,
+                        "requiresOtp", true
+                )
+        );
     }
 
-    // ==========================================
+
+    // =========================
+    // VERIFY LOGIN OTP
+    // =========================
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyLoginOtp(
+            @RequestBody Map<String, String> otpData) {
+
+        String email = otpData.get("email");
+        String otp = otpData.get("otp");
+
+        if (email == null || otp == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Email and OTP are required"));
+        }
+
+        String storedOtp = loginOtpStore.get(email);
+        Long expiry = loginOtpExpiryStore.get(email);
+
+        if (storedOtp == null || expiry == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "OTP not found or expired"));
+        }
+
+        if (System.currentTimeMillis() > expiry) {
+
+            loginOtpStore.remove(email);
+            loginOtpExpiryStore.remove(email);
+
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "OTP expired"));
+        }
+
+        if (!storedOtp.equals(otp)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Invalid OTP"));
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("message", "User not found"));
+        }
+
+        loginOtpStore.remove(email);
+        loginOtpExpiryStore.remove(email);
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("message", "Login successful");
+        response.put("id", user.getId());
+        response.put("name", user.getName());
+        response.put("email", user.getEmail());
+        response.put("role", user.getRole());
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    // =========================
+    // FORGOT PASSWORD
+    // SEND OTP
+    // =========================
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestBody Map<String, String> data) {
+
+        String email = data.get("email");
+
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Email is required"));
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("message", "Email not registered"));
+        }
+
+        String otp = generateOtp();
+
+        forgotOtpStore.put(email, otp);
+
+        forgotOtpExpiryStore.put(
+                email,
+                System.currentTimeMillis() + (5 * 60 * 1000)
+        );
+
+        try {
+
+            emailService.sendForgotPasswordOtpEmail(
+                    user.getEmail(),
+                    user.getName(),
+                    otp
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Forgot password OTP email could not be sent: "
+                            + e.getMessage()
+            );
+
+            return ResponseEntity.internalServerError()
+                    .body(Map.of(
+                            "message",
+                            "Unable to send OTP email"
+                    ));
+        }
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "Password reset OTP sent successfully",
+                        "email",
+                        email
+                )
+        );
+    }
+
+
+    // =========================
+    // VERIFY FORGOT PASSWORD OTP
+    // =========================
+
+    @PostMapping("/verify-forgot-otp")
+    public ResponseEntity<?> verifyForgotPasswordOtp(
+            @RequestBody Map<String, String> data) {
+
+        String email = data.get("email");
+        String otp = data.get("otp");
+
+        if (email == null || otp == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "message",
+                            "Email and OTP are required"
+                    ));
+        }
+
+        String storedOtp = forgotOtpStore.get(email);
+        Long expiry = forgotOtpExpiryStore.get(email);
+
+        if (storedOtp == null || expiry == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "message",
+                            "OTP not found or expired"
+                    ));
+        }
+
+        if (System.currentTimeMillis() > expiry) {
+
+            forgotOtpStore.remove(email);
+            forgotOtpExpiryStore.remove(email);
+
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "OTP expired"));
+        }
+
+        if (!storedOtp.equals(otp)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Invalid OTP"));
+        }
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "OTP verified successfully",
+                        "verified",
+                        true
+                )
+        );
+    }
+
+
+    // =========================
+    // RESET PASSWORD
+    // =========================
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestBody Map<String, String> data) {
+
+        String email = data.get("email");
+        String otp = data.get("otp");
+        String newPassword = data.get("newPassword");
+
+        if (email == null || otp == null || newPassword == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "message",
+                            "Email, OTP and new password are required"
+                    ));
+        }
+
+        if (newPassword.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "message",
+                            "New password cannot be empty"
+                    ));
+        }
+
+        String storedOtp = forgotOtpStore.get(email);
+        Long expiry = forgotOtpExpiryStore.get(email);
+
+        if (storedOtp == null || expiry == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "message",
+                            "OTP not found or expired"
+                    ));
+        }
+
+        if (System.currentTimeMillis() > expiry) {
+
+            forgotOtpStore.remove(email);
+            forgotOtpExpiryStore.remove(email);
+
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "OTP expired"));
+        }
+
+        if (!storedOtp.equals(otp)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Invalid OTP"));
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("message", "User not found"));
+        }
+
+        user.setPassword(newPassword);
+
+        userRepository.save(user);
+
+        forgotOtpStore.remove(email);
+        forgotOtpExpiryStore.remove(email);
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "Password reset successfully"
+                )
+        );
+    }
+
+
+    // =========================
+    // GET ALL USERS
+    // =========================
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+
+    // =========================
     // GET USER BY ID
-    // ==========================================
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    // =========================
 
-        return repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"
-                        ));
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+
+        return userRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(
+                        ResponseEntity.status(404)
+                                .body(Map.of(
+                                        "message",
+                                        "User not found"
+                                ))
+                );
     }
 
-    // ==========================================
+
+    // =========================
+    // GET USER BY EMAIL
+    // =========================
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> getUserByEmail(
+            @PathVariable String email) {
+
+        return userRepository.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(
+                        ResponseEntity.status(404)
+                                .body(Map.of(
+                                        "message",
+                                        "User not found"
+                                ))
+                );
+    }
+
+
+    // =========================
     // GET USERS BY ROLE
-    // ==========================================
+    // =========================
+
     @GetMapping("/role/{role}")
     public List<User> getUsersByRole(
             @PathVariable String role) {
 
-        return repository.findByRole(role);
+        return userRepository.findByRole(role);
     }
 
-    // ==========================================
-    // GET USER BY EMAIL
-    // ==========================================
-    @GetMapping("/email/{email}")
-    public User getUserByEmail(
-            @PathVariable String email) {
 
-        return repository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found with email: "
-                                        + email
-                        ));
-    }
-
-    // ==========================================
+    // =========================
     // UPDATE USER
-    // ==========================================
+    // =========================
+
     @PutMapping("/{id}")
-    public User updateUser(
+    public ResponseEntity<?> updateUser(
             @PathVariable Long id,
             @RequestBody User updatedUser) {
 
-        User user = repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"
-                        ));
+        User existingUser =
+                userRepository.findById(id).orElse(null);
 
-        user.setName(updatedUser.getName());
-        user.setEmail(updatedUser.getEmail());
-        user.setPassword(updatedUser.getPassword());
-        user.setRole(updatedUser.getRole());
+        if (existingUser == null) {
+            return ResponseEntity.status(404)
+                    .body(Map.of(
+                            "message",
+                            "User not found"
+                    ));
+        }
 
-        return repository.save(user);
+        existingUser.setName(updatedUser.getName());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPassword(updatedUser.getPassword());
+        existingUser.setRole(updatedUser.getRole());
+
+        User savedUser =
+                userRepository.save(existingUser);
+
+        return ResponseEntity.ok(savedUser);
     }
 
-    // ==========================================
+
+    // =========================
     // DELETE USER
-    // ==========================================
+    // =========================
+
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(
+            @PathVariable Long id) {
 
-        User user = repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"
-                        ));
+        if (!userRepository.existsById(id)) {
+            return ResponseEntity.status(404)
+                    .body(Map.of(
+                            "message",
+                            "User not found"
+                    ));
+        }
 
-        repository.delete(user);
+        userRepository.deleteById(id);
 
-        return "User deleted successfully";
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "User deleted successfully"
+                )
+        );
+    }
+
+
+    // =========================
+    // GENERATE 6 DIGIT OTP
+    // =========================
+
+    private String generateOtp() {
+
+        return String.format(
+                "%06d",
+                random.nextInt(1000000)
+        );
     }
 }

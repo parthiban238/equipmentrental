@@ -2,7 +2,7 @@ const API_URL = "http://localhost:8081";
 
 
 // =====================================================
-// Load Available Equipment
+// Load Equipment
 // =====================================================
 async function loadEquipment() {
 
@@ -54,7 +54,19 @@ function displayEquipment(equipment) {
 
     equipmentList.innerHTML = "";
 
+    // 3 columns + proper spacing
+    equipmentList.style.display = "grid";
+    equipmentList.style.gridTemplateColumns =
+        "repeat(3, 1fr)";
+    equipmentList.style.gap = "25px";
+    equipmentList.style.padding = "25px 0";
+    equipmentList.style.width = "100%";
+    equipmentList.style.boxSizing = "border-box";
+
+
     if (equipment.length === 0) {
+
+        equipmentList.style.display = "block";
 
         equipmentList.innerHTML = `
             <p>
@@ -74,26 +86,43 @@ function displayEquipment(equipment) {
         card.className = "equipment-card";
 
 
+        // Card design
+        card.style.background = "white";
+        card.style.padding = "20px";
+        card.style.borderRadius = "12px";
+        card.style.boxShadow =
+            "0 4px 12px rgba(0,0,0,0.15)";
+        card.style.border = "1px solid #ddd";
+        card.style.boxSizing = "border-box";
+        card.style.minHeight = "240px";
+
+
         card.innerHTML = `
 
-            <h3>🚜 ${item.name}</h3>
+            <h3 style="
+                margin-top:0;
+                margin-bottom:12px;
+                font-size:21px;
+            ">
+                🚜 ${item.name}
+            </h3>
 
-            <p>
+            <p style="margin:8px 0;">
                 <strong>Category:</strong>
                 ${item.category}
             </p>
 
-            <p>
+            <p style="margin:8px 0;">
                 <strong>Location:</strong>
                 ${item.location}
             </p>
 
-            <p>
+            <p style="margin:8px 0;">
                 <strong>Price:</strong>
                 ₹${item.pricePerDay} / day
             </p>
 
-            <p>
+            <p style="margin:8px 0;">
                 <strong>Current Status:</strong>
 
                 ${
@@ -118,19 +147,36 @@ function displayEquipment(equipment) {
                     ?
                     `
                     <button
-                        onclick="checkAvailability(${item.id})">
+                        onclick="checkAvailability(${item.id})"
+                        style="
+                            margin-top:12px;
+                            padding:9px 15px;
+                            border:none;
+                            border-radius:6px;
+                            cursor:pointer;
+                        "
+                    >
                         📅 Check Availability
                     </button>
                     `
                     :
                     `
-                    <button disabled>
+                    <button
+                        disabled
+                        style="
+                            margin-top:12px;
+                            padding:9px 15px;
+                            border:none;
+                            border-radius:6px;
+                        "
+                    >
                         🔴 Currently Unavailable
                     </button>
                     `
                 }
 
             </div>
+
 
             <div id="availability-${item.id}"></div>
 
@@ -242,7 +288,6 @@ async function checkAvailability(equipmentId) {
             .value;
 
 
-    // Validate dates
     if (!startDate || !endDate) {
 
         alert(
@@ -324,10 +369,9 @@ async function checkAvailability(equipmentId) {
                             ${equipmentId},
                             '${startDate}',
                             '${endDate}'
-                        )">
-
+                        )"
+                    >
                         ✅ Book Now
-
                     </button>
 
                 </div>
@@ -492,7 +536,6 @@ async function bookEquipment(
         );
 
 
-        // Refresh equipment
         loadEquipment();
 
 
