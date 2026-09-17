@@ -7,7 +7,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Bookings - Agricultural Equipment Rental</title>
+    <title>Owner Complaints - Agricultural Equipment Rental</title>
 
     <style>
 
@@ -17,10 +17,14 @@
             box-sizing: border-box;
         }
 
+
         body {
             font-family: Arial, Helvetica, sans-serif;
+
             background: #f4f7f4;
+
             color: #333;
+
             min-height: 100vh;
         }
 
@@ -46,7 +50,8 @@
 
             align-items: center;
 
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            box-shadow:
+                0 3px 10px rgba(0, 0, 0, 0.15);
 
             position: sticky;
 
@@ -64,9 +69,11 @@
         nav {
             display: flex;
 
-            gap: 10px;
+            gap: 8px;
 
             align-items: center;
+
+            flex-wrap: wrap;
         }
 
 
@@ -75,7 +82,7 @@
 
             text-decoration: none;
 
-            padding: 10px 14px;
+            padding: 9px 13px;
 
             border-radius: 6px;
 
@@ -86,7 +93,8 @@
 
 
         nav a:hover {
-            background: rgba(255, 255, 255, 0.18);
+            background:
+                rgba(255, 255, 255, 0.18);
         }
 
 
@@ -95,9 +103,9 @@
         ========================= */
 
         main {
-            max-width: 1200px;
+            max-width: 1250px;
 
-            margin: 0 auto;
+            margin: auto;
 
             padding: 35px 20px 50px;
         }
@@ -106,7 +114,7 @@
         .page-title {
             text-align: center;
 
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
 
@@ -122,31 +130,89 @@
         .page-title p {
             color: #666;
 
-            font-size: 16px;
+            font-size: 15px;
         }
 
 
         /* =========================
-           BOOKING LIST
+           TOP BAR
         ========================= */
 
-        #bookingList {
+        .top-bar {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            background: white;
+
+            padding: 18px 20px;
+
+            border-radius: 10px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.07);
+        }
+
+
+        .complaint-count {
+            font-size: 16px;
+
+            font-weight: bold;
+
+            color: #1b5e20;
+        }
+
+
+        .refresh-btn {
+            border: none;
+
+            background: #2e7d32;
+
+            color: white;
+
+            padding: 10px 16px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            font-size: 14px;
+        }
+
+
+        .refresh-btn:hover {
+            background: #1b5e20;
+        }
+
+
+        /* =========================
+           COMPLAINT GRID
+        ========================= */
+
+        #complaintList {
             display: grid;
 
-            grid-template-columns: repeat(
-                auto-fit,
-                minmax(320px, 1fr)
-            );
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(350px, 1fr)
+                );
 
-            gap: 25px;
+            gap: 22px;
         }
 
 
         /* =========================
-           BOOKING CARD
+           COMPLAINT CARD
         ========================= */
 
-        .booking-card {
+        .complaint-card {
             background: white;
 
             border-radius: 14px;
@@ -156,43 +222,42 @@
             box-shadow:
                 0 4px 15px rgba(0, 0, 0, 0.08);
 
-            border: 1px solid #e1e8e1;
+            border: 1px solid #e3e9e3;
 
             transition: 0.3s;
         }
 
 
-        .booking-card:hover {
-            transform: translateY(-4px);
+        .complaint-card:hover {
+            transform: translateY(-3px);
 
             box-shadow:
-                0 8px 22px rgba(0, 0, 0, 0.12);
+                0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
 
-        /* =========================
-           BOOKING HEADER
-        ========================= */
-
-        .booking-header {
+        .complaint-header {
             display: flex;
 
             justify-content: space-between;
 
             align-items: center;
 
-            margin-bottom: 20px;
+            gap: 10px;
 
             padding-bottom: 15px;
 
-            border-bottom: 1px solid #eee;
+            margin-bottom: 18px;
+
+            border-bottom:
+                1px solid #eeeeee;
         }
 
 
-        .booking-header h3 {
+        .complaint-header h3 {
             color: #1b5e20;
 
-            font-size: 20px;
+            font-size: 19px;
         }
 
 
@@ -201,43 +266,43 @@
         ========================= */
 
         .status {
-            padding: 7px 13px;
+            padding: 7px 12px;
 
             border-radius: 20px;
 
-            font-size: 12px;
+            font-size: 11px;
 
             font-weight: bold;
 
-            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
 
-        .pending {
+        .status-pending {
             background: #fff3cd;
 
             color: #856404;
         }
 
 
-        .approved {
-            background: #d4edda;
+        .status-under-review {
+            background: #cfe2ff;
 
-            color: #155724;
+            color: #084298;
         }
 
 
-        .rejected {
+        .status-resolved {
+            background: #d1e7dd;
+
+            color: #0f5132;
+        }
+
+
+        .status-rejected {
             background: #f8d7da;
 
-            color: #721c24;
-        }
-
-
-        .completed {
-            background: #d1ecf1;
-
-            color: #0c5460;
+            color: #842029;
         }
 
 
@@ -248,177 +313,160 @@
         .details {
             display: grid;
 
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns:
+                1fr 1fr;
 
             gap: 12px;
 
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
 
         .detail-box {
             background: #f7faf7;
 
-            padding: 12px;
+            padding: 11px;
 
             border-radius: 8px;
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 6px;
         }
 
 
         .detail-box strong {
-            font-size: 12px;
+            display: block;
 
             color: #666;
+
+            font-size: 11px;
+
+            margin-bottom: 5px;
         }
 
 
         .detail-box span {
             font-size: 14px;
 
-            color: #222;
-
             font-weight: 600;
+
+            color: #222;
 
             word-break: break-word;
         }
 
 
         /* =========================
-           ACTION BUTTONS
+           DESCRIPTION
         ========================= */
 
-        .booking-actions {
-            display: flex;
+        .description-box {
+            background: #f9faf9;
 
-            gap: 10px;
+            border-left:
+                4px solid #2e7d32;
 
-            flex-wrap: wrap;
+            padding: 13px;
 
-            margin-top: 10px;
+            border-radius: 6px;
+
+            margin-bottom: 18px;
         }
 
 
-        .rating-btn,
-        .complaint-btn,
-        .refresh-btn {
-            border: none;
+        .description-box strong {
+            display: block;
 
-            padding: 11px 15px;
+            color: #555;
 
-            border-radius: 7px;
+            font-size: 13px;
 
-            cursor: pointer;
+            margin-bottom: 6px;
+        }
 
+
+        .description-box p {
             font-size: 14px;
 
-            font-weight: 600;
+            line-height: 1.5;
 
-            transition: 0.3s;
-        }
-
-
-        .rating-btn {
-            background: #ffb300;
-
-            color: white;
-        }
-
-
-        .rating-btn:hover {
-            background: #f57c00;
-        }
-
-
-        .complaint-btn {
-            background: #c62828;
-
-            color: white;
-        }
-
-
-        .complaint-btn:hover {
-            background: #a51f1f;
-        }
-
-
-        .refresh-btn {
-            background: #2e7d32;
-
-            color: white;
-
-            margin-top: 15px;
-        }
-
-
-        .refresh-btn:hover {
-            background: #1b5e20;
+            color: #333;
         }
 
 
         /* =========================
-           COMPLAINT FORM
+           COMPLAINT TYPE
         ========================= */
 
-        .complaint-form {
-            display: none;
+        .complaint-type {
+            display: inline-block;
 
-            margin-top: 20px;
+            background: #e8f5e9;
 
-            padding: 20px;
+            color: #1b5e20;
 
-            background: #fff8f8;
+            padding: 7px 10px;
 
-            border: 1px solid #f0cccc;
+            border-radius: 6px;
 
-            border-radius: 10px;
-        }
+            font-size: 12px;
 
-
-        .complaint-form h3 {
-            color: #c62828;
-
-            margin-bottom: 8px;
-        }
-
-
-        .complaint-form p {
-            color: #666;
+            font-weight: bold;
 
             margin-bottom: 15px;
-
-            font-size: 14px;
         }
 
 
-        .complaint-form label {
+        /* =========================
+           PHOTO
+        ========================= */
+
+        .photo-box {
+            background: #f5f5f5;
+
+            padding: 10px;
+
+            border-radius: 6px;
+
+            margin-bottom: 18px;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           STATUS CONTROL
+        ========================= */
+
+        .status-control {
+            border-top:
+                1px solid #eeeeee;
+
+            padding-top: 18px;
+        }
+
+
+        .status-control label {
             display: block;
 
-            margin-top: 12px;
+            font-size: 13px;
 
-            margin-bottom: 6px;
+            font-weight: bold;
 
-            font-weight: 600;
+            margin-bottom: 7px;
 
-            font-size: 14px;
+            color: #555;
         }
 
 
-        .complaint-form select,
-        .complaint-form textarea,
-        .complaint-form input {
+        .status-control select {
             width: 100%;
 
             padding: 11px;
 
-            border: 1px solid #ccc;
+            border:
+                1px solid #ccc;
 
             border-radius: 7px;
+
+            background: white;
 
             font-size: 14px;
 
@@ -426,80 +474,43 @@
         }
 
 
-        .complaint-form select:focus,
-        .complaint-form textarea:focus,
-        .complaint-form input:focus {
+        .status-control select:focus {
             border-color: #2e7d32;
         }
 
 
-        .complaint-form textarea {
-            min-height: 100px;
+        .update-btn {
+            width: 100%;
 
-            resize: vertical;
-        }
+            margin-top: 10px;
 
-
-        .submit-complaint-btn,
-        .cancel-complaint-btn {
             border: none;
 
-            padding: 10px 14px;
+            background: #2e7d32;
+
+            color: white;
+
+            padding: 11px;
 
             border-radius: 7px;
 
             cursor: pointer;
 
-            margin-top: 15px;
+            font-weight: bold;
 
-            font-weight: 600;
+            font-size: 14px;
         }
 
 
-        .submit-complaint-btn {
-            background: #2e7d32;
-
-            color: white;
-        }
-
-
-        .submit-complaint-btn:hover {
+        .update-btn:hover {
             background: #1b5e20;
         }
 
 
-        .cancel-complaint-btn {
-            background: #777;
+        .update-btn:disabled {
+            background: #999;
 
-            color: white;
-
-            margin-left: 5px;
-        }
-
-
-        .cancel-complaint-btn:hover {
-            background: #555;
-        }
-
-
-        /* =========================
-           COMPLAINT STATUS
-        ========================= */
-
-        .complaint-status {
-            margin-top: 15px;
-
-            padding: 15px;
-
-            background: #f3f8ff;
-
-            border-left: 4px solid #1976d2;
-
-            border-radius: 6px;
-
-            font-size: 13px;
-
-            line-height: 1.6;
+            cursor: not-allowed;
         }
 
 
@@ -510,13 +521,13 @@
         .loading {
             grid-column: 1 / -1;
 
-            text-align: center;
-
-            padding: 60px 20px;
-
             background: white;
 
             border-radius: 12px;
+
+            text-align: center;
+
+            padding: 60px 20px;
 
             color: #555;
 
@@ -542,13 +553,13 @@
         .empty {
             grid-column: 1 / -1;
 
-            text-align: center;
-
             background: white;
 
-            padding: 60px 20px;
-
             border-radius: 12px;
+
+            text-align: center;
+
+            padding: 60px 20px;
 
             box-shadow:
                 0 4px 15px rgba(0, 0, 0, 0.07);
@@ -565,7 +576,7 @@
         .empty p {
             color: #666;
 
-            margin-bottom: 10px;
+            font-size: 14px;
         }
 
 
@@ -576,15 +587,16 @@
         .error {
             grid-column: 1 / -1;
 
-            text-align: center;
+            background: white;
 
-            background: #fff;
-
-            border: 1px solid #f5c6cb;
+            border:
+                1px solid #f5c6cb;
 
             color: #721c24;
 
             padding: 40px 20px;
+
+            text-align: center;
 
             border-radius: 12px;
         }
@@ -613,7 +625,7 @@
 
 
         /* =========================
-           MOBILE
+           RESPONSIVE
         ========================= */
 
         @media (max-width: 768px) {
@@ -635,16 +647,7 @@
 
 
             nav {
-                flex-wrap: wrap;
-
                 justify-content: center;
-            }
-
-
-            nav a {
-                font-size: 13px;
-
-                padding: 8px 10px;
             }
 
 
@@ -653,7 +656,21 @@
             }
 
 
-            #bookingList {
+            .top-bar {
+                flex-direction: column;
+
+                gap: 15px;
+
+                align-items: stretch;
+            }
+
+
+            .refresh-btn {
+                width: 100%;
+            }
+
+
+            #complaintList {
                 grid-template-columns: 1fr;
             }
 
@@ -672,28 +689,15 @@
             }
 
 
-            .booking-card {
+            .complaint-card {
                 padding: 16px;
             }
 
 
-            .booking-header {
+            .complaint-header {
+                flex-direction: column;
+
                 align-items: flex-start;
-
-                gap: 10px;
-
-                flex-direction: column;
-            }
-
-
-            .booking-actions {
-                flex-direction: column;
-            }
-
-
-            .rating-btn,
-            .complaint-btn {
-                width: 100%;
             }
 
         }
@@ -719,16 +723,20 @@
 
         <nav>
 
-            <a href="farmer.html">
+            <a href="owner.html">
                 🏠 Dashboard
             </a>
 
-            <a href="equipment.html">
-                🚜 Equipment
+            <a href="owner-equipment.html">
+                🚜 My Equipment
             </a>
 
-            <a href="my-bookings.html">
-                📋 My Bookings
+            <a href="owner-bookings.html">
+                📋 Bookings
+            </a>
+
+            <a href="owner-complaints.html">
+                📢 Complaints
             </a>
 
             <a href="login.html">
@@ -742,7 +750,7 @@
 
 
     <!-- =========================
-         MAIN CONTENT
+         MAIN
     ========================== -->
 
     <main>
@@ -751,25 +759,50 @@
         <div class="page-title">
 
             <h2>
-                📋 My Bookings
+                📢 Customer Complaints
             </h2>
 
             <p>
-                View your agricultural equipment bookings,
-                ratings and complaints.
+                Review and manage complaints
+                reported by farmers for your equipment.
             </p>
 
         </div>
 
 
 
-        <!-- BOOKING LIST -->
+        <!-- TOP BAR -->
 
-        <div id="bookingList">
+        <div class="top-bar">
+
+            <div
+                class="complaint-count"
+                id="complaintCount">
+
+                Complaints: 0
+
+            </div>
+
+
+            <button
+                class="refresh-btn"
+                onclick="loadComplaints()">
+
+                🔄 Refresh Complaints
+
+            </button>
+
+        </div>
+
+
+
+        <!-- COMPLAINT LIST -->
+
+        <div id="complaintList">
 
             <div class="loading">
 
-                Loading your bookings...
+                Loading complaints...
 
             </div>
 
@@ -794,11 +827,9 @@
 
 
 
-    <!-- =========================
-         JAVASCRIPT
-    ========================== -->
+    <!-- JAVASCRIPT -->
 
-    <script src="my-bookings.js"></script>
+    <script src="owner-complaints.js"></script>
 
 
 </body>

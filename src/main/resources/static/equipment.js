@@ -2,6 +2,41 @@ const API_URL = "http://localhost:8081";
 
 
 // =====================================================
+// Date Validation - Today and Future Only
+// =====================================================
+function setupDateValidation() {
+
+    const startDate = document.getElementById("startDate");
+    const endDate = document.getElementById("endDate");
+
+    if (!startDate || !endDate) {
+        return;
+    }
+
+    // Get today's date
+    const today = new Date().toISOString().split("T")[0];
+
+    // Past dates cannot be selected
+    startDate.min = today;
+    endDate.min = today;
+
+    // End date must be same or after start date
+    startDate.addEventListener("change", function () {
+
+        if (this.value) {
+
+            endDate.min = this.value;
+
+            // If selected end date is before start date
+            if (endDate.value && endDate.value < this.value) {
+                endDate.value = this.value;
+            }
+        }
+    });
+}
+
+
+// =====================================================
 // Load Equipment
 // =====================================================
 async function loadEquipment() {
@@ -266,6 +301,7 @@ async function searchEquipment() {
             error
         );
 
+
         alert(
             "Unable to search equipment."
         );
@@ -292,6 +328,34 @@ async function checkAvailability(equipmentId) {
 
         alert(
             "Please select Start Date and End Date."
+        );
+
+        return;
+    }
+
+
+    // ==========================================
+    // Check Past Date
+    // ==========================================
+
+    const today =
+        new Date().toISOString().split("T")[0];
+
+
+    if (startDate < today) {
+
+        alert(
+            "❌ Start Date cannot be in the past."
+        );
+
+        return;
+    }
+
+
+    if (endDate < today) {
+
+        alert(
+            "❌ End Date cannot be in the past."
         );
 
         return;
@@ -445,6 +509,44 @@ async function bookEquipment(
     }
 
 
+    // ==========================================
+    // Final Frontend Date Validation
+    // ==========================================
+
+    const today =
+        new Date().toISOString().split("T")[0];
+
+
+    if (startDate < today) {
+
+        alert(
+            "❌ Booking cannot be made for a past date."
+        );
+
+        return;
+    }
+
+
+    if (endDate < today) {
+
+        alert(
+            "❌ End date cannot be in the past."
+        );
+
+        return;
+    }
+
+
+    if (endDate < startDate) {
+
+        alert(
+            "❌ End Date cannot be before Start Date."
+        );
+
+        return;
+    }
+
+
     const bookingData = {
 
         userId:
@@ -573,7 +675,11 @@ document.addEventListener(
     "DOMContentLoaded",
     function() {
 
+        // Load equipment
         loadEquipment();
+
+        // Setup date validation
+        setupDateValidation();
 
     }
 );

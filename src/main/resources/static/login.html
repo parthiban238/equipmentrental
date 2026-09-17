@@ -51,7 +51,6 @@
         }
 
         .left-section {
-
             min-height: 680px;
 
             padding: 55px 45px;
@@ -283,11 +282,6 @@
             width: auto;
         }
 
-        .secure-text {
-            color: #218838;
-            font-weight: bold;
-        }
-
         .forgot-link {
             color: #218838;
             font-weight: bold;
@@ -327,6 +321,15 @@
 
             box-shadow:
                 0 8px 20px rgba(33,136,56,0.30);
+        }
+
+        .login-btn:disabled,
+        .verify-btn:disabled,
+        .resend-btn:disabled,
+        .register-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
         }
 
         #otpSection,
@@ -423,6 +426,45 @@
             background: #0d5422;
         }
 
+        .resend-btn {
+
+            width: 100%;
+
+            margin-top: 10px;
+
+            padding: 12px;
+
+            border: 1px solid #218838;
+
+            border-radius: 9px;
+
+            background: white;
+
+            color: #218838;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .resend-btn:hover:not(:disabled) {
+            background: #eaffef;
+        }
+
+        .otp-timer {
+
+            text-align: center;
+
+            margin-top: 10px;
+
+            font-size: 13px;
+
+            color: #666;
+
+            font-weight: bold;
+        }
+
         .back-login-btn {
 
             width: 100%;
@@ -457,6 +499,8 @@
             font-size: 13px;
 
             font-weight: bold;
+
+            min-height: 18px;
         }
 
         .divider {
@@ -721,17 +765,9 @@
 
 <body>
 
-
-<!-- =====================================================
-     MAIN CONTAINER
-====================================================== -->
-
 <div class="main-container">
 
-
-    <!-- =================================================
-         LEFT SIDE
-    ================================================== -->
+    <!-- LEFT SECTION -->
 
     <div class="left-section">
 
@@ -748,14 +784,11 @@
             </h1>
 
             <p class="left-description">
-
                 Access reliable agricultural equipment
                 whenever you need it. Rent tractors,
                 harvesters and farming implements from
                 trusted equipment owners.
-
             </p>
-
 
             <div class="features">
 
@@ -777,7 +810,6 @@
 
                 </div>
 
-
                 <div class="feature">
 
                     <div class="feature-icon">
@@ -796,7 +828,6 @@
 
                 </div>
 
-
                 <div class="feature">
 
                     <div class="feature-icon">
@@ -814,7 +845,6 @@
                     </div>
 
                 </div>
-
 
                 <div class="feature">
 
@@ -838,45 +868,31 @@
 
         </div>
 
-
         <div class="left-bottom">
-
             🌿 Smart Farming Starts With
             <strong>the Right Equipment</strong>
-
         </div>
 
     </div>
 
 
-    <!-- =================================================
-         RIGHT SIDE
-    ================================================== -->
+    <!-- RIGHT SECTION -->
 
     <div class="right-section">
 
-
         <div class="logo">
-
             <span>🌾</span>
             Equipment Rental
-
         </div>
 
-
         <p class="welcome">
-
             Welcome Back!
             <br>
-
             Login securely to continue
-
         </p>
 
 
-        <!-- =================================================
-             LOGIN FORM
-        ================================================== -->
+        <!-- LOGIN FORM -->
 
         <form id="loginForm">
 
@@ -914,9 +930,7 @@
                     <span
                         class="show-password"
                         onclick="togglePassword()">
-
                         👁️
-
                     </span>
 
                 </div>
@@ -935,7 +949,6 @@
                     Remember me
 
                 </label>
-
 
                 <span
                     class="forgot-link"
@@ -960,15 +973,10 @@
         </form>
 
 
-        <p
-            id="loginMessage"
-            class="message">
-        </p>
+        <p id="loginMessage" class="message"></p>
 
 
-        <!-- =================================================
-             LOGIN OTP
-        ================================================== -->
+        <!-- LOGIN OTP -->
 
         <div id="otpSection">
 
@@ -990,6 +998,7 @@
                 maxlength="6"
                 inputmode="numeric"
                 placeholder="••••••"
+                autocomplete="one-time-code"
             >
 
             <button
@@ -1001,6 +1010,28 @@
 
             </button>
 
+            <!-- TIMER -->
+
+            <p
+                id="otpTimer"
+                class="otp-timer">
+
+                Resend OTP in 60 seconds
+
+            </p>
+
+            <!-- RESEND BUTTON -->
+
+            <button
+                type="button"
+                class="resend-btn"
+                id="resendOtpBtn"
+                disabled>
+
+                🔄 Resend OTP
+
+            </button>
+
             <p
                 id="otpMessage"
                 class="otp-message">
@@ -1009,17 +1040,12 @@
         </div>
 
 
-        <!-- =================================================
-             FORGOT PASSWORD
-        ================================================== -->
+        <!-- FORGOT PASSWORD -->
 
         <div id="forgotPasswordSection">
 
-
             <div class="otp-title">
-
                 🔑 Reset Your Password
-
             </div>
 
 
@@ -1034,7 +1060,6 @@
 
                 </p>
 
-
                 <input
                     type="email"
                     id="forgotEmail"
@@ -1042,7 +1067,6 @@
                     style="letter-spacing: 0;"
                     placeholder="Enter your email"
                 >
-
 
                 <button
                     type="button"
@@ -1058,8 +1082,9 @@
 
             <!-- STEP 2 -->
 
-            <div id="forgotOtpStep"
-                 style="display:none;">
+            <div
+                id="forgotOtpStep"
+                style="display:none;">
 
                 <p class="otp-info">
 
@@ -1067,7 +1092,6 @@
                     to your email.
 
                 </p>
-
 
                 <input
                     type="text"
@@ -1077,7 +1101,6 @@
                     inputmode="numeric"
                     placeholder="••••••"
                 >
-
 
                 <button
                     type="button"
@@ -1093,15 +1116,15 @@
 
             <!-- STEP 3 -->
 
-            <div id="newPasswordStep"
-                 style="display:none;">
+            <div
+                id="newPasswordStep"
+                style="display:none;">
 
                 <p class="otp-info">
 
                     Create your new password.
 
                 </p>
-
 
                 <div class="form-group">
 
@@ -1164,9 +1187,7 @@
 
 
         <div class="divider">
-
             <span>OR</span>
-
         </div>
 
 
@@ -1197,7 +1218,6 @@
 
             </div>
 
-
             <div>
 
                 <span class="security-icon">
@@ -1208,7 +1228,6 @@
 
             </div>
 
-
             <div>
 
                 <span class="security-icon">
@@ -1218,7 +1237,6 @@
                 Owner
 
             </div>
-
 
             <div>
 
@@ -1237,14 +1255,11 @@
 </div>
 
 
-<!-- =====================================================
-     REGISTER SECTION
-====================================================== -->
+<!-- REGISTER SECTION -->
 
 <div
     class="register-section"
     id="registerSection">
-
 
     <div class="register-header">
 
@@ -1403,17 +1418,19 @@
 
 <script>
 
-
-/* =====================================================
-   API URL
-===================================================== */
-
 const API_URL =
     "http://localhost:8081/api/users";
 
 
 /* =====================================================
-   SHOW / HIDE LOGIN PASSWORD
+   VARIABLES
+===================================================== */
+
+let loginOtpTimer = null;
+
+
+/* =====================================================
+   SHOW / HIDE PASSWORD
 ===================================================== */
 
 function togglePassword() {
@@ -1435,6 +1452,54 @@ function togglePassword() {
 
 
 /* =====================================================
+   START OTP TIMER
+===================================================== */
+
+function startOtpTimer() {
+
+    const timerElement =
+        document.getElementById("otpTimer");
+
+    const resendButton =
+        document.getElementById("resendOtpBtn");
+
+    let seconds = 60;
+
+    resendButton.disabled = true;
+
+    timerElement.textContent =
+        "Resend OTP in " + seconds + " seconds";
+
+    if (loginOtpTimer) {
+        clearInterval(loginOtpTimer);
+    }
+
+    loginOtpTimer = setInterval(function() {
+
+        seconds--;
+
+        if (seconds > 0) {
+
+            timerElement.textContent =
+                "Resend OTP in " + seconds + " seconds";
+
+        } else {
+
+            clearInterval(loginOtpTimer);
+
+            timerElement.textContent =
+                "You can request a new OTP now.";
+
+            resendButton.disabled = false;
+
+        }
+
+    }, 1000);
+
+}
+
+
+/* =====================================================
    LOGIN
 ===================================================== */
 
@@ -1444,39 +1509,32 @@ document
 
         event.preventDefault();
 
-
         const email =
             document
                 .getElementById("loginEmail")
                 .value
                 .trim();
 
-
         const password =
             document
                 .getElementById("loginPassword")
                 .value;
 
-
         const message =
             document.getElementById("loginMessage");
 
-
         const loginBtn =
             document.getElementById("loginBtn");
-
 
         message.style.color = "#555";
 
         message.textContent =
             "Checking your credentials...";
 
-
         loginBtn.disabled = true;
 
         loginBtn.textContent =
             "Sending OTP...";
-
 
         try {
 
@@ -1501,10 +1559,8 @@ document
                     }
                 );
 
-
             const data =
                 await response.json();
-
 
             if (!response.ok) {
 
@@ -1515,18 +1571,21 @@ document
 
             }
 
-
             message.style.color =
                 "#218838";
 
             message.textContent =
                 "✓ OTP sent successfully to your email.";
 
-
             document
                 .getElementById("otpSection")
                 .style.display = "block";
 
+            document
+                .getElementById("otp")
+                .value = "";
+
+            startOtpTimer();
 
             document
                 .getElementById("otpSection")
@@ -1534,7 +1593,6 @@ document
                     behavior: "smooth",
                     block: "center"
                 });
-
 
             loginBtn.textContent =
                 "OTP Sent ✓";
@@ -1560,13 +1618,12 @@ document
 
 
 /* =====================================================
-   VERIFY LOGIN OTP
+   RESEND LOGIN OTP
 ===================================================== */
 
 document
-    .getElementById("verifyOtpBtn")
+    .getElementById("resendOtpBtn")
     .addEventListener("click", async function() {
-
 
         const email =
             document
@@ -1574,6 +1631,114 @@ document
                 .value
                 .trim();
 
+        const otpMessage =
+            document.getElementById("otpMessage");
+
+        const resendButton =
+            document.getElementById("resendOtpBtn");
+
+        if (!email) {
+
+            otpMessage.style.color = "red";
+
+            otpMessage.textContent =
+                "Email address is required.";
+
+            return;
+
+        }
+
+        resendButton.disabled = true;
+
+        resendButton.textContent =
+            "Sending...";
+
+        otpMessage.style.color = "#555";
+
+        otpMessage.textContent =
+            "Sending new OTP...";
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL + "/resend-otp",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            email: email
+
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to resend OTP"
+                );
+
+            }
+
+            otpMessage.style.color =
+                "#218838";
+
+            otpMessage.textContent =
+                "✓ New OTP sent successfully.";
+
+            document
+                .getElementById("otp")
+                .value = "";
+
+            resendButton.textContent =
+                "🔄 Resend OTP";
+
+            startOtpTimer();
+
+        }
+
+        catch(error) {
+
+            otpMessage.style.color =
+                "red";
+
+            otpMessage.textContent =
+                error.message;
+
+            resendButton.disabled = false;
+
+            resendButton.textContent =
+                "🔄 Resend OTP";
+
+        }
+
+    });
+
+
+/* =====================================================
+   VERIFY LOGIN OTP
+===================================================== */
+
+document
+    .getElementById("verifyOtpBtn")
+    .addEventListener("click", async function() {
+
+        const email =
+            document
+                .getElementById("loginEmail")
+                .value
+                .trim();
 
         const otp =
             document
@@ -1581,14 +1746,11 @@ document
                 .value
                 .trim();
 
-
         const otpMessage =
             document.getElementById("otpMessage");
 
-
         const verifyBtn =
             document.getElementById("verifyOtpBtn");
-
 
         if (!/^\d{6}$/.test(otp)) {
 
@@ -1602,19 +1764,16 @@ document
 
         }
 
-
         verifyBtn.disabled = true;
 
         verifyBtn.textContent =
             "Verifying...";
-
 
         otpMessage.style.color =
             "#555";
 
         otpMessage.textContent =
             "Verifying OTP...";
-
 
         try {
 
@@ -1639,10 +1798,8 @@ document
                     }
                 );
 
-
             const user =
                 await response.json();
-
 
             if (!response.ok) {
 
@@ -1652,7 +1809,6 @@ document
                 );
 
             }
-
 
             localStorage.setItem(
                 "userId",
@@ -1674,7 +1830,6 @@ document
                 user.email
             );
 
-
             if (
                 document
                     .getElementById("rememberMe")
@@ -1688,6 +1843,9 @@ document
 
             }
 
+            if (loginOtpTimer) {
+                clearInterval(loginOtpTimer);
+            }
 
             otpMessage.style.color =
                 "#218838";
@@ -1695,9 +1853,7 @@ document
             otpMessage.textContent =
                 "✓ OTP verified! Login successful.";
 
-
             setTimeout(function() {
-
 
                 if (user.role === "FARMER") {
 
@@ -1720,6 +1876,12 @@ document
 
                 }
 
+                else {
+
+                    window.location.href =
+                        "index.html";
+
+                }
 
             }, 700);
 
@@ -1753,36 +1915,29 @@ function showForgotPassword() {
         .getElementById("loginForm")
         .style.display = "none";
 
-
     document
         .getElementById("otpSection")
         .style.display = "none";
-
 
     document
         .getElementById("forgotPasswordSection")
         .style.display = "block";
 
-
     document
         .getElementById("forgotEmailStep")
         .style.display = "block";
-
 
     document
         .getElementById("forgotOtpStep")
         .style.display = "none";
 
-
     document
         .getElementById("newPasswordStep")
         .style.display = "none";
 
-
     document
         .getElementById("forgotMessage")
         .textContent = "";
-
 
     document
         .getElementById("forgotEmail")
@@ -1790,7 +1945,6 @@ function showForgotPassword() {
         document
             .getElementById("loginEmail")
             .value;
-
 
     document
         .getElementById("forgotPasswordSection")
@@ -1812,11 +1966,9 @@ function hideForgotPassword() {
         .getElementById("forgotPasswordSection")
         .style.display = "none";
 
-
     document
         .getElementById("loginForm")
         .style.display = "block";
-
 
     document
         .getElementById("forgotMessage")
@@ -1833,23 +1985,19 @@ document
     .getElementById("sendForgotOtpBtn")
     .addEventListener("click", async function() {
 
-
         const email =
             document
                 .getElementById("forgotEmail")
                 .value
                 .trim();
 
-
         const message =
             document
                 .getElementById("forgotMessage");
 
-
         const button =
             document
                 .getElementById("sendForgotOtpBtn");
-
 
         if (!email) {
 
@@ -1862,18 +2010,15 @@ document
 
         }
 
-
         button.disabled = true;
 
         button.textContent =
             "Sending OTP...";
 
-
         message.style.color = "#555";
 
         message.textContent =
             "Sending password reset OTP...";
-
 
         try {
 
@@ -1896,10 +2041,8 @@ document
                     }
                 );
 
-
             const data =
                 await response.json();
-
 
             if (!response.ok) {
 
@@ -1910,23 +2053,19 @@ document
 
             }
 
-
             message.style.color =
                 "#218838";
 
             message.textContent =
                 "✓ Password reset OTP sent to your email.";
 
-
             document
                 .getElementById("forgotEmailStep")
                 .style.display = "none";
 
-
             document
                 .getElementById("forgotOtpStep")
                 .style.display = "block";
-
 
         }
 
@@ -1956,13 +2095,11 @@ document
     .getElementById("verifyForgotOtpBtn")
     .addEventListener("click", async function() {
 
-
         const email =
             document
                 .getElementById("forgotEmail")
                 .value
                 .trim();
-
 
         const otp =
             document
@@ -1970,16 +2107,13 @@ document
                 .value
                 .trim();
 
-
         const message =
             document
                 .getElementById("forgotMessage");
 
-
         const button =
             document
                 .getElementById("verifyForgotOtpBtn");
-
 
         if (!/^\d{6}$/.test(otp)) {
 
@@ -1992,18 +2126,15 @@ document
 
         }
 
-
         button.disabled = true;
 
         button.textContent =
             "Verifying...";
 
-
         message.style.color = "#555";
 
         message.textContent =
             "Verifying OTP...";
-
 
         try {
 
@@ -2028,10 +2159,8 @@ document
                     }
                 );
 
-
             const data =
                 await response.json();
-
 
             if (!response.ok) {
 
@@ -2042,23 +2171,19 @@ document
 
             }
 
-
             message.style.color =
                 "#218838";
 
             message.textContent =
                 "✓ OTP verified. Create your new password.";
 
-
             document
                 .getElementById("forgotOtpStep")
                 .style.display = "none";
 
-
             document
                 .getElementById("newPasswordStep")
                 .style.display = "block";
-
 
         }
 
@@ -2088,13 +2213,11 @@ document
     .getElementById("resetPasswordBtn")
     .addEventListener("click", async function() {
 
-
         const email =
             document
                 .getElementById("forgotEmail")
                 .value
                 .trim();
-
 
         const otp =
             document
@@ -2102,28 +2225,23 @@ document
                 .value
                 .trim();
 
-
         const newPassword =
             document
                 .getElementById("newPassword")
                 .value;
-
 
         const confirmPassword =
             document
                 .getElementById("confirmNewPassword")
                 .value;
 
-
         const message =
             document
                 .getElementById("forgotMessage");
 
-
         const button =
             document
                 .getElementById("resetPasswordBtn");
-
 
         if (!newPassword || !confirmPassword) {
 
@@ -2136,7 +2254,6 @@ document
 
         }
 
-
         if (newPassword.length < 4) {
 
             message.style.color = "red";
@@ -2147,7 +2264,6 @@ document
             return;
 
         }
-
 
         if (newPassword !== confirmPassword) {
 
@@ -2160,18 +2276,15 @@ document
 
         }
 
-
         button.disabled = true;
 
         button.textContent =
             "Resetting Password...";
 
-
         message.style.color = "#555";
 
         message.textContent =
             "Updating your password...";
-
 
         try {
 
@@ -2198,10 +2311,8 @@ document
                     }
                 );
 
-
             const data =
                 await response.json();
-
 
             if (!response.ok) {
 
@@ -2212,23 +2323,19 @@ document
 
             }
 
-
             message.style.color =
                 "#218838";
 
             message.textContent =
                 "✓ Password reset successful! You can now login.";
 
-
             document
                 .getElementById("newPassword")
                 .value = "";
 
-
             document
                 .getElementById("confirmNewPassword")
                 .value = "";
-
 
             setTimeout(function() {
 
@@ -2272,9 +2379,7 @@ document
     .getElementById("registerForm")
     .addEventListener("submit", async function(event) {
 
-
         event.preventDefault();
-
 
         const name =
             document
@@ -2282,36 +2387,30 @@ document
                 .value
                 .trim();
 
-
         const email =
             document
                 .getElementById("registerEmail")
                 .value
                 .trim();
 
-
         const password =
             document
                 .getElementById("registerPassword")
                 .value;
-
 
         const confirmPassword =
             document
                 .getElementById("confirmPassword")
                 .value;
 
-
         const role =
             document
                 .getElementById("registerRole")
                 .value;
 
-
         const message =
             document
                 .getElementById("registerMessage");
-
 
         if (password !== confirmPassword) {
 
@@ -2325,13 +2424,23 @@ document
 
         }
 
+        if (!role) {
+
+            message.style.color =
+                "red";
+
+            message.textContent =
+                "Please select your role.";
+
+            return;
+
+        }
 
         message.style.color =
             "#555";
 
         message.textContent =
             "Creating your account...";
-
 
         try {
 
@@ -2360,23 +2469,39 @@ document
                     }
                 );
 
-
             if (!response.ok) {
 
                 const errorText =
                     await response.text();
 
-                throw new Error(
-                    errorText ||
-                    "Registration failed"
-                );
+                let errorMessage =
+                    "Registration failed";
+
+                try {
+
+                    const errorData =
+                        JSON.parse(errorText);
+
+                    errorMessage =
+                        errorData.message ||
+                        errorMessage;
+
+                }
+
+                catch(e) {
+
+                    if (errorText) {
+                        errorMessage = errorText;
+                    }
+
+                }
+
+                throw new Error(errorMessage);
 
             }
 
-
             const user =
                 await response.json();
-
 
             message.style.color =
                 "#218838";
@@ -2384,17 +2509,14 @@ document
             message.textContent =
                 "✓ Registration successful! Welcome email sent.";
 
-
             document
                 .getElementById("registerForm")
                 .reset();
-
 
             document
                 .getElementById("loginEmail")
                 .value =
                 user.email;
-
 
             setTimeout(function() {
 

@@ -8,10 +8,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/equipment")
-@CrossOrigin(origins = {
-        "http://localhost:5500",
-        "http://127.0.0.1:5500"
-})
+@CrossOrigin(
+        origins = {
+                "http://localhost:5500",
+                "http://127.0.0.1:5500"
+        },
+        methods = {
+                RequestMethod.GET,
+                RequestMethod.POST,
+                RequestMethod.PUT,
+                RequestMethod.DELETE,
+                RequestMethod.OPTIONS
+        }
+)
 public class EquipmentController {
 
     private final EquipmentRepository repository;
@@ -72,8 +81,7 @@ public class EquipmentController {
         return repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Equipment not found with id: "
-                                        + id));
+                                "Equipment not found with id: " + id));
     }
 
     // Update equipment
@@ -85,11 +93,12 @@ public class EquipmentController {
         Equipment equipment = repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Equipment not found with id: "
-                                        + id));
+                                "Equipment not found with id: " + id));
 
         equipment.setName(updatedEquipment.getName());
-        equipment.setCategory(updatedEquipment.getCategory());
+
+        equipment.setCategory(
+                updatedEquipment.getCategory());
 
         equipment.setPricePerDay(
                 updatedEquipment.getPricePerDay());
@@ -116,8 +125,7 @@ public class EquipmentController {
         Equipment equipment = repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Equipment not found with id: "
-                                        + id));
+                                "Equipment not found with id: " + id));
 
         equipment.setAvailable(available);
 
@@ -125,15 +133,14 @@ public class EquipmentController {
     }
 
     // Delete equipment
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{id}")
     public String deleteEquipment(
             @PathVariable Long id) {
 
         Equipment equipment = repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Equipment not found with id: "
-                                        + id));
+                                "Equipment not found with id: " + id));
 
         repository.delete(equipment);
 

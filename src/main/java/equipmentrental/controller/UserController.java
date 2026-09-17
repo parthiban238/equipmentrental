@@ -30,12 +30,14 @@ public class UserController {
 
     private final Random random = new Random();
 
+    // Login OTP storage
     private final ConcurrentHashMap<String, String> loginOtpStore =
             new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<String, Long> loginOtpExpiryStore =
             new ConcurrentHashMap<>();
 
+    // Forgot password OTP storage
     private final ConcurrentHashMap<String, String> forgotOtpStore =
             new ConcurrentHashMap<>();
 
@@ -48,28 +50,42 @@ public class UserController {
     // =========================
 
     @PostMapping
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(
+            @RequestBody User user) {
 
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+        if (user.getEmail() == null ||
+                user.getEmail().trim().isEmpty()) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Email is required"));
+                    .body(Map.of(
+                            "message",
+                            "Email is required"
+                    ));
         }
 
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Email already registered"));
+                    .body(Map.of(
+                            "message",
+                            "Email already registered"
+                    ));
         }
 
         User savedUser = userRepository.save(user);
 
         try {
+
             emailService.sendWelcomeEmail(
                     savedUser.getEmail(),
                     savedUser.getName()
             );
+
         } catch (Exception e) {
+
             System.out.println(
-                    "Welcome email could not be sent: " + e.getMessage()
+                    "Welcome email could not be sent: "
+                            + e.getMessage()
             );
         }
 
@@ -82,35 +98,52 @@ public class UserController {
     // =========================
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginData) {
+    public ResponseEntity<?> loginUser(
+            @RequestBody Map<String, String> loginData) {
 
         String email = loginData.get("email");
         String password = loginData.get("password");
 
         if (email == null || password == null) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Email and password are required"));
+                    .body(Map.of(
+                            "message",
+                            "Email and password are required"
+                    ));
         }
 
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user =
+                userRepository.findByEmail(email)
+                        .orElse(null);
 
         if (user == null) {
+
             return ResponseEntity.status(401)
-                    .body(Map.of("message", "Invalid email or password"));
+                    .body(Map.of(
+                            "message",
+                            "Invalid email or password"
+                    ));
         }
 
         if (!user.getPassword().equals(password)) {
+
             return ResponseEntity.status(401)
-                    .body(Map.of("message", "Invalid email or password"));
+                    .body(Map.of(
+                            "message",
+                            "Invalid email or password"
+                    ));
         }
 
+        // Generate OTP
         String otp = generateOtp();
 
         loginOtpStore.put(email, otp);
 
         loginOtpExpiryStore.put(
                 email,
-                System.currentTimeMillis() + (5 * 60 * 1000)
+                System.currentTimeMillis()
+                        + (5 * 60 * 1000)
         );
 
         try {
@@ -137,9 +170,93 @@ public class UserController {
 
         return ResponseEntity.ok(
                 Map.of(
-                        "message", "OTP sent successfully",
-                        "email", email,
-                        "requiresOtp", true
+                        "message",
+                        "OTP sent successfully",
+                        "email",
+                        email,
+                        "requiresOtp",
+                        true
+                )
+        );
+    }
+
+
+    // =========================
+    // RESEND LOGIN OTP
+    // =========================
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendLoginOtp(
+            @RequestBody Map<String, String> data) {
+
+        String email = data.get("email");
+
+        if (email == null ||
+                email.trim().isEmpty()) {
+
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "message",
+                            "Email is required"
+                    ));
+        }
+
+        User user =
+                userRepository.findByEmail(email)
+                        .orElse(null);
+
+        if (user == null) {
+
+            return ResponseEntity.status(404)
+                    .body(Map.of(
+                            "message",
+                            "User not found"
+                    ));
+        }
+
+        String newOtp = generateOtp();
+
+        loginOtpStore.put(
+                email,
+                newOtp
+        );
+
+        loginOtpExpiryStore.put(
+                email,
+                System.currentTimeMillis()
+                        + (5 * 60 * 1000)
+        );
+
+        try {
+
+            emailService.sendOtpEmail(
+                    user.getEmail(),
+                    user.getName(),
+                    newOtp
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Resend OTP email could not be sent: "
+                            + e.getMessage()
+            );
+
+            return ResponseEntity.internalServerError()
+                    .body(Map.of(
+                            "message",
+                            "Unable to resend OTP email"
+                    ));
+        }
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "New OTP sent successfully",
+                        "email",
+                        email,
+                        "requiresOtp",
+                        true
                 )
         );
     }
@@ -157,16 +274,28 @@ public class UserController {
         String otp = otpData.get("otp");
 
         if (email == null || otp == null) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Email and OTP are required"));
+                    .body(Map.of(
+                            "message",
+                            "Email and OTP are required"
+                    ));
         }
 
-        String storedOtp = loginOtpStore.get(email);
-        Long expiry = loginOtpExpiryStore.get(email);
+        String storedOtp =
+                loginOtpStore.get(email);
 
-        if (storedOtp == null || expiry == null) {
+        Long expiry =
+                loginOtpExpiryStore.get(email);
+
+        if (storedOtp == null ||
+                expiry == null) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "OTP not found or expired"));
+                    .body(Map.of(
+                            "message",
+                            "OTP not found or expired"
+                    ));
         }
 
         if (System.currentTimeMillis() > expiry) {
@@ -175,31 +304,64 @@ public class UserController {
             loginOtpExpiryStore.remove(email);
 
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "OTP expired"));
+                    .body(Map.of(
+                            "message",
+                            "OTP expired"
+                    ));
         }
 
         if (!storedOtp.equals(otp)) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Invalid OTP"));
+                    .body(Map.of(
+                            "message",
+                            "Invalid OTP"
+                    ));
         }
 
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user =
+                userRepository.findByEmail(email)
+                        .orElse(null);
 
         if (user == null) {
+
             return ResponseEntity.status(404)
-                    .body(Map.of("message", "User not found"));
+                    .body(Map.of(
+                            "message",
+                            "User not found"
+                    ));
         }
 
         loginOtpStore.remove(email);
         loginOtpExpiryStore.remove(email);
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response =
+                new HashMap<>();
 
-        response.put("message", "Login successful");
-        response.put("id", user.getId());
-        response.put("name", user.getName());
-        response.put("email", user.getEmail());
-        response.put("role", user.getRole());
+        response.put(
+                "message",
+                "Login successful"
+        );
+
+        response.put(
+                "id",
+                user.getId()
+        );
+
+        response.put(
+                "name",
+                user.getName()
+        );
+
+        response.put(
+                "email",
+                user.getEmail()
+        );
+
+        response.put(
+                "role",
+                user.getRole()
+        );
 
         return ResponseEntity.ok(response);
     }
@@ -216,25 +378,40 @@ public class UserController {
 
         String email = data.get("email");
 
-        if (email == null || email.trim().isEmpty()) {
+        if (email == null ||
+                email.trim().isEmpty()) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Email is required"));
+                    .body(Map.of(
+                            "message",
+                            "Email is required"
+                    ));
         }
 
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user =
+                userRepository.findByEmail(email)
+                        .orElse(null);
 
         if (user == null) {
+
             return ResponseEntity.status(404)
-                    .body(Map.of("message", "Email not registered"));
+                    .body(Map.of(
+                            "message",
+                            "Email not registered"
+                    ));
         }
 
         String otp = generateOtp();
 
-        forgotOtpStore.put(email, otp);
+        forgotOtpStore.put(
+                email,
+                otp
+        );
 
         forgotOtpExpiryStore.put(
                 email,
-                System.currentTimeMillis() + (5 * 60 * 1000)
+                System.currentTimeMillis()
+                        + (5 * 60 * 1000)
         );
 
         try {
@@ -282,6 +459,7 @@ public class UserController {
         String otp = data.get("otp");
 
         if (email == null || otp == null) {
+
             return ResponseEntity.badRequest()
                     .body(Map.of(
                             "message",
@@ -289,10 +467,15 @@ public class UserController {
                     ));
         }
 
-        String storedOtp = forgotOtpStore.get(email);
-        Long expiry = forgotOtpExpiryStore.get(email);
+        String storedOtp =
+                forgotOtpStore.get(email);
 
-        if (storedOtp == null || expiry == null) {
+        Long expiry =
+                forgotOtpExpiryStore.get(email);
+
+        if (storedOtp == null ||
+                expiry == null) {
+
             return ResponseEntity.badRequest()
                     .body(Map.of(
                             "message",
@@ -306,12 +489,19 @@ public class UserController {
             forgotOtpExpiryStore.remove(email);
 
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "OTP expired"));
+                    .body(Map.of(
+                            "message",
+                            "OTP expired"
+                    ));
         }
 
         if (!storedOtp.equals(otp)) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Invalid OTP"));
+                    .body(Map.of(
+                            "message",
+                            "Invalid OTP"
+                    ));
         }
 
         return ResponseEntity.ok(
@@ -335,9 +525,13 @@ public class UserController {
 
         String email = data.get("email");
         String otp = data.get("otp");
-        String newPassword = data.get("newPassword");
+        String newPassword =
+                data.get("newPassword");
 
-        if (email == null || otp == null || newPassword == null) {
+        if (email == null ||
+                otp == null ||
+                newPassword == null) {
+
             return ResponseEntity.badRequest()
                     .body(Map.of(
                             "message",
@@ -346,6 +540,7 @@ public class UserController {
         }
 
         if (newPassword.trim().isEmpty()) {
+
             return ResponseEntity.badRequest()
                     .body(Map.of(
                             "message",
@@ -353,10 +548,15 @@ public class UserController {
                     ));
         }
 
-        String storedOtp = forgotOtpStore.get(email);
-        Long expiry = forgotOtpExpiryStore.get(email);
+        String storedOtp =
+                forgotOtpStore.get(email);
 
-        if (storedOtp == null || expiry == null) {
+        Long expiry =
+                forgotOtpExpiryStore.get(email);
+
+        if (storedOtp == null ||
+                expiry == null) {
+
             return ResponseEntity.badRequest()
                     .body(Map.of(
                             "message",
@@ -370,19 +570,32 @@ public class UserController {
             forgotOtpExpiryStore.remove(email);
 
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "OTP expired"));
+                    .body(Map.of(
+                            "message",
+                            "OTP expired"
+                    ));
         }
 
         if (!storedOtp.equals(otp)) {
+
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Invalid OTP"));
+                    .body(Map.of(
+                            "message",
+                            "Invalid OTP"
+                    ));
         }
 
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user =
+                userRepository.findByEmail(email)
+                        .orElse(null);
 
         if (user == null) {
+
             return ResponseEntity.status(404)
-                    .body(Map.of("message", "User not found"));
+                    .body(Map.of(
+                            "message",
+                            "User not found"
+                    ));
         }
 
         user.setPassword(newPassword);
@@ -407,6 +620,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers() {
+
         return userRepository.findAll();
     }
 
@@ -416,17 +630,23 @@ public class UserController {
     // =========================
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+    public ResponseEntity<?> getUserById(
+            @PathVariable Long id) {
 
-        return userRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(
-                        ResponseEntity.status(404)
-                                .body(Map.of(
-                                        "message",
-                                        "User not found"
-                                ))
-                );
+        User user =
+                userRepository.findById(id)
+                        .orElse(null);
+
+        if (user == null) {
+
+            return ResponseEntity.status(404)
+                    .body(Map.of(
+                            "message",
+                            "User not found"
+                    ));
+        }
+
+        return ResponseEntity.ok(user);
     }
 
 
@@ -438,15 +658,20 @@ public class UserController {
     public ResponseEntity<?> getUserByEmail(
             @PathVariable String email) {
 
-        return userRepository.findByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(
-                        ResponseEntity.status(404)
-                                .body(Map.of(
-                                        "message",
-                                        "User not found"
-                                ))
-                );
+        User user =
+                userRepository.findByEmail(email)
+                        .orElse(null);
+
+        if (user == null) {
+
+            return ResponseEntity.status(404)
+                    .body(Map.of(
+                            "message",
+                            "User not found"
+                    ));
+        }
+
+        return ResponseEntity.ok(user);
     }
 
 
@@ -472,9 +697,11 @@ public class UserController {
             @RequestBody User updatedUser) {
 
         User existingUser =
-                userRepository.findById(id).orElse(null);
+                userRepository.findById(id)
+                        .orElse(null);
 
         if (existingUser == null) {
+
             return ResponseEntity.status(404)
                     .body(Map.of(
                             "message",
@@ -482,10 +709,21 @@ public class UserController {
                     ));
         }
 
-        existingUser.setName(updatedUser.getName());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setPassword(updatedUser.getPassword());
-        existingUser.setRole(updatedUser.getRole());
+        existingUser.setName(
+                updatedUser.getName()
+        );
+
+        existingUser.setEmail(
+                updatedUser.getEmail()
+        );
+
+        existingUser.setPassword(
+                updatedUser.getPassword()
+        );
+
+        existingUser.setRole(
+                updatedUser.getRole()
+        );
 
         User savedUser =
                 userRepository.save(existingUser);
@@ -503,6 +741,7 @@ public class UserController {
             @PathVariable Long id) {
 
         if (!userRepository.existsById(id)) {
+
             return ResponseEntity.status(404)
                     .body(Map.of(
                             "message",

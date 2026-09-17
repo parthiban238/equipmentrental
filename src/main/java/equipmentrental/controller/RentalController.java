@@ -40,6 +40,7 @@ public class RentalController {
     @PostMapping
     public Rental createRental(@RequestBody Rental rental) {
 
+        // Check equipment
         Equipment equipment = equipmentRepository
                 .findById(rental.getEquipmentId())
                 .orElseThrow(() ->
@@ -47,7 +48,7 @@ public class RentalController {
                                 "Equipment not found with id: "
                                         + rental.getEquipmentId()));
 
-        // Check dates
+        // Check dates are provided
         if (rental.getStartDate() == null ||
                 rental.getEndDate() == null) {
 
@@ -55,6 +56,27 @@ public class RentalController {
                     "Start date and end date are required");
         }
 
+        // ==========================================
+        // PAST DATE VALIDATION
+        // ==========================================
+
+        LocalDate today = LocalDate.now();
+
+        // Start date cannot be in the past
+        if (rental.getStartDate().isBefore(today)) {
+
+            throw new RuntimeException(
+                    "Booking cannot be made for a past date");
+        }
+
+        // End date cannot be in the past
+        if (rental.getEndDate().isBefore(today)) {
+
+            throw new RuntimeException(
+                    "End date cannot be in the past");
+        }
+
+        // End date cannot be before start date
         if (rental.getEndDate()
                 .isBefore(rental.getStartDate())) {
 
@@ -62,13 +84,20 @@ public class RentalController {
                     "End date cannot be before start date");
         }
 
-        // Check equipment availability
+        // ==========================================
+        // CHECK EQUIPMENT AVAILABILITY
+        // ==========================================
+
         if (!equipment.isAvailable()) {
+
             throw new RuntimeException(
                     "Equipment is currently unavailable");
         }
 
-        // Check overlapping bookings
+        // ==========================================
+        // CHECK OVERLAPPING BOOKINGS
+        // ==========================================
+
         List<String> activeStatuses =
                 List.of("PENDING", "APPROVED");
 
@@ -87,24 +116,34 @@ public class RentalController {
                             .isBefore(existing.getStartDate());
 
             if (overlap) {
+
                 throw new RuntimeException(
                         "Equipment is already booked for these dates");
             }
         }
 
-        // Calculate rental days
+        // ==========================================
+        // CALCULATE RENTAL DAYS
+        // ==========================================
+
         long rentalDays =
                 ChronoUnit.DAYS.between(
                         rental.getStartDate(),
                         rental.getEndDate()) + 1;
 
-        // Calculate total amount
+        // ==========================================
+        // CALCULATE TOTAL AMOUNT
+        // ==========================================
+
         double totalAmount =
                 rentalDays * equipment.getPricePerDay();
 
         rental.setTotalAmount(totalAmount);
 
-        // Default status
+        // ==========================================
+        // DEFAULT STATUS
+        // ==========================================
+
         rental.setStatus("PENDING");
 
         return repository.save(rental);
@@ -180,9 +219,27 @@ public class RentalController {
         LocalDate end =
                 LocalDate.parse(endDate);
 
+        // ==========================================
+        // PAST DATE VALIDATION
+        // ==========================================
+
+        LocalDate today = LocalDate.now();
+
+        if (start.isBefore(today)) {
+            return "Booking cannot be made for a past date";
+        }
+
+        if (end.isBefore(today)) {
+            return "End date cannot be in the past";
+        }
+
         if (end.isBefore(start)) {
             return "End date cannot be before start date";
         }
+
+        // ==========================================
+        // CHECK EXISTING BOOKINGS
+        // ==========================================
 
         List<String> activeStatuses =
                 List.of("PENDING", "APPROVED");
@@ -200,6 +257,7 @@ public class RentalController {
                     !end.isBefore(existing.getStartDate());
 
             if (overlap) {
+
                 return "Equipment is NOT available for these dates";
             }
         }
@@ -217,6 +275,35 @@ public class RentalController {
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Rental not found with id: " + id));
+
+        // Validate updated dates
+        LocalDate today = LocalDate.now();
+
+        if (updatedRental.getStartDate() == null ||
+                updatedRental.getEndDate() == null) {
+
+            throw new RuntimeException(
+                    "Start date and end date are required");
+        }
+
+        if (updatedRental.getStartDate().isBefore(today)) {
+
+            throw new RuntimeException(
+                    "Start date cannot be in the past");
+        }
+
+        if (updatedRental.getEndDate().isBefore(today)) {
+
+            throw new RuntimeException(
+                    "End date cannot be in the past");
+        }
+
+        if (updatedRental.getEndDate()
+                .isBefore(updatedRental.getStartDate())) {
+
+            throw new RuntimeException(
+                    "End date cannot be before start date");
+        }
 
         rental.setUserId(updatedRental.getUserId());
         rental.setEquipmentId(updatedRental.getEquipmentId());
@@ -246,6 +333,7 @@ public class RentalController {
                                         + rental.getEquipmentId()));
 
         if (!equipment.isAvailable()) {
+
             throw new RuntimeException(
                     "Equipment is already unavailable");
         }

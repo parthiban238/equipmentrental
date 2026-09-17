@@ -1,1137 +1,1146 @@
-const API_URL = "http://localhost:8081/api/users";
+const API_URL = "http://localhost:8081";
 
-let loggedInEmail = "";
-let forgotPasswordEmail = "";
-let forgotPasswordOtp = "";
+let loginOtpTimer = null;
+let loginOtpSeconds = 60;
+
+// ===============================
+// PAGE LOAD
+// ===============================
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loginForm = document.getElementById("loginForm");
+    const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+    const resendOtpBtn = document.getElementById("resendOtpBtn");
+    const registerForm = document.getElementById("registerForm");
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", loginUser);
+    }
+
+    if (verifyOtpBtn) {
+        verifyOtpBtn.addEventListener("click", verifyLoginOtp);
+    }
+
+    if (resendOtpBtn) {
+        resendOtpBtn.addEventListener("click", resendLoginOtp);
+    }
+
+    if (registerForm) {
+        registerForm.addEventListener("submit", registerUser);
+    }
+
+    const sendForgotOtpBtn = document.getElementById("sendForgotOtpBtn");
+    const verifyForgotOtpBtn = document.getElementById("verifyForgotOtpBtn");
+    const resetPasswordBtn = document.getElementById("resetPasswordBtn");
+
+    if (sendForgotOtpBtn) {
+        sendForgotOtpBtn.addEventListener("click", sendForgotPasswordOtp);
+    }
+
+    if (verifyForgotOtpBtn) {
+        verifyForgotOtpBtn.addEventListener("click", verifyForgotOtp);
+    }
+
+    if (resetPasswordBtn) {
+        resetPasswordBtn.addEventListener("click", resetPassword);
+    }
+
+    const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener("click", function (e) {
+            e.preventDefault();
+            showForgotPassword();
+        });
+    }
+
+    const backToLoginBtn = document.getElementById("backToLoginBtn");
+
+    if (backToLoginBtn) {
+        backToLoginBtn.addEventListener("click", showLogin);
+    }
+});
 
 
-// ==========================================
-// SHOW / HIDE PASSWORD
-// ==========================================
+// ===============================
+// LOGIN
+// ===============================
+async function loginUser(event) {
 
-function togglePassword() {
+    event.preventDefault();
 
-    const password =
-        document.getElementById("loginPassword");
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const message = document.getElementById("loginMessage");
+    const loginBtn = document.getElementById("loginBtn");
 
-    if (password.type === "password") {
+    if (!email || !password) {
+        showMessage(message, "Please enter email and password.", "error");
+        return;
+    }
 
-        password.type = "text";
+    loginBtn.disabled = true;
+    loginBtn.innerText = "Logging in...";
 
-    } else {
+    try {
 
-        password.type = "password";
+        const response = await fetch(`${API_URL}/api/users/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
 
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            showMessage(
+                message,
+                data.message || "Invalid email or password.",
+                "error"
+            );
+
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Login";
+
+            return;
+        }
+
+        /*
+         * Backend sends OTP after successful
+         * email + password verification.
+         */
+
+        if (data.requiresOtp === true) {
+
+            localStorage.setItem("pendingLoginEmail", email);
+
+            showMessage(
+                message,
+                "OTP sent to your email. Please enter the OTP.",
+                "success"
+            );
+
+            showOtpSection();
+
+            startOtpTimer();
+
+        } else {
+
+            /*
+             * Fallback if backend directly returns user details.
+             */
+            saveUserSession(data);
+
+            redirectByRole(data.role);
+        }
+
+    } catch (error) {
+
+        console.error("Login error:", error);
+
+        showMessage(
+            message,
+            "Unable to connect to server. Please make sure Spring Boot is running.",
+            "error"
+        );
+
+    } finally {
+
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Login";
     }
 }
 
 
-// ==========================================
-// LOGIN
-// ==========================================
+// ===============================
+// SHOW OTP SECTION
+// ===============================
+function showOtpSection() {
 
-document
-    .getElementById("loginForm")
-    .addEventListener("submit", async function(event) {
+    const otpSection = document.getElementById("otpSection");
 
-        event.preventDefault();
+    if (otpSection) {
+        otpSection.style.display = "block";
+    }
 
-        const email =
-            document
-                .getElementById("loginEmail")
-                .value
-                .trim();
+    const otp = document.getElementById("otp");
 
-        const password =
-            document
-                .getElementById("loginPassword")
-                .value;
+    if (otp) {
+        otp.value = "";
+        otp.focus();
+    }
 
-        const message =
-            document.getElementById("loginMessage");
+    const resendOtpBtn = document.getElementById("resendOtpBtn");
 
-        const loginBtn =
-            document.getElementById("loginBtn");
+    if (resendOtpBtn) {
+        resendOtpBtn.disabled = true;
+    }
+
+    const otpTimer = document.getElementById("otpTimer");
+
+    if (otpTimer) {
+        otpTimer.innerText = "Resend OTP in 60 seconds";
+    }
+}
 
 
-        if (!email || !password) {
+// ===============================
+// OTP TIMER
+// ===============================
+function startOtpTimer() {
 
-            message.innerText =
-                "Please enter email and password.";
+    clearInterval(loginOtpTimer);
 
-            message.style.color = "red";
+    loginOtpSeconds = 60;
+
+    const resendOtpBtn = document.getElementById("resendOtpBtn");
+    const otpTimer = document.getElementById("otpTimer");
+
+    if (resendOtpBtn) {
+        resendOtpBtn.disabled = true;
+    }
+
+    loginOtpTimer = setInterval(function () {
+
+        loginOtpSeconds--;
+
+        if (otpTimer) {
+            otpTimer.innerText =
+                `Resend OTP in ${loginOtpSeconds} seconds`;
+        }
+
+        if (loginOtpSeconds <= 0) {
+
+            clearInterval(loginOtpTimer);
+
+            if (resendOtpBtn) {
+                resendOtpBtn.disabled = false;
+                resendOtpBtn.innerText = "🔄 Resend OTP";
+            }
+
+            if (otpTimer) {
+                otpTimer.innerText = "You can resend the OTP now.";
+            }
+        }
+
+    }, 1000);
+}
+
+
+// ===============================
+// RESEND LOGIN OTP
+// ===============================
+async function resendLoginOtp() {
+
+    const email =
+        localStorage.getItem("pendingLoginEmail") ||
+        document.getElementById("loginEmail").value.trim();
+
+    const otpMessage = document.getElementById("otpMessage");
+    const resendOtpBtn = document.getElementById("resendOtpBtn");
+
+    if (!email) {
+
+        showMessage(
+            otpMessage,
+            "Email not found. Please login again.",
+            "error"
+        );
+
+        return;
+    }
+
+    resendOtpBtn.disabled = true;
+    resendOtpBtn.innerText = "Sending...";
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/users/resend-otp`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            showMessage(
+                otpMessage,
+                data.message || "Failed to resend OTP.",
+                "error"
+            );
+
+            resendOtpBtn.disabled = false;
+            resendOtpBtn.innerText = "🔄 Resend OTP";
 
             return;
         }
 
+        showMessage(
+            otpMessage,
+            "New OTP sent successfully.",
+            "success"
+        );
 
-        message.innerText =
-            "Checking your credentials...";
+        const otp = document.getElementById("otp");
 
-        message.style.color = "#555";
-
-
-        loginBtn.disabled = true;
-
-        loginBtn.innerText =
-            "Sending OTP...";
-
-
-        try {
-
-            const response = await fetch(
-                API_URL + "/login",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        email: email,
-                        password: password
-                    })
-                }
-            );
-
-
-            const data =
-                await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    data.error ||
-                    "Invalid email or password"
-                );
-            }
-
-
-            loggedInEmail =
-                data.email || email;
-
-
-            message.innerText =
-                "✓ OTP sent successfully to your email.";
-
-            message.style.color =
-                "#218838";
-
-
-            document
-                .getElementById("otpSection")
-                .style.display = "block";
-
-
-            document
-                .getElementById("otpSection")
-                .scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
-
-
-            loginBtn.innerText =
-                "OTP Sent ✓";
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            message.innerText =
-                error.message;
-
-            message.style.color =
-                "red";
-
-
-            loginBtn.disabled =
-                false;
-
-            loginBtn.innerText =
-                "Login & Get OTP";
+        if (otp) {
+            otp.value = "";
+            otp.focus();
         }
 
-    });
+        startOtpTimer();
+
+    } catch (error) {
+
+        console.error("Resend OTP error:", error);
+
+        showMessage(
+            otpMessage,
+            "Unable to connect to server.",
+            "error"
+        );
+
+        resendOtpBtn.disabled = false;
+        resendOtpBtn.innerText = "🔄 Resend OTP";
+    }
+}
 
 
-// ==========================================
+// ===============================
 // VERIFY LOGIN OTP
-// ==========================================
+// ===============================
+async function verifyLoginOtp() {
 
-document
-    .getElementById("verifyOtpBtn")
-    .addEventListener("click", async function() {
+    const email =
+        localStorage.getItem("pendingLoginEmail") ||
+        document.getElementById("loginEmail").value.trim();
 
-        const otp =
-            document
-                .getElementById("otp")
-                .value
-                .trim();
+    const otp = document.getElementById("otp").value.trim();
+    const otpMessage = document.getElementById("otpMessage");
+    const verifyBtn = document.getElementById("verifyOtpBtn");
 
-        const otpMessage =
-            document.getElementById("otpMessage");
+    if (!email) {
 
-        const verifyBtn =
-            document.getElementById("verifyOtpBtn");
+        showMessage(
+            otpMessage,
+            "Email not found. Please login again.",
+            "error"
+        );
 
+        return;
+    }
 
-        if (!/^\d{6}$/.test(otp)) {
+    if (!otp) {
 
-            otpMessage.innerText =
-                "Please enter a valid 6-digit OTP.";
+        showMessage(
+            otpMessage,
+            "Please enter the OTP.",
+            "error"
+        );
 
-            otpMessage.style.color =
-                "red";
+        return;
+    }
+
+    if (otp.length !== 6) {
+
+        showMessage(
+            otpMessage,
+            "OTP must contain 6 digits.",
+            "error"
+        );
+
+        return;
+    }
+
+    verifyBtn.disabled = true;
+    verifyBtn.innerText = "Verifying...";
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/users/verify-otp`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    otp: otp
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            showMessage(
+                otpMessage,
+                data.message || "Invalid or expired OTP.",
+                "error"
+            );
 
             return;
         }
 
+        clearInterval(loginOtpTimer);
 
-        verifyBtn.disabled =
-            true;
+        localStorage.removeItem("pendingLoginEmail");
 
-        verifyBtn.innerText =
-            "Verifying...";
+        saveUserSession(data);
 
+        showMessage(
+            otpMessage,
+            "Login successful! Redirecting...",
+            "success"
+        );
 
-        otpMessage.innerText =
-            "Verifying OTP...";
+        setTimeout(function () {
+            redirectByRole(data.role);
+        }, 800);
 
-        otpMessage.style.color =
-            "#555";
+    } catch (error) {
 
+        console.error("OTP verification error:", error);
 
-        try {
+        showMessage(
+            otpMessage,
+            "Unable to connect to server.",
+            "error"
+        );
 
-            const response = await fetch(
-                API_URL + "/verify-otp",
-                {
-                    method: "POST",
+    } finally {
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        email: loggedInEmail,
-                        otp: otp
-                    })
-                }
-            );
-
-
-            const user =
-                await response.json();
+        verifyBtn.disabled = false;
+        verifyBtn.innerText = "Verify OTP";
+    }
+}
 
 
-            if (!response.ok) {
+// ===============================
+// SAVE USER SESSION
+// ===============================
+function saveUserSession(data) {
 
-                throw new Error(
-                    user.message ||
-                    user.error ||
-                    "Invalid OTP"
-                );
-            }
+    if (data.id !== undefined) {
+        localStorage.setItem("userId", data.id);
+    }
 
+    if (data.name) {
+        localStorage.setItem("userName", data.name);
+    }
 
-            // ======================================
-            // SAVE USER DETAILS
-            // ======================================
+    if (data.email) {
+        localStorage.setItem("userEmail", data.email);
+    }
 
-            localStorage.setItem(
-                "userId",
-                user.id
-            );
-
-            localStorage.setItem(
-                "userName",
-                user.name
-            );
-
-            localStorage.setItem(
-                "userRole",
-                user.role
-            );
-
-            localStorage.setItem(
-                "userEmail",
-                user.email
-            );
+    if (data.role) {
+        localStorage.setItem("userRole", data.role);
+    }
+}
 
 
-            // ======================================
-            // REMEMBER ME
-            // ======================================
+// ===============================
+// REDIRECT BASED ON ROLE
+// ===============================
+function redirectByRole(role) {
 
-            const rememberMe =
-                document.getElementById("rememberMe");
+    if (!role) {
+        window.location.href = "farmer.html";
+        return;
+    }
 
+    role = role.toUpperCase();
 
-            if (rememberMe && rememberMe.checked) {
+    if (role === "FARMER") {
 
-                localStorage.setItem(
-                    "rememberMe",
-                    "true"
-                );
+        window.location.href = "farmer.html";
 
-            } else {
+    } else if (role === "OWNER") {
 
-                localStorage.removeItem(
-                    "rememberMe"
-                );
+        window.location.href = "owner.html";
 
-            }
+    } else if (role === "ADMIN") {
 
+        window.location.href = "admin.html";
 
-            otpMessage.innerText =
-                "✓ OTP verified! Login successful.";
+    } else {
 
-            otpMessage.style.color =
-                "#218838";
-
-
-            // ======================================
-            // REDIRECT
-            // ======================================
-
-            setTimeout(() => {
-
-                if (user.role === "FARMER") {
-
-                    window.location.href =
-                        "farmer.html";
-
-                }
-
-                else if (user.role === "OWNER") {
-
-                    window.location.href =
-                        "owner.html";
-
-                }
-
-                else if (user.role === "ADMIN") {
-
-                    window.location.href =
-                        "admin.html";
-
-                }
-
-                else {
-
-                    window.location.href =
-                        "index.html";
-
-                }
-
-            }, 700);
+        window.location.href = "farmer.html";
+    }
+}
 
 
-        } catch (error) {
-
-            console.error(error);
-
-            otpMessage.innerText =
-                error.message;
-
-            otpMessage.style.color =
-                "red";
-
-
-            verifyBtn.disabled =
-                false;
-
-            verifyBtn.innerText =
-                "✓ Verify OTP & Login";
-        }
-
-    });
-
-
-// ==========================================
-// SHOW FORGOT PASSWORD
-// ==========================================
+// =====================================================
+// FORGOT PASSWORD
+// =====================================================
 
 function showForgotPassword() {
 
-    document
-        .getElementById("loginForm")
-        .style.display = "none";
+    const loginSection = document.getElementById("loginSection");
+    const forgotSection =
+        document.getElementById("forgotPasswordSection");
 
+    if (loginSection) {
+        loginSection.style.display = "none";
+    }
 
-    document
-        .getElementById("otpSection")
-        .style.display = "none";
+    if (forgotSection) {
+        forgotSection.style.display = "block";
+    }
 
-
-    document
-        .getElementById("forgotPasswordSection")
-        .style.display = "block";
-
-
-    document
-        .getElementById("forgotEmailStep")
-        .style.display = "block";
-
-
-    document
-        .getElementById("forgotOtpStep")
-        .style.display = "none";
-
-
-    document
-        .getElementById("newPasswordStep")
-        .style.display = "none";
-
-
-    document
-        .getElementById("forgotMessage")
-        .innerText = "";
-
-
-    const loginEmail =
-        document
-            .getElementById("loginEmail")
-            .value
-            .trim();
-
-
-    document
-        .getElementById("forgotEmail")
-        .value = loginEmail;
-
-
-    document
-        .getElementById("forgotPasswordSection")
-        .scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
+    resetForgotPasswordSteps();
 }
 
 
-// ==========================================
-// HIDE FORGOT PASSWORD
-// ==========================================
+// ===============================
+// SHOW LOGIN
+// ===============================
+function showLogin() {
 
-function hideForgotPassword() {
+    const loginSection = document.getElementById("loginSection");
+    const forgotSection =
+        document.getElementById("forgotPasswordSection");
 
-    document
-        .getElementById("forgotPasswordSection")
-        .style.display = "none";
+    if (forgotSection) {
+        forgotSection.style.display = "none";
+    }
 
-
-    document
-        .getElementById("loginForm")
-        .style.display = "block";
-
-
-    document
-        .getElementById("forgotMessage")
-        .innerText = "";
-
+    if (loginSection) {
+        loginSection.style.display = "block";
+    }
 }
 
 
-// ==========================================
+// ===============================
+// FORGOT PASSWORD STEP RESET
+// ===============================
+function resetForgotPasswordSteps() {
+
+    const emailStep = document.getElementById("forgotEmailStep");
+    const otpStep = document.getElementById("forgotOtpStep");
+    const passwordStep =
+        document.getElementById("newPasswordStep");
+
+    if (emailStep) {
+        emailStep.style.display = "block";
+    }
+
+    if (otpStep) {
+        otpStep.style.display = "none";
+    }
+
+    if (passwordStep) {
+        passwordStep.style.display = "none";
+    }
+
+    const forgotMessage =
+        document.getElementById("forgotMessage");
+
+    if (forgotMessage) {
+        forgotMessage.innerText = "";
+    }
+}
+
+
+// ===============================
 // SEND FORGOT PASSWORD OTP
-// ==========================================
+// ===============================
+async function sendForgotPasswordOtp() {
 
-document
-    .getElementById("sendForgotOtpBtn")
-    .addEventListener("click", async function() {
+    const email =
+        document.getElementById("forgotEmail").value.trim();
 
+    const message =
+        document.getElementById("forgotMessage");
 
-        const email =
-            document
-                .getElementById("forgotEmail")
-                .value
-                .trim();
+    const button =
+        document.getElementById("sendForgotOtpBtn");
 
+    if (!email) {
 
-        const message =
-            document
-                .getElementById("forgotMessage");
+        showMessage(
+            message,
+            "Please enter your registered email.",
+            "error"
+        );
 
+        return;
+    }
 
-        const button =
-            document
-                .getElementById("sendForgotOtpBtn");
+    button.disabled = true;
+    button.innerText = "Sending...";
 
+    try {
 
-        if (!email) {
+        const response = await fetch(
+            `${API_URL}/api/users/forgot-password`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            }
+        );
 
-            message.innerText =
-                "Please enter your registered email.";
+        const data = await response.json();
 
-            message.style.color =
-                "red";
+        if (!response.ok) {
 
-            return;
-        }
-
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-
-            message.innerText =
-                "Please enter a valid email address.";
-
-            message.style.color =
-                "red";
-
-            return;
-        }
-
-
-        forgotPasswordEmail =
-            email;
-
-
-        button.disabled =
-            true;
-
-        button.innerText =
-            "Sending OTP...";
-
-
-        message.innerText =
-            "Sending password reset OTP...";
-
-        message.style.color =
-            "#555";
-
-
-        try {
-
-            const response = await fetch(
-                API_URL + "/forgot-password",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        email: email
-                    })
-                }
+            showMessage(
+                message,
+                data.message || "Failed to send OTP.",
+                "error"
             );
 
-
-            const data =
-                await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    data.error ||
-                    "Unable to send OTP"
-                );
-            }
-
-
-            message.innerText =
-                "✓ Password reset OTP sent to your email.";
-
-            message.style.color =
-                "#218838";
-
-
-            document
-                .getElementById("forgotEmailStep")
-                .style.display = "none";
-
-
-            document
-                .getElementById("forgotOtpStep")
-                .style.display = "block";
-
-
-            document
-                .getElementById("forgotOtp")
-                .focus();
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            message.innerText =
-                error.message;
-
-            message.style.color =
-                "red";
-
-
-            button.disabled =
-                false;
-
-            button.innerText =
-                "📩 Send Reset OTP";
-        }
-
-    });
-
-
-// ==========================================
-// VERIFY FORGOT PASSWORD OTP
-// ==========================================
-
-document
-    .getElementById("verifyForgotOtpBtn")
-    .addEventListener("click", async function() {
-
-
-        const email =
-            document
-                .getElementById("forgotEmail")
-                .value
-                .trim();
-
-
-        const otp =
-            document
-                .getElementById("forgotOtp")
-                .value
-                .trim();
-
-
-        const message =
-            document
-                .getElementById("forgotMessage");
-
-
-        const button =
-            document
-                .getElementById("verifyForgotOtpBtn");
-
-
-        if (!/^\d{6}$/.test(otp)) {
-
-            message.innerText =
-                "Please enter a valid 6-digit OTP.";
-
-            message.style.color =
-                "red";
-
             return;
         }
 
+        localStorage.setItem("forgotPasswordEmail", email);
 
-        button.disabled =
-            true;
+        showMessage(
+            message,
+            "Password reset OTP sent to your email.",
+            "success"
+        );
 
-        button.innerText =
-            "Verifying...";
+        const emailStep =
+            document.getElementById("forgotEmailStep");
 
+        const otpStep =
+            document.getElementById("forgotOtpStep");
 
-        message.innerText =
-            "Verifying OTP...";
-
-        message.style.color =
-            "#555";
-
-
-        try {
-
-            const response = await fetch(
-                API_URL + "/verify-forgot-otp",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        email: email,
-                        otp: otp
-                    })
-                }
-            );
-
-
-            const data =
-                await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    data.error ||
-                    "Invalid OTP"
-                );
-            }
-
-
-            // Save OTP for reset-password API
-            forgotPasswordOtp =
-                otp;
-
-
-            message.innerText =
-                "✓ OTP verified. Create your new password.";
-
-            message.style.color =
-                "#218838";
-
-
-            document
-                .getElementById("forgotOtpStep")
-                .style.display = "none";
-
-
-            document
-                .getElementById("newPasswordStep")
-                .style.display = "block";
-
-
-            document
-                .getElementById("newPassword")
-                .focus();
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            message.innerText =
-                error.message;
-
-            message.style.color =
-                "red";
-
-
-            button.disabled =
-                false;
-
-            button.innerText =
-                "✓ Verify OTP";
+        if (emailStep) {
+            emailStep.style.display = "none";
         }
 
-    });
-
-
-// ==========================================
-// RESET PASSWORD
-// ==========================================
-
-document
-    .getElementById("resetPasswordBtn")
-    .addEventListener("click", async function() {
-
-
-        const email =
-            document
-                .getElementById("forgotEmail")
-                .value
-                .trim();
-
-
-        const otp =
-            forgotPasswordOtp ||
-            document
-                .getElementById("forgotOtp")
-                .value
-                .trim();
-
-
-        const newPassword =
-            document
-                .getElementById("newPassword")
-                .value;
-
-
-        const confirmPassword =
-            document
-                .getElementById("confirmNewPassword")
-                .value;
-
-
-        const message =
-            document
-                .getElementById("forgotMessage");
-
-
-        const button =
-            document
-                .getElementById("resetPasswordBtn");
-
-
-        if (!newPassword || !confirmPassword) {
-
-            message.innerText =
-                "Please enter both password fields.";
-
-            message.style.color =
-                "red";
-
-            return;
+        if (otpStep) {
+            otpStep.style.display = "block";
         }
 
+        const forgotOtp =
+            document.getElementById("forgotOtp");
 
-        if (newPassword.length < 4) {
-
-            message.innerText =
-                "Password must contain at least 4 characters.";
-
-            message.style.color =
-                "red";
-
-            return;
+        if (forgotOtp) {
+            forgotOtp.value = "";
+            forgotOtp.focus();
         }
 
+    } catch (error) {
 
-        if (newPassword !== confirmPassword) {
+        console.error("Forgot password error:", error);
 
-            message.innerText =
-                "Passwords do not match.";
+        showMessage(
+            message,
+            "Unable to connect to server.",
+            "error"
+        );
 
-            message.style.color =
-                "red";
+    } finally {
 
-            return;
-        }
-
-
-        if (!otp) {
-
-            message.innerText =
-                "OTP verification is required.";
-
-            message.style.color =
-                "red";
-
-            return;
-        }
-
-
-        button.disabled =
-            true;
-
-        button.innerText =
-            "Resetting Password...";
-
-
-        message.innerText =
-            "Updating your password...";
-
-        message.style.color =
-            "#555";
-
-
-        try {
-
-            const response = await fetch(
-                API_URL + "/reset-password",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        email: email,
-
-                        otp: otp,
-
-                        newPassword: newPassword
-
-                    })
-                }
-            );
-
-
-            const data =
-                await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    data.error ||
-                    "Password reset failed"
-                );
-            }
-
-
-            message.innerText =
-                "✓ Password reset successful! You can now login.";
-
-            message.style.color =
-                "#218838";
-
-
-            document
-                .getElementById("newPassword")
-                .value = "";
-
-
-            document
-                .getElementById("confirmNewPassword")
-                .value = "";
-
-
-            forgotPasswordOtp = "";
-
-
-            setTimeout(function() {
-
-                hideForgotPassword();
-
-
-                document
-                    .getElementById("loginEmail")
-                    .value = email;
-
-
-                document
-                    .getElementById("loginPassword")
-                    .value = "";
-
-
-                const loginBtn =
-                    document.getElementById("loginBtn");
-
-
-                loginBtn.disabled =
-                    false;
-
-
-                loginBtn.innerText =
-                    "Login & Get OTP";
-
-
-            }, 1500);
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            message.innerText =
-                error.message;
-
-            message.style.color =
-                "red";
-
-
-            button.disabled =
-                false;
-
-            button.innerText =
-                "🔒 Reset Password";
-        }
-
-    });
-
-
-// ==========================================
-// REGISTER
-// ==========================================
-
-document
-    .getElementById("registerForm")
-    .addEventListener("submit", async function(event) {
-
-        event.preventDefault();
-
-
-        const name =
-            document
-                .getElementById("registerName")
-                .value
-                .trim();
-
-
-        const email =
-            document
-                .getElementById("registerEmail")
-                .value
-                .trim();
-
-
-        const password =
-            document
-                .getElementById("registerPassword")
-                .value;
-
-
-        const confirmPassword =
-            document
-                .getElementById("confirmPassword")
-                .value;
-
-
-        const role =
-            document
-                .getElementById("registerRole")
-                .value;
-
-
-        const message =
-            document
-                .getElementById("registerMessage");
-
-
-        if (!name || !email || !password || !confirmPassword || !role) {
-
-            message.innerText =
-                "Please fill all fields.";
-
-            message.style.color =
-                "red";
-
-            return;
-        }
-
-
-        if (password !== confirmPassword) {
-
-            message.innerText =
-                "Passwords do not match.";
-
-            message.style.color =
-                "red";
-
-            return;
-        }
-
-
-        message.innerText =
-            "Creating your account...";
-
-        message.style.color =
-            "#555";
-
-
-        try {
-
-            const response = await fetch(
-                API_URL,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        name: name,
-
-                        email: email,
-
-                        password: password,
-
-                        role: role
-
-                    })
-                }
-            );
-
-
-            if (!response.ok) {
-
-                const errorText =
-                    await response.text();
-
-
-                throw new Error(
-                    errorText ||
-                    "Registration failed"
-                );
-            }
-
-
-            const user =
-                await response.json();
-
-
-            message.innerText =
-                "✓ Registration successful! Welcome email sent.";
-
-            message.style.color =
-                "#218838";
-
-
-            document
-                .getElementById("registerForm")
-                .reset();
-
-
-            document
-                .getElementById("loginEmail")
-                .value =
-                user.email;
-
-
-            setTimeout(function() {
-
-                scrollToLogin();
-
-            }, 1000);
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            message.innerText =
-                error.message;
-
-            message.style.color =
-                "red";
-        }
-
-    });
-
-
-// ==========================================
-// SCROLL TO REGISTER
-// ==========================================
-
-function scrollToRegister() {
-
-    document
-        .getElementById("registerSection")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
-
+        button.disabled = false;
+        button.innerText = "Send OTP";
+    }
 }
 
 
-// ==========================================
-// SCROLL TO LOGIN
-// ==========================================
+// ===============================
+// VERIFY FORGOT PASSWORD OTP
+// ===============================
+async function verifyForgotOtp() {
 
-function scrollToLogin() {
+    const email =
+        localStorage.getItem("forgotPasswordEmail") ||
+        document.getElementById("forgotEmail").value.trim();
 
-    window.scrollTo({
+    const otp =
+        document.getElementById("forgotOtp").value.trim();
 
-        top: 0,
+    const message =
+        document.getElementById("forgotMessage");
 
-        behavior: "smooth"
+    const button =
+        document.getElementById("verifyForgotOtpBtn");
 
-    });
+    if (!email) {
 
+        showMessage(
+            message,
+            "Email not found.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!otp) {
+
+        showMessage(
+            message,
+            "Please enter the OTP.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (otp.length !== 6) {
+
+        showMessage(
+            message,
+            "OTP must contain 6 digits.",
+            "error"
+        );
+
+        return;
+    }
+
+    button.disabled = true;
+    button.innerText = "Verifying...";
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/users/verify-forgot-otp`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    otp: otp
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            showMessage(
+                message,
+                data.message || "Invalid or expired OTP.",
+                "error"
+            );
+
+            return;
+        }
+
+        localStorage.setItem("forgotPasswordOtp", otp);
+
+        showMessage(
+            message,
+            "OTP verified. Enter your new password.",
+            "success"
+        );
+
+        const otpStep =
+            document.getElementById("forgotOtpStep");
+
+        const passwordStep =
+            document.getElementById("newPasswordStep");
+
+        if (otpStep) {
+            otpStep.style.display = "none";
+        }
+
+        if (passwordStep) {
+            passwordStep.style.display = "block";
+        }
+
+    } catch (error) {
+
+        console.error("Forgot OTP verification error:", error);
+
+        showMessage(
+            message,
+            "Unable to connect to server.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.innerText = "Verify OTP";
+    }
+}
+
+
+// ===============================
+// RESET PASSWORD
+// ===============================
+async function resetPassword() {
+
+    const email =
+        localStorage.getItem("forgotPasswordEmail");
+
+    const otp =
+        localStorage.getItem("forgotPasswordOtp");
+
+    const newPassword =
+        document.getElementById("newPassword").value;
+
+    const confirmPassword =
+        document.getElementById("confirmNewPassword").value;
+
+    const message =
+        document.getElementById("forgotMessage");
+
+    const button =
+        document.getElementById("resetPasswordBtn");
+
+    if (!email || !otp) {
+
+        showMessage(
+            message,
+            "OTP session expired. Please try again.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!newPassword || !confirmPassword) {
+
+        showMessage(
+            message,
+            "Please enter both password fields.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (newPassword.length < 6) {
+
+        showMessage(
+            message,
+            "Password must contain at least 6 characters.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+
+        showMessage(
+            message,
+            "Passwords do not match.",
+            "error"
+        );
+
+        return;
+    }
+
+    button.disabled = true;
+    button.innerText = "Updating...";
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/users/reset-password`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    otp: otp,
+                    newPassword: newPassword
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            showMessage(
+                message,
+                data.message || "Failed to reset password.",
+                "error"
+            );
+
+            return;
+        }
+
+        showMessage(
+            message,
+            "Password reset successful. Please login.",
+            "success"
+        );
+
+        localStorage.removeItem("forgotPasswordEmail");
+        localStorage.removeItem("forgotPasswordOtp");
+
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmNewPassword").value = "";
+
+        setTimeout(function () {
+            showLogin();
+        }, 1500);
+
+    } catch (error) {
+
+        console.error("Reset password error:", error);
+
+        showMessage(
+            message,
+            "Unable to connect to server.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.innerText = "Reset Password";
+    }
+}
+
+
+// =====================================================
+// REGISTER
+// =====================================================
+
+async function registerUser(event) {
+
+    event.preventDefault();
+
+    const name =
+        document.getElementById("registerName").value.trim();
+
+    const email =
+        document.getElementById("registerEmail").value.trim();
+
+    const password =
+        document.getElementById("registerPassword").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+    const role =
+        document.getElementById("registerRole").value;
+
+    const message =
+        document.getElementById("registerMessage");
+
+    if (!name || !email || !password || !confirmPassword || !role) {
+
+        showMessage(
+            message,
+            "Please fill all fields.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (password.length < 6) {
+
+        showMessage(
+            message,
+            "Password must contain at least 6 characters.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (password !== confirmPassword) {
+
+        showMessage(
+            message,
+            "Passwords do not match.",
+            "error"
+        );
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/users`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password,
+                    role: role
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            showMessage(
+                message,
+                data.message || "Registration failed.",
+                "error"
+            );
+
+            return;
+        }
+
+        showMessage(
+            message,
+            "Registration successful! Please login.",
+            "success"
+        );
+
+        document.getElementById("registerForm").reset();
+
+        setTimeout(function () {
+
+            const registerSection =
+                document.getElementById("registerSection");
+
+            const loginSection =
+                document.getElementById("loginSection");
+
+            if (registerSection) {
+                registerSection.style.display = "none";
+            }
+
+            if (loginSection) {
+                loginSection.style.display = "block";
+            }
+
+        }, 1200);
+
+    } catch (error) {
+
+        console.error("Registration error:", error);
+
+        showMessage(
+            message,
+            "Unable to connect to server.",
+            "error"
+        );
+    }
+}
+
+
+// =====================================================
+// LOGOUT
+// =====================================================
+
+function logout() {
+
+    clearInterval(loginOtpTimer);
+
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+
+    localStorage.removeItem("pendingLoginEmail");
+
+    localStorage.removeItem("forgotPasswordEmail");
+    localStorage.removeItem("forgotPasswordOtp");
+
+    window.location.href = "login.html";
+}
+
+
+// =====================================================
+// MESSAGE FUNCTION
+// =====================================================
+
+function showMessage(element, text, type) {
+
+    if (!element) {
+        return;
+    }
+
+    element.innerText = text;
+
+    element.className = "";
+
+    if (type === "success") {
+        element.classList.add("success-message");
+    } else if (type === "error") {
+        element.classList.add("error-message");
+    } else {
+        element.classList.add("info-message");
+    }
+}
+
+
+// =====================================================
+// REGISTER SECTION TOGGLE
+// =====================================================
+
+function showRegister() {
+
+    const loginSection =
+        document.getElementById("loginSection");
+
+    const registerSection =
+        document.getElementById("registerSection");
+
+    const forgotSection =
+        document.getElementById("forgotPasswordSection");
+
+    if (loginSection) {
+        loginSection.style.display = "none";
+    }
+
+    if (forgotSection) {
+        forgotSection.style.display = "none";
+    }
+
+    if (registerSection) {
+        registerSection.style.display = "block";
+    }
+}
+
+
+// =====================================================
+// BACK TO LOGIN FROM REGISTER
+// =====================================================
+
+function backToLogin() {
+
+    const registerSection =
+        document.getElementById("registerSection");
+
+    const loginSection =
+        document.getElementById("loginSection");
+
+    if (registerSection) {
+        registerSection.style.display = "none";
+    }
+
+    if (loginSection) {
+        loginSection.style.display = "block";
+    }
 }
