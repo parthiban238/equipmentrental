@@ -5,17 +5,26 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendWelcomeEmail(String toEmail, String name) {
+    // ==========================================
+    // WELCOME EMAIL
+    // ==========================================
+
+    public void sendWelcomeEmail(
+            String toEmail,
+            String name) {
 
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(toEmail);
+
         message.setSubject(
                 "Welcome to Agricultural Equipment Rental System"
         );
@@ -33,6 +42,11 @@ public class EmailService {
         mailSender.send(message);
     }
 
+
+    // ==========================================
+    // LOGIN OTP EMAIL
+    // ==========================================
+
     public void sendOtpEmail(
             String toEmail,
             String name,
@@ -41,6 +55,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(toEmail);
+
         message.setSubject(
                 "Login OTP - Agricultural Equipment Rental System"
         );
@@ -59,6 +74,11 @@ public class EmailService {
         mailSender.send(message);
     }
 
+
+    // ==========================================
+    // FORGOT PASSWORD OTP
+    // ==========================================
+
     public void sendForgotPasswordOtpEmail(
             String toEmail,
             String name,
@@ -67,6 +87,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(toEmail);
+
         message.setSubject(
                 "Password Reset OTP - Agricultural Equipment Rental System"
         );
@@ -88,6 +109,11 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+
+    // ==========================================
+    // COMPLAINT EMAIL TO OWNER
+    // ==========================================
 
     public void sendComplaintEmail(
             String toEmail,
@@ -125,6 +151,104 @@ public class EmailService {
                 "and review the complaint.\n\n" +
 
                 "Thank you,\n" +
+                "Agricultural Equipment Rental System"
+        );
+
+        mailSender.send(message);
+    }
+
+
+    // ==========================================
+    // BOOKING APPROVED EMAIL TO FARMER
+    // ==========================================
+
+    public void sendBookingApprovedEmail(
+            String toEmail,
+            String farmerName,
+            Long rentalId,
+            String equipmentName,
+            LocalDate startDate,
+            LocalDate endDate,
+            double totalAmount) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(toEmail);
+
+        message.setSubject(
+                "Booking Approved - Agricultural Equipment Rental System"
+        );
+
+        message.setText(
+                "Hello " + farmerName + ",\n\n" +
+
+                "Good news! Your equipment booking has been APPROVED " +
+                "by the equipment owner.\n\n" +
+
+                "Booking Details:\n\n" +
+
+                "Booking ID: " + rentalId + "\n" +
+                "Equipment: " + equipmentName + "\n" +
+                "Start Date: " + startDate + "\n" +
+                "End Date: " + endDate + "\n" +
+                "Total Amount: Rs. " + totalAmount + "\n\n" +
+
+                "Booking Status: APPROVED\n\n" +
+
+                "You can login to the Agricultural Equipment Rental System " +
+                "to view your booking details.\n\n" +
+
+                "Thank you for using our service.\n\n" +
+
+                "Agricultural Equipment Rental System"
+        );
+
+        mailSender.send(message);
+    }
+
+
+    // ==========================================
+    // BOOKING REJECTED EMAIL TO FARMER
+    // ==========================================
+
+    public void sendBookingRejectedEmail(
+            String toEmail,
+            String farmerName,
+            Long rentalId,
+            String equipmentName,
+            LocalDate startDate,
+            LocalDate endDate,
+            double totalAmount) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(toEmail);
+
+        message.setSubject(
+                "Booking Rejected - Agricultural Equipment Rental System"
+        );
+
+        message.setText(
+                "Hello " + farmerName + ",\n\n" +
+
+                "Your equipment booking request has been REJECTED " +
+                "by the equipment owner.\n\n" +
+
+                "Booking Details:\n\n" +
+
+                "Booking ID: " + rentalId + "\n" +
+                "Equipment: " + equipmentName + "\n" +
+                "Start Date: " + startDate + "\n" +
+                "End Date: " + endDate + "\n" +
+                "Total Amount: Rs. " + totalAmount + "\n\n" +
+
+                "Booking Status: REJECTED\n\n" +
+
+                "You can login to the Agricultural Equipment Rental System " +
+                "to view your booking details and make another booking.\n\n" +
+
+                "Thank you,\n" +
+
                 "Agricultural Equipment Rental System"
         );
 
