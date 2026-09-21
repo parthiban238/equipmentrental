@@ -13,6 +13,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+
     // ==========================================
     // WELCOME EMAIL
     // ==========================================
@@ -112,6 +113,112 @@ public class EmailService {
 
 
     // ==========================================
+    // BOOKING CREATED / BOOKING SUCCESS EMAIL
+    // TO FARMER
+    // ==========================================
+
+    public void sendBookingCreatedEmail(
+            String toEmail,
+            String farmerName,
+            Long rentalId,
+            String equipmentName,
+            LocalDate startDate,
+            LocalDate endDate,
+            double totalAmount) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(toEmail);
+
+        message.setSubject(
+                "Booking Successful - Agricultural Equipment Rental System"
+        );
+
+        message.setText(
+                "Hello " + farmerName + ",\n\n" +
+
+                "Your agricultural equipment booking has been " +
+                "successfully created.\n\n" +
+
+                "Booking Details:\n\n" +
+
+                "Booking ID: " + rentalId + "\n" +
+                "Equipment: " + equipmentName + "\n" +
+                "Start Date: " + startDate + "\n" +
+                "End Date: " + endDate + "\n" +
+                "Total Amount: Rs. " + totalAmount + "\n\n" +
+
+                "Booking Status: PENDING\n\n" +
+
+                "Your booking request has been sent to the equipment owner " +
+                "for approval.\n\n" +
+
+                "You will receive another email when the owner approves " +
+                "or rejects your booking.\n\n" +
+
+                "Thank you for using the Agricultural Equipment Rental System.\n\n" +
+
+                "Regards,\n" +
+                "Agricultural Equipment Rental System"
+        );
+
+        mailSender.send(message);
+    }
+
+
+    // ==========================================
+    // NEW BOOKING REQUEST EMAIL
+    // TO OWNER
+    // ==========================================
+
+    public void sendBookingRequestToOwnerEmail(
+            String toEmail,
+            String ownerName,
+            Long rentalId,
+            String equipmentName,
+            LocalDate startDate,
+            LocalDate endDate,
+            double totalAmount) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(toEmail);
+
+        message.setSubject(
+                "New Booking Request - Agricultural Equipment Rental System"
+        );
+
+        message.setText(
+                "Hello " + ownerName + ",\n\n" +
+
+                "You have received a new booking request " +
+                "for your agricultural equipment.\n\n" +
+
+                "Booking Details:\n\n" +
+
+                "Booking ID: " + rentalId + "\n" +
+                "Equipment: " + equipmentName + "\n" +
+                "Start Date: " + startDate + "\n" +
+                "End Date: " + endDate + "\n" +
+                "Total Amount: Rs. " + totalAmount + "\n\n" +
+
+                "Booking Status: PENDING\n\n" +
+
+                "Please login to the Agricultural Equipment Rental System " +
+                "and review this booking request.\n\n" +
+
+                "You can approve or reject the booking " +
+                "from your Owner Dashboard.\n\n" +
+
+                "Thank you,\n" +
+                "Agricultural Equipment Rental System"
+        );
+
+        mailSender.send(message);
+    }
+
+
+    // ==========================================
     // COMPLAINT EMAIL TO OWNER
     // ==========================================
 
@@ -134,6 +241,7 @@ public class EmailService {
 
         message.setText(
                 "Hello " + ownerName + ",\n\n" +
+
                 "A new complaint has been reported by a farmer " +
                 "regarding your agricultural equipment.\n\n" +
 
@@ -247,7 +355,7 @@ public class EmailService {
                 "You can login to the Agricultural Equipment Rental System " +
                 "to view your booking details and make another booking.\n\n" +
 
-                "Thank you,\n" +
+                "Thank you,\n\n" +
 
                 "Agricultural Equipment Rental System"
         );

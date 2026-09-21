@@ -1,4 +1,3 @@
-```java
 package equipmentrental.controller;
 
 import equipmentrental.entity.Equipment;
@@ -40,13 +39,22 @@ public class RentalController {
         this.emailService = emailService;
     }
 
-    // Get all rentals
+
+    // ==========================================
+    // GET ALL RENTALS
+    // ==========================================
+
     @GetMapping
     public List<Rental> getAllRentals() {
         return repository.findAll();
     }
 
-    // Create rental
+
+    // ==========================================
+    // CREATE RENTAL
+    // FARMER EMAIL + OWNER EMAIL
+    // ==========================================
+
     @PostMapping
     public Rental createRental(@RequestBody Rental rental) {
 
@@ -56,6 +64,8 @@ public class RentalController {
                         new RuntimeException(
                                 "Equipment not found with id: "
                                         + rental.getEquipmentId()));
+
+        // Check dates
 
         if (rental.getStartDate() == null ||
                 rental.getEndDate() == null) {
@@ -85,11 +95,17 @@ public class RentalController {
                     "End date cannot be before start date");
         }
 
+
+        // Check equipment availability
+
         if (!equipment.isAvailable()) {
 
             throw new RuntimeException(
                     "Equipment is currently unavailable");
         }
+
+
+        // Check existing bookings
 
         List<String> activeStatuses =
                 List.of("PENDING", "APPROVED");
@@ -115,10 +131,16 @@ public class RentalController {
             }
         }
 
+
+        // Calculate rental days
+
         long rentalDays =
                 ChronoUnit.DAYS.between(
                         rental.getStartDate(),
                         rental.getEndDate()) + 1;
+
+
+        // Calculate total amount
 
         double totalAmount =
                 rentalDays * equipment.getPricePerDay();
@@ -127,10 +149,108 @@ public class RentalController {
 
         rental.setStatus("PENDING");
 
-        return repository.save(rental);
+
+        // ==========================================
+        // SAVE RENTAL
+        // ==========================================
+
+        Rental savedRental =
+                repository.save(rental);
+
+
+        // ==========================================
+        // FARMER BOOKING CONFIRMATION EMAIL
+        // ==========================================
+
+        userRepository.findById(savedRental.getUserId())
+                .ifPresentOrElse(
+
+                        farmer -> {
+
+                            try {
+
+                                emailService.sendBookingCreatedEmail(
+                                        farmer.getEmail(),
+                                        farmer.getName(),
+                                        savedRental.getId(),
+                                        equipment.getName(),
+                                        savedRental.getStartDate(),
+                                        savedRental.getEndDate(),
+                                        savedRental.getTotalAmount()
+                                );
+
+                                System.out.println(
+                                        "Farmer booking email sent successfully");
+
+                            } catch (Exception e) {
+
+                                System.out.println(
+                                        "Farmer booking email failed: "
+                                                + e.getMessage());
+                            }
+                        },
+
+                        () -> {
+
+                            System.out.println(
+                                    "FARMER NOT FOUND FOR USER ID: "
+                                            + savedRental.getUserId());
+                        }
+                );
+
+
+        // ==========================================
+        // OWNER BOOKING REQUEST EMAIL
+        // ==========================================
+
+        if (equipment.getOwnerId() != null) {
+
+            userRepository.findById(equipment.getOwnerId())
+                    .ifPresentOrElse(
+
+                            owner -> {
+
+                                try {
+
+                                    emailService.sendBookingRequestToOwnerEmail(
+                                            owner.getEmail(),
+                                            owner.getName(),
+                                            savedRental.getId(),
+                                            equipment.getName(),
+                                            savedRental.getStartDate(),
+                                            savedRental.getEndDate(),
+                                            savedRental.getTotalAmount()
+                                    );
+
+                                    System.out.println(
+                                            "Owner booking request email sent successfully");
+
+                                } catch (Exception e) {
+
+                                    System.out.println(
+                                            "Owner booking email failed: "
+                                                    + e.getMessage());
+                                }
+                            },
+
+                            () -> {
+
+                                System.out.println(
+                                        "OWNER NOT FOUND FOR OWNER ID: "
+                                                + equipment.getOwnerId());
+                            }
+                    );
+        }
+
+
+        return savedRental;
     }
 
-    // Get rental by ID
+
+    // ==========================================
+    // GET RENTAL BY ID
+    // ==========================================
+
     @GetMapping("/id/{id}")
     public Rental getRentalById(
             @PathVariable Long id) {
@@ -141,7 +261,11 @@ public class RentalController {
                                 "Rental not found with id: " + id));
     }
 
-    // Get rentals by user
+
+    // ==========================================
+    // GET RENTALS BY USER
+    // ==========================================
+
     @GetMapping("/user/{userId}")
     public List<Rental> getRentalsByUser(
             @PathVariable Long userId) {
@@ -149,7 +273,11 @@ public class RentalController {
         return repository.findByUserId(userId);
     }
 
-    // Get rentals by owner
+
+    // ==========================================
+    // GET RENTALS BY OWNER
+    // ==========================================
+
     @GetMapping("/owner/{ownerId}")
     public List<Rental> getRentalsByOwner(
             @PathVariable Long ownerId) {
@@ -163,19 +291,29 @@ public class RentalController {
                         .collect(Collectors.toList());
 
         if (equipmentIds.isEmpty()) {
+
             return List.of();
         }
 
         return repository.findByEquipmentIdIn(equipmentIds);
     }
 
-    // Get pending rentals
+
+    // ==========================================
+    // GET PENDING RENTALS
+    // ==========================================
+
     @GetMapping("/pending")
     public List<Rental> getPendingRentals() {
+
         return repository.findByStatus("PENDING");
     }
 
-    // Get rentals by status
+
+    // ==========================================
+    // GET RENTALS BY STATUS
+    // ==========================================
+
     @GetMapping("/status/{status}")
     public List<Rental> getRentalsByStatus(
             @PathVariable String status) {
@@ -183,7 +321,11 @@ public class RentalController {
         return repository.findByStatus(status);
     }
 
-    // Check equipment availability
+
+    // ==========================================
+    // CHECK AVAILABILITY
+    // ==========================================
+
     @GetMapping("/availability")
     public String checkAvailability(
             @RequestParam Long equipmentId,
@@ -196,17 +338,21 @@ public class RentalController {
         LocalDate end =
                 LocalDate.parse(endDate);
 
-        LocalDate today = LocalDate.now();
+        LocalDate today =
+                LocalDate.now();
 
         if (start.isBefore(today)) {
+
             return "Booking cannot be made for a past date";
         }
 
         if (end.isBefore(today)) {
+
             return "End date cannot be in the past";
         }
 
         if (end.isBefore(start)) {
+
             return "End date cannot be before start date";
         }
 
@@ -226,6 +372,7 @@ public class RentalController {
                     !end.isBefore(existing.getStartDate());
 
             if (overlap) {
+
                 return "Equipment is NOT available for these dates";
             }
         }
@@ -233,7 +380,11 @@ public class RentalController {
         return "Equipment is AVAILABLE for these dates";
     }
 
-    // Update rental
+
+    // ==========================================
+    // UPDATE RENTAL
+    // ==========================================
+
     @PutMapping("/id/{id}")
     public Rental updateRental(
             @PathVariable Long id,
@@ -244,7 +395,8 @@ public class RentalController {
                         new RuntimeException(
                                 "Rental not found with id: " + id));
 
-        LocalDate today = LocalDate.now();
+        LocalDate today =
+                LocalDate.now();
 
         if (updatedRental.getStartDate() == null ||
                 updatedRental.getEndDate() == null) {
@@ -253,13 +405,15 @@ public class RentalController {
                     "Start date and end date are required");
         }
 
-        if (updatedRental.getStartDate().isBefore(today)) {
+        if (updatedRental.getStartDate()
+                .isBefore(today)) {
 
             throw new RuntimeException(
                     "Start date cannot be in the past");
         }
 
-        if (updatedRental.getEndDate().isBefore(today)) {
+        if (updatedRental.getEndDate()
+                .isBefore(today)) {
 
             throw new RuntimeException(
                     "End date cannot be in the past");
@@ -272,44 +426,48 @@ public class RentalController {
                     "End date cannot be before start date");
         }
 
-        rental.setUserId(updatedRental.getUserId());
-        rental.setEquipmentId(updatedRental.getEquipmentId());
-        rental.setStartDate(updatedRental.getStartDate());
-        rental.setEndDate(updatedRental.getEndDate());
-        rental.setTotalAmount(updatedRental.getTotalAmount());
-        rental.setStatus(updatedRental.getStatus());
+        rental.setUserId(
+                updatedRental.getUserId());
+
+        rental.setEquipmentId(
+                updatedRental.getEquipmentId());
+
+        rental.setStartDate(
+                updatedRental.getStartDate());
+
+        rental.setEndDate(
+                updatedRental.getEndDate());
+
+        rental.setTotalAmount(
+                updatedRental.getTotalAmount());
+
+        rental.setStatus(
+                updatedRental.getStatus());
 
         return repository.save(rental);
     }
 
-    // Approve rental
+
+    // ==========================================
+    // APPROVE RENTAL
+    // ==========================================
+
     @PutMapping("/approve/{id}")
     public Rental approveRental(
             @PathVariable Long id) {
-
-        System.out.println(
-                "========== APPROVE RENTAL CALLED ==========");
-
-        System.out.println(
-                "Rental ID: " + id);
 
         Rental rental = repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Rental not found with id: " + id));
 
-        System.out.println(
-                "Farmer User ID: " + rental.getUserId());
-
-        Equipment equipment = equipmentRepository
-                .findById(rental.getEquipmentId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Equipment not found with id: "
-                                        + rental.getEquipmentId()));
-
-        System.out.println(
-                "Equipment: " + equipment.getName());
+        Equipment equipment =
+                equipmentRepository
+                        .findById(rental.getEquipmentId())
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Equipment not found with id: "
+                                                + rental.getEquipmentId()));
 
         if (!equipment.isAvailable()) {
 
@@ -323,31 +481,17 @@ public class RentalController {
 
         equipmentRepository.save(equipment);
 
-        Rental savedRental = repository.save(rental);
+        Rental savedRental =
+                repository.save(rental);
 
-        System.out.println(
-                "Rental status updated to APPROVED");
 
-        // ==========================================
-        // FIND FARMER AND SEND APPROVAL EMAIL
-        // ==========================================
+        // Send approval email to farmer
 
-        userRepository.findById(rental.getUserId())
+        userRepository.findById(
+                        rental.getUserId())
                 .ifPresentOrElse(
 
                         farmer -> {
-
-                            System.out.println(
-                                    "Farmer Found: "
-                                            + farmer.getName());
-
-                            System.out.println(
-                                    "Farmer Email: "
-                                            + farmer.getEmail());
-
-                            System.out.println(
-                                    "Farmer Role: "
-                                            + farmer.getRole());
 
                             try {
 
@@ -367,17 +511,8 @@ public class RentalController {
                             } catch (Exception e) {
 
                                 System.out.println(
-                                        "Booking approval email failed");
-
-                                System.out.println(
-                                        "Farmer Email: "
-                                                + farmer.getEmail());
-
-                                System.out.println(
-                                        "Error: "
+                                        "Booking approval email failed: "
                                                 + e.getMessage());
-
-                                e.printStackTrace();
                             }
                         },
 
@@ -392,49 +527,38 @@ public class RentalController {
         return savedRental;
     }
 
-    // Reject rental
+
+    // ==========================================
+    // REJECT RENTAL
+    // ==========================================
+
     @PutMapping("/reject/{id}")
     public Rental rejectRental(
             @PathVariable Long id) {
-
-        System.out.println(
-                "========== REJECT RENTAL CALLED ==========");
-
-        System.out.println(
-                "Rental ID: " + id);
 
         Rental rental = repository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Rental not found with id: " + id));
 
-        System.out.println(
-                "Farmer User ID: " + rental.getUserId());
-
         rental.setStatus("REJECTED");
 
-        Rental savedRental = repository.save(rental);
+        Rental savedRental =
+                repository.save(rental);
 
-        Equipment equipment = equipmentRepository
-                .findById(rental.getEquipmentId())
-                .orElse(null);
+        Equipment equipment =
+                equipmentRepository
+                        .findById(rental.getEquipmentId())
+                        .orElse(null);
 
-        userRepository.findById(rental.getUserId())
+
+        // Send rejection email to farmer
+
+        userRepository.findById(
+                        rental.getUserId())
                 .ifPresentOrElse(
 
                         farmer -> {
-
-                            System.out.println(
-                                    "Farmer Found: "
-                                            + farmer.getName());
-
-                            System.out.println(
-                                    "Farmer Email: "
-                                            + farmer.getEmail());
-
-                            System.out.println(
-                                    "Farmer Role: "
-                                            + farmer.getRole());
 
                             try {
 
@@ -459,17 +583,8 @@ public class RentalController {
                             } catch (Exception e) {
 
                                 System.out.println(
-                                        "Booking rejection email failed");
-
-                                System.out.println(
-                                        "Farmer Email: "
-                                                + farmer.getEmail());
-
-                                System.out.println(
-                                        "Error: "
+                                        "Booking rejection email failed: "
                                                 + e.getMessage());
-
-                                e.printStackTrace();
                             }
                         },
 
@@ -484,7 +599,11 @@ public class RentalController {
         return savedRental;
     }
 
-    // Complete rental
+
+    // ==========================================
+    // COMPLETE RENTAL
+    // ==========================================
+
     @PutMapping("/complete/{id}")
     public Rental completeRental(
             @PathVariable Long id) {
@@ -494,12 +613,13 @@ public class RentalController {
                         new RuntimeException(
                                 "Rental not found with id: " + id));
 
-        Equipment equipment = equipmentRepository
-                .findById(rental.getEquipmentId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Equipment not found with id: "
-                                        + rental.getEquipmentId()));
+        Equipment equipment =
+                equipmentRepository
+                        .findById(rental.getEquipmentId())
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Equipment not found with id: "
+                                                + rental.getEquipmentId()));
 
         rental.setStatus("COMPLETED");
 
@@ -510,7 +630,11 @@ public class RentalController {
         return repository.save(rental);
     }
 
-    // Delete rental
+
+    // ==========================================
+    // DELETE RENTAL
+    // ==========================================
+
     @DeleteMapping("/id/{id}")
     public String deleteRental(
             @PathVariable Long id) {
@@ -525,4 +649,3 @@ public class RentalController {
         return "Rental deleted successfully";
     }
 }
-```
