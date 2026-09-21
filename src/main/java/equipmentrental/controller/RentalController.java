@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/rentals")
 @CrossOrigin(origins = {
         "http://localhost:5500",
-        "http://127.0.0.1:5500"
+        "http://127.0.0.1:5500",
+        "https://equipmentrental-3.onrender.com"
 })
 public class RentalController {
 
@@ -39,21 +40,10 @@ public class RentalController {
         this.emailService = emailService;
     }
 
-
-    // ==========================================
-    // GET ALL RENTALS
-    // ==========================================
-
     @GetMapping
     public List<Rental> getAllRentals() {
         return repository.findAll();
     }
-
-
-    // ==========================================
-    // CREATE RENTAL
-    // FARMER EMAIL + OWNER EMAIL
-    // ==========================================
 
     @PostMapping
     public Rental createRental(@RequestBody Rental rental) {
@@ -65,8 +55,6 @@ public class RentalController {
                                 "Equipment not found with id: "
                                         + rental.getEquipmentId()));
 
-        // Check dates
-
         if (rental.getStartDate() == null ||
                 rental.getEndDate() == null) {
 
@@ -77,13 +65,11 @@ public class RentalController {
         LocalDate today = LocalDate.now();
 
         if (rental.getStartDate().isBefore(today)) {
-
             throw new RuntimeException(
                     "Booking cannot be made for a past date");
         }
 
         if (rental.getEndDate().isBefore(today)) {
-
             throw new RuntimeException(
                     "End date cannot be in the past");
         }
@@ -95,17 +81,10 @@ public class RentalController {
                     "End date cannot be before start date");
         }
 
-
-        // Check equipment availability
-
         if (!equipment.isAvailable()) {
-
             throw new RuntimeException(
                     "Equipment is currently unavailable");
         }
-
-
-        // Check existing bookings
 
         List<String> activeStatuses =
                 List.of("PENDING", "APPROVED");
@@ -125,42 +104,24 @@ public class RentalController {
                             .isBefore(existing.getStartDate());
 
             if (overlap) {
-
                 throw new RuntimeException(
                         "Equipment is already booked for these dates");
             }
         }
-
-
-        // Calculate rental days
 
         long rentalDays =
                 ChronoUnit.DAYS.between(
                         rental.getStartDate(),
                         rental.getEndDate()) + 1;
 
-
-        // Calculate total amount
-
         double totalAmount =
                 rentalDays * equipment.getPricePerDay();
 
         rental.setTotalAmount(totalAmount);
-
         rental.setStatus("PENDING");
-
-
-        // ==========================================
-        // SAVE RENTAL
-        // ==========================================
 
         Rental savedRental =
                 repository.save(rental);
-
-
-        // ==========================================
-        // FARMER BOOKING CONFIRMATION EMAIL
-        // ==========================================
 
         userRepository.findById(savedRental.getUserId())
                 .ifPresentOrElse(
@@ -197,11 +158,6 @@ public class RentalController {
                                             + savedRental.getUserId());
                         }
                 );
-
-
-        // ==========================================
-        // OWNER BOOKING REQUEST EMAIL
-        // ==========================================
 
         if (equipment.getOwnerId() != null) {
 
@@ -242,14 +198,8 @@ public class RentalController {
                     );
         }
 
-
         return savedRental;
     }
-
-
-    // ==========================================
-    // GET RENTAL BY ID
-    // ==========================================
 
     @GetMapping("/id/{id}")
     public Rental getRentalById(
@@ -261,22 +211,12 @@ public class RentalController {
                                 "Rental not found with id: " + id));
     }
 
-
-    // ==========================================
-    // GET RENTALS BY USER
-    // ==========================================
-
     @GetMapping("/user/{userId}")
     public List<Rental> getRentalsByUser(
             @PathVariable Long userId) {
 
         return repository.findByUserId(userId);
     }
-
-
-    // ==========================================
-    // GET RENTALS BY OWNER
-    // ==========================================
 
     @GetMapping("/owner/{ownerId}")
     public List<Rental> getRentalsByOwner(
@@ -291,17 +231,11 @@ public class RentalController {
                         .collect(Collectors.toList());
 
         if (equipmentIds.isEmpty()) {
-
             return List.of();
         }
 
         return repository.findByEquipmentIdIn(equipmentIds);
     }
-
-
-    // ==========================================
-    // GET PENDING RENTALS
-    // ==========================================
 
     @GetMapping("/pending")
     public List<Rental> getPendingRentals() {
@@ -309,22 +243,12 @@ public class RentalController {
         return repository.findByStatus("PENDING");
     }
 
-
-    // ==========================================
-    // GET RENTALS BY STATUS
-    // ==========================================
-
     @GetMapping("/status/{status}")
     public List<Rental> getRentalsByStatus(
             @PathVariable String status) {
 
         return repository.findByStatus(status);
     }
-
-
-    // ==========================================
-    // CHECK AVAILABILITY
-    // ==========================================
 
     @GetMapping("/availability")
     public String checkAvailability(
@@ -342,17 +266,14 @@ public class RentalController {
                 LocalDate.now();
 
         if (start.isBefore(today)) {
-
             return "Booking cannot be made for a past date";
         }
 
         if (end.isBefore(today)) {
-
             return "End date cannot be in the past";
         }
 
         if (end.isBefore(start)) {
-
             return "End date cannot be before start date";
         }
 
@@ -372,18 +293,12 @@ public class RentalController {
                     !end.isBefore(existing.getStartDate());
 
             if (overlap) {
-
                 return "Equipment is NOT available for these dates";
             }
         }
 
         return "Equipment is AVAILABLE for these dates";
     }
-
-
-    // ==========================================
-    // UPDATE RENTAL
-    // ==========================================
 
     @PutMapping("/id/{id}")
     public Rental updateRental(
@@ -447,11 +362,6 @@ public class RentalController {
         return repository.save(rental);
     }
 
-
-    // ==========================================
-    // APPROVE RENTAL
-    // ==========================================
-
     @PutMapping("/approve/{id}")
     public Rental approveRental(
             @PathVariable Long id) {
@@ -470,7 +380,6 @@ public class RentalController {
                                                 + rental.getEquipmentId()));
 
         if (!equipment.isAvailable()) {
-
             throw new RuntimeException(
                     "Equipment is already unavailable");
         }
@@ -483,9 +392,6 @@ public class RentalController {
 
         Rental savedRental =
                 repository.save(rental);
-
-
-        // Send approval email to farmer
 
         userRepository.findById(
                         rental.getUserId())
@@ -527,11 +433,6 @@ public class RentalController {
         return savedRental;
     }
 
-
-    // ==========================================
-    // REJECT RENTAL
-    // ==========================================
-
     @PutMapping("/reject/{id}")
     public Rental rejectRental(
             @PathVariable Long id) {
@@ -550,9 +451,6 @@ public class RentalController {
                 equipmentRepository
                         .findById(rental.getEquipmentId())
                         .orElse(null);
-
-
-        // Send rejection email to farmer
 
         userRepository.findById(
                         rental.getUserId())
@@ -599,11 +497,6 @@ public class RentalController {
         return savedRental;
     }
 
-
-    // ==========================================
-    // COMPLETE RENTAL
-    // ==========================================
-
     @PutMapping("/complete/{id}")
     public Rental completeRental(
             @PathVariable Long id) {
@@ -629,11 +522,6 @@ public class RentalController {
 
         return repository.save(rental);
     }
-
-
-    // ==========================================
-    // DELETE RENTAL
-    // ==========================================
 
     @DeleteMapping("/id/{id}")
     public String deleteRental(
