@@ -17,7 +17,8 @@ import java.util.List;
 @RequestMapping("/api/complaints")
 @CrossOrigin(origins = {
         "http://localhost:5500",
-        "http://127.0.0.1:5500"
+        "http://127.0.0.1:5500",
+        "https://equipmentrental-3.onrender.com"
 })
 public class ComplaintController {
 
@@ -38,10 +39,7 @@ public class ComplaintController {
         this.emailService = emailService;
     }
 
-    // =========================================================
     // CREATE COMPLAINT
-    // =========================================================
-
     @PostMapping
     public ResponseEntity<?> createComplaint(
             @RequestBody Complaint complaint) {
@@ -75,7 +73,6 @@ public class ComplaintController {
                     .body("Complaint description is required");
         }
 
-        // Check equipment
         Equipment equipment = equipmentRepository
                 .findById(complaint.getEquipmentId())
                 .orElse(null);
@@ -85,7 +82,6 @@ public class ComplaintController {
                     .body("Equipment not found");
         }
 
-        // Check owner
         Long ownerId = equipment.getOwnerId();
 
         if (ownerId == null) {
@@ -93,15 +89,12 @@ public class ComplaintController {
                     .body("Owner not assigned to this equipment");
         }
 
-        // Set default values
         complaint.setStatus("PENDING");
         complaint.setCreatedAt(LocalDateTime.now());
 
-        // Save complaint
         Complaint savedComplaint =
                 complaintRepository.save(complaint);
 
-        // Send complaint email to owner
         userRepository.findById(ownerId)
                 .ifPresentOrElse(
                         owner -> {
@@ -166,12 +159,7 @@ public class ComplaintController {
         return ResponseEntity.ok(savedComplaint);
     }
 
-
-    // =========================================================
     // GET ALL COMPLAINTS
-    // Used by admin-complaints.html
-    // =========================================================
-
     @GetMapping
     public ResponseEntity<List<Complaint>> getAllComplaints() {
 
@@ -181,12 +169,7 @@ public class ComplaintController {
         return ResponseEntity.ok(complaints);
     }
 
-
-    // =========================================================
     // GET COMPLAINT BY ID
-    // Used for VIEW
-    // =========================================================
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getComplaintById(
             @PathVariable Long id) {
@@ -197,11 +180,7 @@ public class ComplaintController {
                         ResponseEntity.notFound().build());
     }
 
-
-    // =========================================================
-    // GET COMPLAINTS BY USER / FARMER
-    // =========================================================
-
+    // GET COMPLAINTS BY USER
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Complaint>> getComplaintsByUser(
             @PathVariable Long userId) {
@@ -211,11 +190,7 @@ public class ComplaintController {
         );
     }
 
-
-    // =========================================================
     // GET COMPLAINTS BY EQUIPMENT
-    // =========================================================
-
     @GetMapping("/equipment/{equipmentId}")
     public ResponseEntity<List<Complaint>> getComplaintsByEquipment(
             @PathVariable Long equipmentId) {
@@ -225,11 +200,7 @@ public class ComplaintController {
         );
     }
 
-
-    // =========================================================
     // GET COMPLAINTS BY RENTAL
-    // =========================================================
-
     @GetMapping("/rental/{rentalId}")
     public ResponseEntity<List<Complaint>> getComplaintsByRental(
             @PathVariable Long rentalId) {
@@ -239,12 +210,7 @@ public class ComplaintController {
         );
     }
 
-
-    // =========================================================
     // GET COMPLAINTS BY STATUS
-    // PENDING / UNDER_REVIEW / RESOLVED / REJECTED
-    // =========================================================
-
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Complaint>> getComplaintsByStatus(
             @PathVariable String status) {
@@ -259,11 +225,7 @@ public class ComplaintController {
         );
     }
 
-
-    // =========================================================
     // GET COMPLAINTS BY OWNER
-    // =========================================================
-
     @GetMapping("/owner/{ownerId}")
     public ResponseEntity<?> getComplaintsByOwner(
             @PathVariable Long ownerId) {
@@ -295,12 +257,7 @@ public class ComplaintController {
         return ResponseEntity.ok(ownerComplaints);
     }
 
-
-    // =========================================================
     // UPDATE COMPLAINT STATUS
-    // Used by ADMIN STATUS UPDATE
-    // =========================================================
-
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateComplaintStatus(
             @PathVariable Long id,
@@ -312,7 +269,6 @@ public class ComplaintController {
                         .orElse(null);
 
         if (complaint == null) {
-
             return ResponseEntity.notFound().build();
         }
 
@@ -328,7 +284,6 @@ public class ComplaintController {
                         .trim()
                         .toUpperCase();
 
-        // Allowed statuses
         if (!newStatus.equals("PENDING") &&
                 !newStatus.equals("UNDER_REVIEW") &&
                 !newStatus.equals("RESOLVED") &&
@@ -342,7 +297,6 @@ public class ComplaintController {
                     );
         }
 
-        // Update status
         complaint.setStatus(newStatus);
 
         Complaint updatedComplaint =
@@ -351,12 +305,7 @@ public class ComplaintController {
         return ResponseEntity.ok(updatedComplaint);
     }
 
-
-    // =========================================================
     // DELETE COMPLAINT
-    // Used by ADMIN DELETE button
-    // =========================================================
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteComplaint(
             @PathVariable Long id) {
@@ -367,7 +316,6 @@ public class ComplaintController {
                         .orElse(null);
 
         if (complaint == null) {
-
             return ResponseEntity.notFound().build();
         }
 

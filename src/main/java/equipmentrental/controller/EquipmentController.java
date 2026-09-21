@@ -11,7 +11,8 @@ import java.util.List;
 @CrossOrigin(
         origins = {
                 "http://localhost:5500",
-                "http://127.0.0.1:5500"
+                "http://127.0.0.1:5500",
+                "https://equipmentrental-3.onrender.com"
         },
         methods = {
                 RequestMethod.GET,
