@@ -38,6 +38,10 @@ public class ComplaintController {
         this.emailService = emailService;
     }
 
+    // =========================================================
+    // CREATE COMPLAINT
+    // =========================================================
+
     @PostMapping
     public ResponseEntity<?> createComplaint(
             @RequestBody Complaint complaint) {
@@ -71,6 +75,7 @@ public class ComplaintController {
                     .body("Complaint description is required");
         }
 
+        // Check equipment
         Equipment equipment = equipmentRepository
                 .findById(complaint.getEquipmentId())
                 .orElse(null);
@@ -80,6 +85,7 @@ public class ComplaintController {
                     .body("Equipment not found");
         }
 
+        // Check owner
         Long ownerId = equipment.getOwnerId();
 
         if (ownerId == null) {
@@ -87,69 +93,176 @@ public class ComplaintController {
                     .body("Owner not assigned to this equipment");
         }
 
+        // Set default values
         complaint.setStatus("PENDING");
         complaint.setCreatedAt(LocalDateTime.now());
 
+        // Save complaint
         Complaint savedComplaint =
                 complaintRepository.save(complaint);
 
+        // Send complaint email to owner
         userRepository.findById(ownerId)
-                .ifPresent(owner -> {
+                .ifPresentOrElse(
+                        owner -> {
 
-                    try {
+                            try {
 
-                        emailService.sendComplaintEmail(
-                                owner.getEmail(),
-                                owner.getName(),
-                                savedComplaint.getId(),
-                                savedComplaint.getRentalId(),
-                                savedComplaint.getEquipmentId(),
-                                savedComplaint.getComplaintType(),
-                                savedComplaint.getDescription()
-                        );
+                                emailService.sendComplaintEmail(
+                                        owner.getEmail(),
+                                        owner.getName(),
+                                        savedComplaint.getId(),
+                                        savedComplaint.getRentalId(),
+                                        savedComplaint.getEquipmentId(),
+                                        savedComplaint.getComplaintType(),
+                                        savedComplaint.getDescription()
+                                );
 
-                        System.out.println(
-                                "Complaint email sent successfully"
-                        );
+                                System.out.println(
+                                        "Complaint email sent successfully"
+                                );
 
-                        System.out.println(
-                                "Owner ID: " + ownerId
-                        );
+                                System.out.println(
+                                        "Owner ID: " + ownerId
+                                );
 
-                        System.out.println(
-                                "Owner Email: " + owner.getEmail()
-                        );
+                                System.out.println(
+                                        "Owner Email: " +
+                                        owner.getEmail()
+                                );
 
-                        System.out.println(
-                                "Complaint ID: " +
-                                savedComplaint.getId()
-                        );
+                                System.out.println(
+                                        "Complaint ID: " +
+                                        savedComplaint.getId()
+                                );
 
-                    } catch (Exception e) {
+                            } catch (Exception e) {
 
-                        System.out.println(
-                                "Complaint email failed"
-                        );
+                                System.out.println(
+                                        "Complaint email failed"
+                                );
 
-                        System.out.println(
-                                "Owner Email: " +
-                                owner.getEmail()
-                        );
+                                System.out.println(
+                                        "Owner Email: " +
+                                        owner.getEmail()
+                                );
 
-                        System.out.println(
-                                "Error: " + e.getMessage()
-                        );
-                    }
-                });
+                                System.out.println(
+                                        "Error: " +
+                                        e.getMessage()
+                                );
+                            }
+                        },
+
+                        () -> {
+
+                            System.out.println(
+                                    "OWNER NOT FOUND: " +
+                                    ownerId
+                            );
+                        }
+                );
 
         return ResponseEntity.ok(savedComplaint);
     }
 
-    @GetMapping
-    public List<Complaint> getAllComplaints() {
 
-        return complaintRepository.findAll();
+    // =========================================================
+    // GET ALL COMPLAINTS
+    // Used by admin-complaints.html
+    // =========================================================
+
+    @GetMapping
+    public ResponseEntity<List<Complaint>> getAllComplaints() {
+
+        List<Complaint> complaints =
+                complaintRepository.findAll();
+
+        return ResponseEntity.ok(complaints);
     }
+
+
+    // =========================================================
+    // GET COMPLAINT BY ID
+    // Used for VIEW
+    // =========================================================
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getComplaintById(
+            @PathVariable Long id) {
+
+        return complaintRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() ->
+                        ResponseEntity.notFound().build());
+    }
+
+
+    // =========================================================
+    // GET COMPLAINTS BY USER / FARMER
+    // =========================================================
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Complaint>> getComplaintsByUser(
+            @PathVariable Long userId) {
+
+        return ResponseEntity.ok(
+                complaintRepository.findByUserId(userId)
+        );
+    }
+
+
+    // =========================================================
+    // GET COMPLAINTS BY EQUIPMENT
+    // =========================================================
+
+    @GetMapping("/equipment/{equipmentId}")
+    public ResponseEntity<List<Complaint>> getComplaintsByEquipment(
+            @PathVariable Long equipmentId) {
+
+        return ResponseEntity.ok(
+                complaintRepository.findByEquipmentId(equipmentId)
+        );
+    }
+
+
+    // =========================================================
+    // GET COMPLAINTS BY RENTAL
+    // =========================================================
+
+    @GetMapping("/rental/{rentalId}")
+    public ResponseEntity<List<Complaint>> getComplaintsByRental(
+            @PathVariable Long rentalId) {
+
+        return ResponseEntity.ok(
+                complaintRepository.findByRentalId(rentalId)
+        );
+    }
+
+
+    // =========================================================
+    // GET COMPLAINTS BY STATUS
+    // PENDING / UNDER_REVIEW / RESOLVED / REJECTED
+    // =========================================================
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Complaint>> getComplaintsByStatus(
+            @PathVariable String status) {
+
+        String normalizedStatus =
+                status.trim().toUpperCase();
+
+        return ResponseEntity.ok(
+                complaintRepository.findByStatus(
+                        normalizedStatus
+                )
+        );
+    }
+
+
+    // =========================================================
+    // GET COMPLAINTS BY OWNER
+    // =========================================================
 
     @GetMapping("/owner/{ownerId}")
     public ResponseEntity<?> getComplaintsByOwner(
@@ -175,53 +288,18 @@ public class ComplaintController {
 
                             return equipment.getOwnerId() != null
                                     && equipment.getOwnerId()
-                                            .equals(ownerId);
+                                    .equals(ownerId);
                         })
                         .toList();
 
         return ResponseEntity.ok(ownerComplaints);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getComplaintById(
-            @PathVariable Long id) {
 
-        return complaintRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() ->
-                        ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/user/{userId}")
-    public List<Complaint> getComplaintsByUser(
-            @PathVariable Long userId) {
-
-        return complaintRepository.findByUserId(userId);
-    }
-
-    @GetMapping("/equipment/{equipmentId}")
-    public List<Complaint> getComplaintsByEquipment(
-            @PathVariable Long equipmentId) {
-
-        return complaintRepository
-                .findByEquipmentId(equipmentId);
-    }
-
-    @GetMapping("/rental/{rentalId}")
-    public List<Complaint> getComplaintsByRental(
-            @PathVariable Long rentalId) {
-
-        return complaintRepository
-                .findByRentalId(rentalId);
-    }
-
-    @GetMapping("/status/{status}")
-    public List<Complaint> getComplaintsByStatus(
-            @PathVariable String status) {
-
-        return complaintRepository
-                .findByStatus(status);
-    }
+    // =========================================================
+    // UPDATE COMPLAINT STATUS
+    // Used by ADMIN STATUS UPDATE
+    // =========================================================
 
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateComplaintStatus(
@@ -234,6 +312,7 @@ public class ComplaintController {
                         .orElse(null);
 
         if (complaint == null) {
+
             return ResponseEntity.notFound().build();
         }
 
@@ -249,6 +328,7 @@ public class ComplaintController {
                         .trim()
                         .toUpperCase();
 
+        // Allowed statuses
         if (!newStatus.equals("PENDING") &&
                 !newStatus.equals("UNDER_REVIEW") &&
                 !newStatus.equals("RESOLVED") &&
@@ -257,17 +337,25 @@ public class ComplaintController {
             return ResponseEntity.badRequest()
                     .body(
                             "Invalid status. Allowed values: " +
-                            "PENDING, UNDER_REVIEW, RESOLVED, REJECTED"
+                            "PENDING, UNDER_REVIEW, " +
+                            "RESOLVED, REJECTED"
                     );
         }
 
+        // Update status
         complaint.setStatus(newStatus);
 
-        Complaint updated =
+        Complaint updatedComplaint =
                 complaintRepository.save(complaint);
 
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(updatedComplaint);
     }
+
+
+    // =========================================================
+    // DELETE COMPLAINT
+    // Used by ADMIN DELETE button
+    // =========================================================
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteComplaint(
@@ -279,6 +367,7 @@ public class ComplaintController {
                         .orElse(null);
 
         if (complaint == null) {
+
             return ResponseEntity.notFound().build();
         }
 
