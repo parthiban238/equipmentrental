@@ -1,5 +1,4 @@
-const API_URL = "http://localhost:8081";
-
+const API_URL = "https://equipmentrental-1.onrender.com";
 
 // =====================================================
 // Date Validation - Today and Future Only
@@ -13,21 +12,17 @@ function setupDateValidation() {
         return;
     }
 
-    // Get today's date
     const today = new Date().toISOString().split("T")[0];
 
-    // Past dates cannot be selected
     startDate.min = today;
     endDate.min = today;
 
-    // End date must be same or after start date
     startDate.addEventListener("change", function () {
 
         if (this.value) {
 
             endDate.min = this.value;
 
-            // If selected end date is before start date
             if (endDate.value && endDate.value < this.value) {
                 endDate.value = this.value;
             }
@@ -72,7 +67,7 @@ async function loadEquipment() {
             <p style="color:red;">
                 ❌ Backend connection failed.
                 <br>
-                Please check Spring Boot.
+                Please check the backend.
             </p>
         `;
     }
@@ -89,7 +84,6 @@ function displayEquipment(equipment) {
 
     equipmentList.innerHTML = "";
 
-    // 3 columns + proper spacing
     equipmentList.style.display = "grid";
     equipmentList.style.gridTemplateColumns =
         "repeat(3, 1fr)";
@@ -121,7 +115,6 @@ function displayEquipment(equipment) {
         card.className = "equipment-card";
 
 
-        // Card design
         card.style.background = "white";
         card.style.padding = "20px";
         card.style.borderRadius = "12px";
@@ -334,10 +327,6 @@ async function checkAvailability(equipmentId) {
     }
 
 
-    // ==========================================
-    // Check Past Date
-    // ==========================================
-
     const today =
         new Date().toISOString().split("T")[0];
 
@@ -509,10 +498,6 @@ async function bookEquipment(
     }
 
 
-    // ==========================================
-    // Final Frontend Date Validation
-    // ==========================================
-
     const today =
         new Date().toISOString().split("T")[0];
 
@@ -675,10 +660,8 @@ document.addEventListener(
     "DOMContentLoaded",
     function() {
 
-        // Load equipment
         loadEquipment();
 
-        // Setup date validation
         setupDateValidation();
 
     }

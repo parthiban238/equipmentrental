@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8081";
+const API_URL = "https://equipmentrental-1.onrender.com";
 
 let loginOtpTimer = null;
 let loginOtpSeconds = 60;
@@ -75,7 +75,11 @@ async function loginUser(event) {
     const loginBtn = document.getElementById("loginBtn");
 
     if (!email || !password) {
-        showMessage(message, "Please enter email and password.", "error");
+        showMessage(
+            message,
+            "Please enter email and password.",
+            "error"
+        );
         return;
     }
 
@@ -135,6 +139,7 @@ async function loginUser(event) {
             /*
              * Fallback if backend directly returns user details.
              */
+
             saveUserSession(data);
 
             redirectByRole(data.role);
@@ -146,7 +151,7 @@ async function loginUser(event) {
 
         showMessage(
             message,
-            "Unable to connect to server. Please make sure Spring Boot is running.",
+            "Unable to connect to server. Please try again.",
             "error"
         );
 
@@ -180,6 +185,7 @@ function showOtpSection() {
 
     if (resendOtpBtn) {
         resendOtpBtn.disabled = true;
+        resendOtpBtn.innerText = "🔄 Resend OTP";
     }
 
     const otpTimer = document.getElementById("otpTimer");
@@ -494,6 +500,7 @@ function redirectByRole(role) {
 function showForgotPassword() {
 
     const loginSection = document.getElementById("loginSection");
+
     const forgotSection =
         document.getElementById("forgotPasswordSection");
 
@@ -515,6 +522,7 @@ function showForgotPassword() {
 function showLogin() {
 
     const loginSection = document.getElementById("loginSection");
+
     const forgotSection =
         document.getElementById("forgotPasswordSection");
 
@@ -533,8 +541,12 @@ function showLogin() {
 // ===============================
 function resetForgotPasswordSteps() {
 
-    const emailStep = document.getElementById("forgotEmailStep");
-    const otpStep = document.getElementById("forgotOtpStep");
+    const emailStep =
+        document.getElementById("forgotEmailStep");
+
+    const otpStep =
+        document.getElementById("forgotOtpStep");
+
     const passwordStep =
         document.getElementById("newPasswordStep");
 
@@ -556,6 +568,9 @@ function resetForgotPasswordSteps() {
     if (forgotMessage) {
         forgotMessage.innerText = "";
     }
+
+    localStorage.removeItem("forgotPasswordEmail");
+    localStorage.removeItem("forgotPasswordOtp");
 }
 
 
@@ -1086,10 +1101,15 @@ function showMessage(element, text, type) {
     element.className = "";
 
     if (type === "success") {
+
         element.classList.add("success-message");
+
     } else if (type === "error") {
+
         element.classList.add("error-message");
+
     } else {
+
         element.classList.add("info-message");
     }
 }

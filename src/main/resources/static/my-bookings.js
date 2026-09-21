@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8081";
+const API_URL = "https://equipmentrental-1.onrender.com";
 
 const userId = localStorage.getItem("userId");
 const userRole = localStorage.getItem("userRole");
