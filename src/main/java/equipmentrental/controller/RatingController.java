@@ -15,7 +15,8 @@ import java.util.List;
 @CrossOrigin(
     origins = {
         "http://localhost:5500",
-        "http://127.0.0.1:5500"
+        "http://127.0.0.1:5500",
+        "https://equipmentrental-3.onrender.com"
     }
 )
 public class RatingController {
@@ -31,7 +32,6 @@ public class RatingController {
         this.rentalRepository = rentalRepository;
     }
 
-
     // ==========================================
     // Add Rating & Review
     // ==========================================
@@ -43,25 +43,19 @@ public class RatingController {
         try {
 
             if (rating.getRentalId() == null) {
-
                 return ResponseEntity.badRequest()
                         .body("Rental ID is required.");
             }
 
-
             if (rating.getUserId() == null) {
-
                 return ResponseEntity.badRequest()
                         .body("User ID is required.");
             }
 
-
             if (rating.getEquipmentId() == null) {
-
                 return ResponseEntity.badRequest()
                         .body("Equipment ID is required.");
             }
-
 
             // Rating must be between 1 and 5
             if (rating.getRating() < 1 ||
@@ -71,20 +65,16 @@ public class RatingController {
                         .body("Rating must be between 1 and 5.");
             }
 
-
             // Check rental
             Rental rental =
                     rentalRepository
                             .findById(rating.getRentalId())
                             .orElse(null);
 
-
             if (rental == null) {
-
                 return ResponseEntity.badRequest()
                         .body("Rental not found.");
             }
-
 
             // Only COMPLETED rental can be reviewed
             if (!"COMPLETED".equalsIgnoreCase(
@@ -96,7 +86,6 @@ public class RatingController {
                         );
             }
 
-
             // Check user owns this rental
             if (!rental.getUserId()
                     .equals(rating.getUserId())) {
@@ -107,7 +96,6 @@ public class RatingController {
                         );
             }
 
-
             // Check equipment matches
             if (!rental.getEquipmentId()
                     .equals(rating.getEquipmentId())) {
@@ -117,7 +105,6 @@ public class RatingController {
                             "Equipment does not match the rental."
                         );
             }
-
 
             // Prevent duplicate review
             if (ratingRepository
@@ -130,15 +117,12 @@ public class RatingController {
                         );
             }
 
-
             Rating saved =
                     ratingRepository.save(rating);
 
-
             return ResponseEntity.ok(saved);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             return ResponseEntity.internalServerError()
                     .body(
@@ -147,7 +131,6 @@ public class RatingController {
                     );
         }
     }
-
 
     // ==========================================
     // Get reviews for equipment
@@ -161,7 +144,6 @@ public class RatingController {
                 .findByEquipmentId(equipmentId);
     }
 
-
     // ==========================================
     // Get user's ratings
     // ==========================================
@@ -173,7 +155,6 @@ public class RatingController {
         return ratingRepository
                 .findByUserId(userId);
     }
-
 
     // ==========================================
     // Get rating by rental
