@@ -12,11 +12,18 @@
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             background-color: #f4f4f4;
+            color: #333;
         }
+
+        /* ================= HEADER ================= */
 
         header {
             background-color: #6a1b9a;
@@ -25,11 +32,115 @@
             text-align: center;
         }
 
+        header h1 {
+            margin: 0;
+        }
+
+        /* ================= CONTAINER ================= */
+
         .container {
             max-width: 1100px;
             margin: 30px auto;
             padding: 20px;
         }
+
+        /* ================= BACK BUTTON ================= */
+
+        .back-btn {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .back-btn:hover {
+            background-color: #333;
+        }
+
+        /* ================= STAT CARDS ================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 20px 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            border-top: 5px solid #6a1b9a;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #6a1b9a;
+            margin-bottom: 5px;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* Pending */
+
+        .pending-stat {
+            border-top-color: #f0ad00;
+        }
+
+        .pending-stat .stat-number {
+            color: #856404;
+        }
+
+        /* Approved */
+
+        .approved-stat {
+            border-top-color: #2e7d32;
+        }
+
+        .approved-stat .stat-number {
+            color: #155724;
+        }
+
+        /* Rejected */
+
+        .rejected-stat {
+            border-top-color: #d32f2f;
+        }
+
+        .rejected-stat .stat-number {
+            color: #721c24;
+        }
+
+        /* Completed */
+
+        .completed-stat {
+            border-top-color: #0288d1;
+        }
+
+        .completed-stat .stat-number {
+            color: #0c5460;
+        }
+
+        /* ================= BOOKING CARD ================= */
 
         .booking-card {
             background-color: white;
@@ -41,12 +152,20 @@
 
         .booking-card h3 {
             color: #6a1b9a;
+            margin-top: 0;
         }
+
+        .booking-card p {
+            line-height: 1.5;
+        }
+
+        /* ================= STATUS ================= */
 
         .status {
             font-weight: bold;
             padding: 6px 12px;
             border-radius: 5px;
+            display: inline-block;
         }
 
         .pending {
@@ -69,6 +188,8 @@
             color: #0c5460;
         }
 
+        /* ================= DELETE BUTTON ================= */
+
         .delete-btn {
             background-color: #d32f2f;
             color: white;
@@ -82,18 +203,39 @@
             background-color: #b71c1c;
         }
 
-        .back-btn {
-            background-color: #555;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
         }
 
-        .back-btn:hover {
-            background-color: #333;
+        @media (max-width: 650px) {
+
+            .container {
+                width: 94%;
+                padding: 10px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
         }
 
     </style>
@@ -104,15 +246,21 @@
 <body>
 
 
+<!-- ================= HEADER ================= -->
+
 <header>
 
-    <h1>📋 Manage Rental Bookings</h1>
+    <h1>
+        📋 Manage Rental Bookings
+    </h1>
 
 </header>
 
 
 <div class="container">
 
+
+    <!-- ================= BACK ================= -->
 
     <button
         class="back-btn"
@@ -123,12 +271,144 @@
     </button>
 
 
-    <h2>All Rental Bookings</h2>
+    <!-- ================================================= -->
+    <!-- OVERALL BOOKING COUNT CARDS -->
+    <!-- ================================================= -->
 
+    <div class="stats-grid">
+
+
+        <!-- TOTAL BOOKINGS -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+            <div
+                class="stat-number"
+                id="totalBookings">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Total Bookings
+            </div>
+
+        </div>
+
+
+        <!-- PENDING -->
+
+        <div class="stat-card pending-stat">
+
+            <div class="stat-icon">
+                ⏳
+            </div>
+
+            <div
+                class="stat-number"
+                id="pendingBookings">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Pending
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED -->
+
+        <div class="stat-card approved-stat">
+
+            <div class="stat-icon">
+                ✅
+            </div>
+
+            <div
+                class="stat-number"
+                id="approvedBookings">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Approved
+            </div>
+
+        </div>
+
+
+        <!-- REJECTED -->
+
+        <div class="stat-card rejected-stat">
+
+            <div class="stat-icon">
+                ❌
+            </div>
+
+            <div
+                class="stat-number"
+                id="rejectedBookings">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Rejected
+            </div>
+
+        </div>
+
+
+        <!-- COMPLETED -->
+
+        <div class="stat-card completed-stat">
+
+            <div class="stat-icon">
+                🎉
+            </div>
+
+            <div
+                class="stat-number"
+                id="completedBookings">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Completed
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= TITLE ================= -->
+
+    <h2>
+        All Rental Bookings
+    </h2>
+
+
+    <!-- ================= BOOKING LIST ================= -->
 
     <div id="bookingList">
 
-        <p>Loading bookings...</p>
+        <p>
+            Loading bookings...
+        </p>
 
     </div>
 
@@ -138,14 +418,13 @@
 
 <script>
 
-
     const API_URL =
         "http://localhost:8081";
 
 
-    // ==================================
-    // Load All Bookings
-    // ==================================
+    // =================================================
+    // LOAD ALL BOOKINGS
+    // =================================================
 
     async function loadBookings() {
 
@@ -182,6 +461,105 @@
             );
 
 
+            // ==========================================
+            // CALCULATE COUNTS
+            // ==========================================
+
+            let total = bookings.length;
+
+            let pending = 0;
+
+            let approved = 0;
+
+            let rejected = 0;
+
+            let completed = 0;
+
+
+            bookings.forEach(
+                function(booking) {
+
+                    const status =
+                        String(
+                            booking.status ||
+                            "PENDING"
+                        )
+                        .trim()
+                        .toUpperCase();
+
+
+                    if (status === "PENDING") {
+
+                        pending++;
+
+                    }
+
+                    else if (
+                        status === "APPROVED"
+                    ) {
+
+                        approved++;
+
+                    }
+
+                    else if (
+                        status === "REJECTED"
+                    ) {
+
+                        rejected++;
+
+                    }
+
+                    else if (
+                        status === "COMPLETED"
+                    ) {
+
+                        completed++;
+
+                    }
+
+                }
+            );
+
+
+            // ==========================================
+            // DISPLAY COUNTS
+            // ==========================================
+
+            document.getElementById(
+                "totalBookings"
+            ).innerText =
+                total;
+
+
+            document.getElementById(
+                "pendingBookings"
+            ).innerText =
+                pending;
+
+
+            document.getElementById(
+                "approvedBookings"
+            ).innerText =
+                approved;
+
+
+            document.getElementById(
+                "rejectedBookings"
+            ).innerText =
+                rejected;
+
+
+            document.getElementById(
+                "completedBookings"
+            ).innerText =
+                completed;
+
+
+            // ==========================================
+            // DISPLAY BOOKINGS
+            // ==========================================
+
             bookingList.innerHTML = "";
 
 
@@ -207,6 +585,10 @@
             }
 
 
+            // ==========================================
+            // CREATE BOOKING CARDS
+            // ==========================================
+
             bookings.forEach(
                 function(booking) {
 
@@ -225,7 +607,9 @@
                         String(
                             booking.status ||
                             "PENDING"
-                        ).toUpperCase();
+                        )
+                        .trim()
+                        .toUpperCase();
 
 
                     let statusClass =
@@ -334,6 +718,33 @@
             );
 
 
+            // Reset counts
+
+            document.getElementById(
+                "totalBookings"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "pendingBookings"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "approvedBookings"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "rejectedBookings"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "completedBookings"
+            ).innerText = "0";
+
+
             bookingList.innerHTML = `
 
                 <div class="booking-card">
@@ -355,9 +766,9 @@
     }
 
 
-    // ==================================
-    // Delete Booking
-    // ==================================
+    // =================================================
+    // DELETE BOOKING
+    // =================================================
 
     async function deleteBooking(
         bookingId
@@ -395,6 +806,7 @@
                 const errorMessage =
                     await response.text();
 
+
                 throw new Error(
                     errorMessage ||
                     "Delete failed"
@@ -408,7 +820,7 @@
             );
 
 
-            // Refresh list
+            // Refresh list and counts
 
             loadBookings();
 
@@ -433,9 +845,9 @@
     }
 
 
-    // ==================================
-    // Back to Admin Dashboard
-    // ==================================
+    // =================================================
+    // BACK TO ADMIN DASHBOARD
+    // =================================================
 
     function goBack() {
 
@@ -445,10 +857,11 @@
     }
 
 
-    // Load bookings when page opens
+    // =================================================
+    // INITIAL LOAD
+    // =================================================
 
     loadBookings();
-
 
 </script>
 

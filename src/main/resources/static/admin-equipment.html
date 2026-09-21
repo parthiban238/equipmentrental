@@ -12,11 +12,18 @@
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             background-color: #f4f4f4;
+            color: #333;
         }
+
+        /* ================= HEADER ================= */
 
         header {
             background-color: #6a1b9a;
@@ -25,11 +32,99 @@
             text-align: center;
         }
 
+        header h1 {
+            margin: 0;
+        }
+
+        /* ================= CONTAINER ================= */
+
         .container {
             max-width: 1100px;
             margin: 30px auto;
             padding: 20px;
         }
+
+        /* ================= BACK BUTTON ================= */
+
+        .back-btn {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .back-btn:hover {
+            background-color: #333;
+        }
+
+        /* ================= STAT CARDS ================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            border-top: 5px solid #6a1b9a;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #6a1b9a;
+            margin-bottom: 5px;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .available-stat {
+            border-top-color: #2e7d32;
+        }
+
+        .available-stat .stat-number {
+            color: #2e7d32;
+        }
+
+        .unavailable-stat {
+            border-top-color: #d32f2f;
+        }
+
+        .unavailable-stat .stat-number {
+            color: #d32f2f;
+        }
+
+        .category-stat {
+            border-top-color: #ef6c00;
+        }
+
+        .category-stat .stat-number {
+            color: #ef6c00;
+        }
+
+        /* ================= EQUIPMENT ================= */
 
         .equipment-card {
             background-color: white;
@@ -41,7 +136,14 @@
 
         .equipment-card h3 {
             color: #6a1b9a;
+            margin-top: 0;
         }
+
+        .equipment-card p {
+            line-height: 1.5;
+        }
+
+        /* ================= DELETE ================= */
 
         .delete-btn {
             background-color: #d32f2f;
@@ -56,15 +158,7 @@
             background-color: #b71c1c;
         }
 
-        .back-btn {
-            background-color: #555;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
+        /* ================= STATUS ================= */
 
         .available {
             color: green;
@@ -76,12 +170,42 @@
             font-weight: bold;
         }
 
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                padding: 10px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+        }
+
     </style>
 
 </head>
 
 
 <body>
+
+
+<!-- ================= HEADER ================= -->
 
 <header>
 
@@ -92,6 +216,9 @@
 
 <div class="container">
 
+
+    <!-- ================= BACK ================= -->
+
     <button
         class="back-btn"
         onclick="goBack()">
@@ -101,14 +228,124 @@
     </button>
 
 
-    <h2>All Equipment</h2>
+    <!-- ================================================= -->
+    <!-- OVERALL COUNT CARDS -->
+    <!-- ================================================= -->
 
+    <div class="stats-grid">
+
+
+        <!-- TOTAL -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🚜
+            </div>
+
+            <div
+                class="stat-number"
+                id="totalEquipment">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Total Equipment
+            </div>
+
+        </div>
+
+
+        <!-- AVAILABLE -->
+
+        <div class="stat-card available-stat">
+
+            <div class="stat-icon">
+                ✅
+            </div>
+
+            <div
+                class="stat-number"
+                id="availableEquipment">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Available
+            </div>
+
+        </div>
+
+
+        <!-- NOT AVAILABLE -->
+
+        <div class="stat-card unavailable-stat">
+
+            <div class="stat-icon">
+                ❌
+            </div>
+
+            <div
+                class="stat-number"
+                id="unavailableEquipment">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Not Available
+            </div>
+
+        </div>
+
+
+        <!-- CATEGORIES -->
+
+        <div class="stat-card category-stat">
+
+            <div class="stat-icon">
+                📂
+            </div>
+
+            <div
+                class="stat-number"
+                id="categoryCount">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Categories
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= EQUIPMENT TITLE ================= -->
+
+    <h2>
+        All Equipment
+    </h2>
+
+
+    <!-- ================= EQUIPMENT LIST ================= -->
 
     <div id="equipmentList">
 
-        <p>Loading equipment...</p>
+        <p>
+            Loading equipment...
+        </p>
 
     </div>
+
 
 </div>
 
@@ -119,9 +356,9 @@
         "http://localhost:8081";
 
 
-    // ================================
-    // Load Equipment
-    // ================================
+    // =================================================
+    // LOAD EQUIPMENT
+    // =================================================
 
     async function loadEquipment() {
 
@@ -158,6 +395,66 @@
             );
 
 
+            // ==========================================
+            // CALCULATE COUNTS
+            // ==========================================
+
+            const total =
+                equipment.length;
+
+
+            const available =
+                equipment.filter(
+                    item => item.available === true
+                ).length;
+
+
+            const unavailable =
+                equipment.filter(
+                    item => item.available === false
+                ).length;
+
+
+            const categories =
+                new Set(
+                    equipment
+                        .map(item => item.category)
+                        .filter(category => category)
+                );
+
+
+            // ==========================================
+            // DISPLAY COUNTS
+            // ==========================================
+
+            document.getElementById(
+                "totalEquipment"
+            ).innerText =
+                total;
+
+
+            document.getElementById(
+                "availableEquipment"
+            ).innerText =
+                available;
+
+
+            document.getElementById(
+                "unavailableEquipment"
+            ).innerText =
+                unavailable;
+
+
+            document.getElementById(
+                "categoryCount"
+            ).innerText =
+                categories.size;
+
+
+            // ==========================================
+            // EQUIPMENT LIST
+            // ==========================================
+
             equipmentList.innerHTML = "";
 
 
@@ -172,6 +469,7 @@
 
 
             equipment.forEach(function(item) {
+
 
                 const card =
                     document.createElement("div");
@@ -249,6 +547,7 @@
             });
 
         }
+
         catch (error) {
 
             console.error(
@@ -265,18 +564,41 @@
 
             `;
 
+
+            // Reset counters
+
+            document.getElementById(
+                "totalEquipment"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "availableEquipment"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "unavailableEquipment"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "categoryCount"
+            ).innerText = "0";
+
         }
 
     }
 
 
-    // ================================
-    // Delete Equipment
-    // ================================
+    // =================================================
+    // DELETE EQUIPMENT
+    // =================================================
 
     async function deleteEquipment(
         equipmentId
     ) {
+
 
         const confirmDelete =
             confirm(
@@ -307,6 +629,7 @@
                 const error =
                     await response.text();
 
+
                 throw new Error(
                     error ||
                     "Failed to delete equipment"
@@ -320,9 +643,12 @@
             );
 
 
+            // Reload list + counts
+
             loadEquipment();
 
         }
+
         catch (error) {
 
             console.error(
@@ -341,9 +667,9 @@
     }
 
 
-    // ================================
-    // Back
-    // ================================
+    // =================================================
+    // BACK
+    // =================================================
 
     function goBack() {
 
@@ -353,7 +679,9 @@
     }
 
 
-    // Load equipment
+    // =================================================
+    // INITIAL LOAD
+    // =================================================
 
     loadEquipment();
 

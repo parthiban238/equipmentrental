@@ -12,11 +12,18 @@
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             background-color: #f4f4f4;
+            color: #333;
         }
+
+        /* ================= HEADER ================= */
 
         header {
             background-color: #6a1b9a;
@@ -25,11 +32,105 @@
             text-align: center;
         }
 
+        header h1 {
+            margin: 0;
+        }
+
+        /* ================= CONTAINER ================= */
+
         .container {
             max-width: 1100px;
             margin: 30px auto;
             padding: 20px;
         }
+
+        /* ================= BACK BUTTON ================= */
+
+        .back-btn {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .back-btn:hover {
+            background-color: #333;
+        }
+
+        /* ================= STAT CARDS ================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 22px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            border-top: 5px solid #6a1b9a;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #6a1b9a;
+            margin-bottom: 5px;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* FARMER */
+
+        .farmer-stat {
+            border-top-color: #2e7d32;
+        }
+
+        .farmer-stat .stat-number {
+            color: #2e7d32;
+        }
+
+        /* OWNER */
+
+        .owner-stat {
+            border-top-color: #ef6c00;
+        }
+
+        .owner-stat .stat-number {
+            color: #ef6c00;
+        }
+
+        /* ADMIN */
+
+        .admin-stat {
+            border-top-color: #1565c0;
+        }
+
+        .admin-stat .stat-number {
+            color: #1565c0;
+        }
+
+        /* ================= USER CARD ================= */
 
         .user-card {
             background-color: white;
@@ -41,7 +142,14 @@
 
         .user-card h3 {
             color: #6a1b9a;
+            margin-top: 0;
         }
+
+        .user-card p {
+            line-height: 1.5;
+        }
+
+        /* ================= DELETE ================= */
 
         .delete-btn {
             background-color: #d32f2f;
@@ -56,14 +164,31 @@
             background-color: #b71c1c;
         }
 
-        .back-btn {
-            background-color: #555;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                padding: 10px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
         }
 
     </style>
@@ -73,14 +198,22 @@
 
 <body>
 
+
+<!-- ================= HEADER ================= -->
+
 <header>
 
-    <h1>👥 Manage Users</h1>
+    <h1>
+        👥 Manage Users
+    </h1>
 
 </header>
 
 
 <div class="container">
+
+
+    <!-- ================= BACK ================= -->
 
     <button
         class="back-btn"
@@ -91,14 +224,124 @@
     </button>
 
 
-    <h2>Registered Users</h2>
+    <!-- ================================================= -->
+    <!-- OVERALL USER COUNT CARDS -->
+    <!-- ================================================= -->
 
+    <div class="stats-grid">
+
+
+        <!-- TOTAL USERS -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+            <div
+                class="stat-number"
+                id="totalUsers">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Total Users
+            </div>
+
+        </div>
+
+
+        <!-- FARMERS -->
+
+        <div class="stat-card farmer-stat">
+
+            <div class="stat-icon">
+                👨‍🌾
+            </div>
+
+            <div
+                class="stat-number"
+                id="farmerCount">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Farmers
+            </div>
+
+        </div>
+
+
+        <!-- OWNERS -->
+
+        <div class="stat-card owner-stat">
+
+            <div class="stat-icon">
+                🚜
+            </div>
+
+            <div
+                class="stat-number"
+                id="ownerCount">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Owners
+            </div>
+
+        </div>
+
+
+        <!-- ADMINS -->
+
+        <div class="stat-card admin-stat">
+
+            <div class="stat-icon">
+                👨‍💼
+            </div>
+
+            <div
+                class="stat-number"
+                id="adminCount">
+
+                0
+
+            </div>
+
+            <div class="stat-title">
+                Admins
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= TITLE ================= -->
+
+    <h2>
+        Registered Users
+    </h2>
+
+
+    <!-- ================= USER LIST ================= -->
 
     <div id="userList">
 
-        <p>Loading users...</p>
+        <p>
+            Loading users...
+        </p>
 
     </div>
+
 
 </div>
 
@@ -109,14 +352,16 @@
         "http://localhost:8081";
 
 
-    // ==================================
-    // Load Users
-    // ==================================
+    // =================================================
+    // LOAD USERS
+    // =================================================
 
     async function loadUsers() {
 
         const userList =
-            document.getElementById("userList");
+            document.getElementById(
+                "userList"
+            );
 
 
         try {
@@ -146,6 +391,86 @@
             );
 
 
+            // ==========================================
+            // CALCULATE COUNTS
+            // ==========================================
+
+            const total =
+                users.length;
+
+
+            let farmers = 0;
+
+            let owners = 0;
+
+            let admins = 0;
+
+
+            users.forEach(
+                function(user) {
+
+                    const role =
+                        String(
+                            user.role || ""
+                        )
+                        .trim()
+                        .toUpperCase();
+
+
+                    if (role === "FARMER") {
+
+                        farmers++;
+
+                    }
+
+                    else if (role === "OWNER") {
+
+                        owners++;
+
+                    }
+
+                    else if (role === "ADMIN") {
+
+                        admins++;
+
+                    }
+
+                }
+            );
+
+
+            // ==========================================
+            // DISPLAY COUNTS
+            // ==========================================
+
+            document.getElementById(
+                "totalUsers"
+            ).innerText =
+                total;
+
+
+            document.getElementById(
+                "farmerCount"
+            ).innerText =
+                farmers;
+
+
+            document.getElementById(
+                "ownerCount"
+            ).innerText =
+                owners;
+
+
+            document.getElementById(
+                "adminCount"
+            ).innerText =
+                admins;
+
+
+            // ==========================================
+            // USER LIST
+            // ==========================================
+
             userList.innerHTML = "";
 
 
@@ -159,59 +484,95 @@
             }
 
 
-            users.forEach(function(user) {
-
-                const card =
-                    document.createElement("div");
+            users.forEach(
+                function(user) {
 
 
-                card.className =
-                    "user-card";
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
 
 
-                card.innerHTML = `
-
-                    <h3>
-                        👤 ${user.name}
-                    </h3>
-
-                    <p>
-                        <strong>ID:</strong>
-                        ${user.id}
-                    </p>
-
-                    <p>
-                        <strong>Email:</strong>
-                        ${user.email}
-                    </p>
-
-                    <p>
-                        <strong>Role:</strong>
-                        ${user.role}
-                    </p>
-
-                    <button
-                        class="delete-btn"
-                        onclick="deleteUser(${user.id})">
-
-                        🗑️ Delete User
-
-                    </button>
-
-                `;
+                    card.className =
+                        "user-card";
 
 
-                userList.appendChild(card);
+                    const role =
+                        String(
+                            user.role || ""
+                        )
+                        .trim()
+                        .toUpperCase();
 
-            });
+
+                    card.innerHTML = `
+
+                        <h3>
+                            👤 ${user.name}
+                        </h3>
+
+                        <p>
+                            <strong>ID:</strong>
+                            ${user.id}
+                        </p>
+
+                        <p>
+                            <strong>Email:</strong>
+                            ${user.email}
+                        </p>
+
+                        <p>
+                            <strong>Role:</strong>
+                            ${role}
+                        </p>
+
+                        <button
+                            class="delete-btn"
+                            onclick="deleteUser(${user.id})">
+
+                            🗑️ Delete User
+
+                        </button>
+
+                    `;
+
+
+                    userList.appendChild(card);
+
+                }
+            );
 
         }
+
         catch (error) {
 
             console.error(
                 "User Error:",
                 error
             );
+
+
+            // Reset counts
+
+            document.getElementById(
+                "totalUsers"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "farmerCount"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "ownerCount"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "adminCount"
+            ).innerText = "0";
 
 
             userList.innerHTML = `
@@ -227,11 +588,14 @@
     }
 
 
-    // ==================================
-    // Delete User
-    // ==================================
+    // =================================================
+    // DELETE USER
+    // =================================================
 
-    async function deleteUser(userId) {
+    async function deleteUser(
+        userId
+    ) {
+
 
         const confirmDelete =
             confirm(
@@ -262,6 +626,7 @@
                 const error =
                     await response.text();
 
+
                 throw new Error(
                     error ||
                     "Failed to delete user"
@@ -275,9 +640,12 @@
             );
 
 
+            // Refresh list + counts
+
             loadUsers();
 
         }
+
         catch (error) {
 
             console.error(
@@ -296,9 +664,9 @@
     }
 
 
-    // ==================================
-    // Back
-    // ==================================
+    // =================================================
+    // BACK
+    // =================================================
 
     function goBack() {
 
@@ -308,7 +676,9 @@
     }
 
 
-    // Load users
+    // =================================================
+    // INITIAL LOAD
+    // =================================================
 
     loadUsers();
 

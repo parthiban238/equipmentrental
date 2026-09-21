@@ -235,7 +235,7 @@
             display: grid;
 
             grid-template-columns:
-                repeat(3, 1fr);
+                repeat(4, 1fr);
 
             gap: 25px;
         }
@@ -286,7 +286,7 @@
 
             line-height: 1.6;
 
-            min-height: 60px;
+            min-height: 75px;
 
             margin-bottom: 18px;
         }
@@ -336,6 +336,30 @@
             background: #e65100;
         }
 
+        .red {
+            background: #c62828;
+        }
+
+        .red:hover {
+            background: #b71c1c;
+        }
+
+        /* =========================
+           COMPLAINT HIGHLIGHT
+        ========================= */
+
+        .complaint-card {
+
+            border-top: 5px solid #c62828;
+
+        }
+
+        .complaint-card h3 {
+
+            color: #b71c1c;
+
+        }
+
         /* =========================
            SYSTEM OVERVIEW
         ========================= */
@@ -372,7 +396,7 @@
             display: grid;
 
             grid-template-columns:
-                repeat(3, 1fr);
+                repeat(4, 1fr);
 
             gap: 20px;
         }
@@ -414,6 +438,30 @@
             color: #555;
 
             line-height: 1.5;
+        }
+
+        /* =========================
+           COMPLAINT COUNT
+        ========================= */
+
+        .complaint-count {
+
+            font-size: 26px;
+
+            font-weight: bold;
+
+            color: #c62828;
+
+            margin-top: 8px;
+        }
+
+        .complaint-status {
+
+            font-size: 13px;
+
+            color: #666;
+
+            margin-top: 4px;
         }
 
         /* =========================
@@ -507,7 +555,7 @@
            TABLET
         ========================= */
 
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
 
             .dashboard-grid {
 
@@ -670,6 +718,10 @@
             📋 Bookings
         </button>
 
+        <button onclick="manageComplaints()">
+            ⚠️ Complaints
+        </button>
+
         <button onclick="logout()">
             🚪 Logout
         </button>
@@ -699,9 +751,10 @@
 
         <p>
 
-            Manage users, agricultural equipment
-            and rental bookings from one centralized
-            administration dashboard.
+            Manage users, agricultural equipment,
+            rental bookings and reported complaints
+            from one centralized administration
+            dashboard.
 
         </p>
 
@@ -785,6 +838,8 @@
 <section class="dashboard-grid">
 
 
+    <!-- USERS -->
+
     <div class="dashboard-card">
 
         <div class="icon">
@@ -814,6 +869,8 @@
     </div>
 
 
+    <!-- EQUIPMENT -->
+
     <div class="dashboard-card">
 
         <div class="icon">
@@ -842,6 +899,8 @@
     </div>
 
 
+    <!-- BOOKINGS -->
+
     <div class="dashboard-card">
 
         <div class="icon">
@@ -869,6 +928,38 @@
 
     </div>
 
+
+    <!-- COMPLAINTS -->
+
+    <div class="dashboard-card complaint-card">
+
+        <div class="icon">
+            ⚠️
+        </div>
+
+        <h3>
+            Manage Complaints
+        </h3>
+
+        <p>
+
+            View farmer complaints, reported
+            equipment issues and update
+            complaint status.
+
+        </p>
+
+        <button
+            class="action red"
+            onclick="manageComplaints()">
+
+            Manage Complaints
+
+        </button>
+
+    </div>
+
+
 </section>
 
 
@@ -883,6 +974,9 @@
     </h2>
 
     <div class="overview-grid">
+
+
+        <!-- USER -->
 
         <div class="overview-box">
 
@@ -904,6 +998,8 @@
         </div>
 
 
+        <!-- EQUIPMENT -->
+
         <div class="overview-box">
 
             <div class="big-icon">
@@ -924,6 +1020,8 @@
         </div>
 
 
+        <!-- RENTAL -->
+
         <div class="overview-box">
 
             <div class="big-icon">
@@ -943,6 +1041,43 @@
 
         </div>
 
+
+        <!-- COMPLAINT -->
+
+        <div class="overview-box">
+
+            <div class="big-icon">
+                ⚠️
+            </div>
+
+            <h3>
+                Complaint Management
+            </h3>
+
+            <p>
+
+                Monitor reported issues
+                and farmer complaints.
+
+            </p>
+
+            <div
+                class="complaint-count"
+                id="complaintCount">
+
+                0
+
+            </div>
+
+            <div class="complaint-status">
+
+                Total Complaints
+
+            </div>
+
+        </div>
+
+
     </div>
 
 </section>
@@ -961,8 +1096,8 @@
     <p>
 
         Regularly monitor users, equipment
-        listings and rental bookings to keep
-        the agricultural rental marketplace
+        listings, rental bookings and complaints
+        to keep the agricultural rental marketplace
         organized and reliable.
 
     </p>
@@ -1009,74 +1144,160 @@
 
 <script>
 
-    const userName =
-        localStorage.getItem("userName");
 
-    const userRole =
-        localStorage.getItem("userRole");
+/* =========================
+   USER INFORMATION
+========================= */
+
+const userName =
+    localStorage.getItem("userName");
+
+const userRole =
+    localStorage.getItem("userRole");
 
 
-    if (userName) {
+if (userName) {
+
+    document
+        .getElementById("userName")
+        .innerText = userName;
+
+}
+
+
+if (userRole) {
+
+    document
+        .getElementById("userRole")
+        .innerText =
+        userRole.toUpperCase();
+
+}
+
+
+/* =========================
+   ADMIN ACCESS CHECK
+========================= */
+
+if (userRole !== "ADMIN") {
+
+    alert("Admin access required.");
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function manageUsers() {
+
+    window.location.href =
+        "users.html";
+
+}
+
+
+function manageEquipment() {
+
+    window.location.href =
+        "admin-equipment.html";
+
+}
+
+
+function manageBookings() {
+
+    window.location.href =
+        "admin-bookings.html";
+
+}
+
+
+function manageComplaints() {
+
+    window.location.href =
+        "admin-complaints.html";
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout() {
+
+    localStorage.clear();
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* =========================
+   LOAD COMPLAINT COUNT
+========================= */
+
+async function loadComplaintCount() {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://localhost:8081/api/complaints"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load complaints"
+            );
+
+        }
+
+
+        const complaints =
+            await response.json();
+
 
         document
-            .getElementById("userName")
-            .innerText = userName;
-
-    }
-
-
-    if (userRole) {
-
-        document
-            .getElementById("userRole")
+            .getElementById("complaintCount")
             .innerText =
-            userRole.toUpperCase();
+            complaints.length;
+
 
     }
 
+    catch (error) {
 
-    if (userRole !== "ADMIN") {
-
-        alert("Admin access required.");
-
-        window.location.href =
-            "login.html";
-
-    }
+        console.error(
+            "Complaint count error:",
+            error
+        );
 
 
-    function manageUsers() {
-
-        window.location.href =
-            "users.html";
+        document
+            .getElementById("complaintCount")
+            .innerText =
+            "0";
 
     }
 
-
-    function manageEquipment() {
-
-        window.location.href =
-            "admin-equipment.html";
-
-    }
+}
 
 
-    function manageBookings() {
+/* =========================
+   INITIAL LOAD
+========================= */
 
-        window.location.href =
-            "admin-bookings.html";
+loadComplaintCount();
 
-    }
-
-
-    function logout() {
-
-        localStorage.clear();
-
-        window.location.href =
-            "login.html";
-
-    }
 
 </script>
 
