@@ -8,20 +8,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/equipment")
-@CrossOrigin(
-        origins = {
-                "http://localhost:5500",
-                "http://127.0.0.1:5500",
-                "https://equipmentrental-3.onrender.com"
-        },
-        methods = {
-                RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.OPTIONS
-        }
-)
+@CrossOrigin(origins = {
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "https://equipmentrental-2bit.vercel.app"
+})
 public class EquipmentController {
 
     private final EquipmentRepository repository;
@@ -110,7 +101,6 @@ public class EquipmentController {
         equipment.setAvailable(
                 updatedEquipment.isAvailable());
 
-        // Update owner ID
         equipment.setOwnerId(
                 updatedEquipment.getOwnerId());
 
