@@ -32,24 +32,17 @@ public class EmailService {
 
         message.setText(
                 "Hello " + name + ",\n\n" +
-                "Welcome to the Agricultural Equipment Rental System!\n\n" +
-                "Your account has been successfully created.\n\n" +
-                "You can now login and rent agricultural equipment " +
-                "or manage your equipment based on your role.\n\n" +
-                "Thank you for joining us!\n\n" +
-                "Agricultural Equipment Rental System"
-        );
-
-        mailSender.send(message);
-    }
-
-
-    // ==========================================
-    // LOGIN OTP EMAIL
-    // ==========================================
-
-    public void sendOtpEmail(
-            String toEmail,
+            public void sendWelcomeEmail(String toEmail, String name) {
+                sendEmail(
+                        toEmail,
+                        "Welcome to Agricultural Equipment Rental System",
+                        "Hello " + name + ",\n\n" +
+                                "Welcome to the Agricultural Equipment Rental System!\n\n" +
+                                "Your account has been successfully created.\n\n" +
+                                "You can now login and rent agricultural equipment " +
+                                "or manage your equipment based on your role.\n\n" +
+                                "Thank you for joining us!\n\n" +
+                                "Agricultural Equipment Rental System");
             String name,
             String otp) {
 
